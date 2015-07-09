@@ -30,14 +30,10 @@ Partial Class frmAbout
         Dim txtAcknowledgements As System.Windows.Forms.TextBox
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmAbout))
         Dim Label1 As System.Windows.Forms.Label
-        Dim Label2 As System.Windows.Forms.Label
-        Dim LinkLabel1 As System.Windows.Forms.LinkLabel
         Me.lblVersion = New System.Windows.Forms.Label
         PictureBox1 = New System.Windows.Forms.PictureBox
         txtAcknowledgements = New System.Windows.Forms.TextBox
         Label1 = New System.Windows.Forms.Label
-        Label2 = New System.Windows.Forms.Label
-        LinkLabel1 = New System.Windows.Forms.LinkLabel
         CType(PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -53,12 +49,12 @@ Partial Class frmAbout
         '
         'txtAcknowledgements
         '
-        txtAcknowledgements.Location = New System.Drawing.Point(103, 89)
+        txtAcknowledgements.Location = New System.Drawing.Point(103, 63)
         txtAcknowledgements.Multiline = True
         txtAcknowledgements.Name = "txtAcknowledgements"
         txtAcknowledgements.ReadOnly = True
         txtAcknowledgements.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        txtAcknowledgements.Size = New System.Drawing.Size(277, 172)
+        txtAcknowledgements.Size = New System.Drawing.Size(277, 198)
         txtAcknowledgements.TabIndex = 1
         txtAcknowledgements.TabStop = False
         txtAcknowledgements.Text = resources.GetString("txtAcknowledgements.Text")
@@ -73,33 +69,14 @@ Partial Class frmAbout
         Label1.TabIndex = 2
         Label1.Text = "Feel 2.0"
         '
-        'Label2
-        '
-        Label2.AutoSize = True
-        Label2.Location = New System.Drawing.Point(100, 37)
-        Label2.Name = "Label2"
-        Label2.Size = New System.Drawing.Size(62, 13)
-        Label2.TabIndex = 3
-        Label2.Text = "Justin Ryan"
-        '
-        'LinkLabel1
-        '
-        LinkLabel1.AutoSize = True
-        LinkLabel1.Location = New System.Drawing.Point(168, 37)
-        LinkLabel1.Name = "LinkLabel1"
-        LinkLabel1.Size = New System.Drawing.Size(134, 13)
-        LinkLabel1.TabIndex = 4
-        LinkLabel1.TabStop = True
-        LinkLabel1.Text = "justin@lb1productions.com"
-        '
         'lblVersion
         '
         Me.lblVersion.AutoSize = True
-        Me.lblVersion.Location = New System.Drawing.Point(100, 59)
+        Me.lblVersion.Location = New System.Drawing.Point(100, 37)
         Me.lblVersion.Name = "lblVersion"
-        Me.lblVersion.Size = New System.Drawing.Size(129, 13)
+        Me.lblVersion.Size = New System.Drawing.Size(127, 13)
         Me.lblVersion.TabIndex = 5
-        Me.lblVersion.Text = "Version: 2.0.0 (Feb. 2014)"
+        Me.lblVersion.Text = "Version: 2.0.0 (Apr. 2015)"
         '
         'frmAbout
         '
@@ -107,8 +84,6 @@ Partial Class frmAbout
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(392, 273)
         Me.Controls.Add(Me.lblVersion)
-        Me.Controls.Add(LinkLabel1)
-        Me.Controls.Add(Label2)
         Me.Controls.Add(Label1)
         Me.Controls.Add(txtAcknowledgements)
         Me.Controls.Add(PictureBox1)

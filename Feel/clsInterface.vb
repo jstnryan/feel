@@ -2,7 +2,7 @@
     Friend Class ServiceHost
         Inherits ActionInterface.IServices
 
-        ''Feel Functions:
+#Region "Feel Functions"
         Public Overrides Sub OpenWindowActions()
             'Source: http://www.codeproject.com/Articles/31971/Understanding-SynchronizationContext-Part-I
             'main._threadcontext.Post(AddressOf main.OpenActionWindow_Ext, main._threadcontext)
@@ -74,10 +74,11 @@
                 RedrawControls(FindDeviceIndex(Device))
             End If
         End Sub
+#End Region
 
+#Region "Device Information"
         '''Map MIDI input and output names to device keys
         Public Overrides Function FindDeviceIndex(ByVal Device As String) As Integer
-            'Return main.FindDevice(Device)
             'TODO: There's got to be a more efficient way of doing this...
             Dim nam As Integer = FindDeviceIndexByName(Device)
             Dim ipt As Integer = FindDeviceIndexByInput(Device)
@@ -93,21 +94,18 @@
             Return -1
         End Function
         Public Overrides Function FindDeviceIndexByName(ByVal Device As String) As Integer
-            'Return main.FindDeviceByName(Device)
             For Each _index As Integer In FeelConfig.Connections.Keys
                 If (FeelConfig.Connections(_index).Name = Device) Then Return _index
             Next
             Return -1
         End Function
         Public Overrides Function FindDeviceIndexByInput(ByVal Device As String) As Integer
-            'Return main.FindDeviceByInput(Device)
             For Each _index As Integer In FeelConfig.Connections.Keys
                 If (FeelConfig.Connections(_index).InputName = Device) Then Return _index
             Next
             Return -1
         End Function
         Public Overrides Function FindDeviceIndexByOutput(ByVal Device As String) As Integer
-            'Return main.FindDeviceByOutput(Device)
             For Each _index As Integer In FeelConfig.Connections.Keys
                 If (FeelConfig.Connections(_index).OutputName = Device) Then Return _index
             Next
@@ -165,8 +163,9 @@
                 Next
             Next
         End Sub
+#End Region
 
-        ''LightJockey Information:
+#Region "LightJockey Information"
         Public Overrides Function GetCurrentCue() As Integer
             Return main.GetCue
         End Function
@@ -186,8 +185,9 @@
         Public Overrides Function GetLJHandle() As System.IntPtr
             Return main.GetHandle
         End Function
+#End Region
 
-        ''MIDI:
+#Region "MIDI"
         Public Overrides Function GetMIDIDeviceList() As String()
             Dim devArr As String() = New String() {"ALL DEVICES"}
             For Each device As Integer In FeelConfig.Connections.Keys
@@ -315,8 +315,9 @@
         '    Dim ContStr As String = If(ControlType = 144 Or ControlType = 128, "9", "B") & channel.ToString & notcon.ToString("X2")
         '    SendMIDI(Device, ContStr)
         'End Sub
+#End Region
 
-        ''Windows Messages:
+#Region "Windows Messages"
         Public Overrides Sub ResetLJWindowHandle()
             main.RefreshHandle()
         End Sub
@@ -340,8 +341,9 @@
             'wParam is supposed to be a pointer to the handle of this process, or an HWND
             Return main.SendCopyData(lParam)
         End Function
+#End Region
 
-        ''DEVICE HELPERS:
+#Region "TypeConverters"
         Public Shadows Class DeviceList
             Inherits ComponentModel.StringConverter
 
@@ -373,5 +375,6 @@
                 Return New StandardValuesCollection(devArr)
             End Function
         End Class
+#End Region
     End Class
 End Class

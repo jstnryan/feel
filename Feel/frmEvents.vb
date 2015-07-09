@@ -595,9 +595,6 @@ Public Class frmEvents
                 End If
             End With
             PopulateActions(tmpAction)
-
-            ''OLD:
-            'lvActions.SelectedItems(0).Group = If(lvActions.SelectedItems(0).Group Is lvActions.Groups(0), lvActions.Groups(1), lvActions.Groups(0))
         End If
     End Sub
 

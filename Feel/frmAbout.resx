@@ -124,28 +124,23 @@
     <value>False</value>
   </metadata>
   <data name="txtAcknowledgements.Text" xml:space="preserve">
-    <value>Feel is a software application for the Microsoft Windows platform intended to vastly extend the Martin LightJockey MIDI implementation for creative use with hardware MIDI devices. Feel connects to and recieves raw MIDI data from any MIDI source, and translates that MIDI data on an event-driven basis into Windows Messages which are sent 'behind the scenes' for the purpose of controlling advanced functionality within LightJockey.
+    <value>Copyright (c) 2015, Justin Ryan
+All rights reserved.
 
-Thanks to:
-• Eric Basquez (VJ pxlvsn), for his ideas, feedback, and constant challenges to my growth as a person.
+Portions of this software were derived from Tom Lokovic's MIDI-dot-net open source library, originally released under the BSD 2-Clause license, modified and distributed in binary form.
 
-• The Betatech staff ("beta testers") who tortured the software during development: Christopher Cornish, Patrick Konkel, Eric Basquez, Luke Hottenroth, Shaylyn James.
+Copyright (c) 2009, Tom Lokovic
+All rights reserved.
 
-• Beta Nightclub, for letting me use their nightclub as an experimental software ground-zero.
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
-• Sven Challenger, for everything. Seriously; everything.
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
-• Tom Lokovic, for his elegant MIDI-dot-net library, from which I gained inspiration and borrowed ideas for my own Windows API MIDI library. Portions of this software are heavily based on MIDI-dot-net (https://code.google.com/p/midi-dot-net/).
-
-• Paul Pelletier, for contributing sensitive internal documents detailing some of the internals of the LightJockey software.</value>
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</value>
   </data>
   <metadata name="Label1.GenerateMember" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <metadata name="Label2.GenerateMember" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>False</value>
-  </metadata>
-  <metadata name="LinkLabel1.GenerateMember" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
