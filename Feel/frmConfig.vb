@@ -90,12 +90,12 @@
                 txtConnectionName.Enabled = True
                 chkConnectionInputEnabled.Checked = .InputEnable
                 chkConnectionInputEnabled.Enabled = True
-                cboConnectionInput.SelectedIndex = .Input
+                If (cboConnectionInput.Items.Count > .Input) Then cboConnectionInput.SelectedIndex = .Input
                 cboConnectionInput.Enabled = True
                 chkConnectionOutputEnabled.Checked = .OutputEnable
                 chkConnectionOutputEnabled.Enabled = True
                 'TODO: this line causes an invalid index error if devices have been removed from the system
-                cboConnectionOutput.SelectedIndex = .Output
+                If (cboConnectionOutput.Items.Count > .Output) Then cboConnectionOutput.SelectedIndex = .Output
                 cboConnectionOutput.Enabled = True
                 txtConnectionInitialization.Text = .Init
                 txtConnectionInitialization.Enabled = True

@@ -225,8 +225,10 @@ Public Class frmActions
             New With {Key .Value = 102, Key .Group = "1. Internal Functions", Key .Display = "02. Go to Page"}, _
             New With {Key .Value = 103, Key .Group = "1. Internal Functions", Key .Display = "03. Change Control State"}, _
             New With {Key .Value = 104, Key .Group = "1. Internal Functions", Key .Display = "04. Toggle Control State"}, _
-            New With {Key .Value = 105, Key .Group = "1. Internal Functions", Key .Display = "05. Reset Group State"}, _
-            New With {Key .Value = 202, Key .Group = "2. MIDI Functions", Key .Display = "02. Send MIDI (String)"}, _
+            New With {Key .Value = 105, Key .Group = "1. Internal Functions", Key .Display = "05. Reset Control State by Group"}, _
+            New With {Key .Value = 106, Key .Group = "1. Internal Functions", Key .Display = "06. Reset Controls by Group"}, _
+            New With {Key .Value = 201, Key .Group = "2. MIDI Functions", Key .Display = "01. Send MIDI (String)"}, _
+            New With {Key .Value = 202, Key .Group = "2. MIDI Functions", Key .Display = "02. Send MIDI (Control Change)"}, _
             New With {Key .Value = 301, Key .Group = "4. LightJockey Functions", Key .Display = "01. Send Windows Message"}, _
             New With {Key .Value = 302, Key .Group = "4. LightJockey Functions", Key .Display = "02. Post Windows Message"}, _
             New With {Key .Value = 303, Key .Group = "4. LightJockey Functions", Key .Display = "03. Load Cue"}, _
@@ -301,13 +303,27 @@ Public Class frmActions
                                 .Actions(curIndex).Action = New clsActionIntGroupResetState
                             End If
                             txtActionDescription.Text = clsActionIntGroupResetState._Description
-                        Case 202
+                        Case 106
+                            If (whichGroup = 1) Then
+                                .ActionsOff(curIndex).Action = New clsActionIntGroupResetControl
+                            Else
+                                .Actions(curIndex).Action = New clsActionIntGroupResetControl
+                            End If
+                            txtActionDescription.Text = clsActionIntGroupResetControl._Description
+                        Case 201
                             If (whichGroup = 1) Then
                                 .ActionsOff(curIndex).Action = New clsActionMidiSendString
                             Else
                                 .Actions(curIndex).Action = New clsActionMidiSendString
                             End If
                             txtActionDescription.Text = clsActionMidiSendString._Description
+                        Case 202
+                            If (whichGroup = 1) Then
+                                .ActionsOff(curIndex).Action = New clsActionMidiControlChange
+                            Else
+                                .Actions(curIndex).Action = New clsActionMidiControlChange
+                            End If
+                            txtActionDescription.Text = clsActionMidiControlChange._Description
                         Case 301
                             If (whichGroup = 1) Then
                                 .ActionsOff(curIndex).Action = New clsActionSendMessage

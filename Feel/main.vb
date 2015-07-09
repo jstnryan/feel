@@ -552,7 +552,7 @@ LoadConfig:
         Return RedrawControls(Device)
     End Function
 
-    Public Function RedrawControls(ByVal Device As String) As Boolean
+    Public Function RedrawControls(Optional ByVal Device As String = "ALL DEVICES") As Boolean
         If (Device = "ALL DEVICES") Then
             For Each dev As clsConnection In Configuration.Connections.Values
                 RedrawControls(dev.Name)
@@ -595,7 +595,7 @@ LoadConfig:
         Return True
     End Function
 
-    'TODO: Restructure all these 'helper functions' that are surpurflous
+    'TODO: Restructure all these 'helper functions' that are supurflous
     Public Sub SendMidi(ByVal dev As String, ByVal mid As String)
         UpdateControlState(dev, mid)
         'For Each device As String In Configuration.Connections.Keys

@@ -58,7 +58,8 @@ Public Class clsActionIntPage
 
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
         SetPage(_device, _page)
-        RedrawControls(Device)
+        'RedrawControls(Device)
+        RedrawControls(_device)
         Return True
     End Function
 
@@ -288,6 +289,76 @@ Public Class clsActionIntGroupResetState
     Friend Sub New()
         _group = 0
         _device = "ALL DEVICES"
+    End Sub
+End Class
+
+<Serializable()> _
+Public Class clsActionIntGroupResetControl
+    Implements iAction
+
+    <NonSerialized()> _
+    Public Const _Name As String = "Reset Controls by Group"
+    <NonSerialized()> _
+    Public Const _Description As String = "Sets all controls in group to 'inactive' (momentary/latch button status)."
+
+    Private _group As Byte
+    Private _redraw As Boolean
+
+    <Browsable(False)> _
+    Public ReadOnly Property Description() As String Implements iAction.Description
+        Get
+            Return _Description
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
+        For Each dev As String In Configuration.Connections.Keys
+            For Each cont As String In Configuration.Connections(dev).Control.Keys
+                For Each pag As Byte In Configuration.Connections(dev).Control(cont).Page.Keys
+                    If (Configuration.Connections(dev).Control(cont).Page(pag).ControlGroup = _group) Then
+                        Configuration.Connections(dev).Control(cont).Page(pag).IsActive = False
+                    End If
+                Next
+            Next
+        Next
+        If (_redraw) Then RedrawControls()
+        Return True
+    End Function
+
+    <Browsable(False)> _
+    Public ReadOnly Property Name() As String Implements iAction.Name
+        Get
+            Return _Name
+        End Get
+    End Property
+
+    <DisplayName("Group"), _
+        Description("Which group to reset to 'inactive.'"), _
+        DefaultValue(0)> _
+    Public Property Group() As Byte
+        Get
+            Return _group
+        End Get
+        Set(ByVal value As Byte)
+            _group = value
+        End Set
+    End Property
+
+    <DisplayName("Redraw"), _
+        Description("True to redraw control states after reset."), _
+        DefaultValue(True)> _
+    Public Property Redraw() As Boolean
+        Get
+            Return _redraw
+        End Get
+        Set(ByVal value As Boolean)
+            _redraw = value
+        End Set
+    End Property
+
+    Friend Sub New()
+        _group = 0
+        _redraw = True
     End Sub
 End Class
 #End Region
@@ -1185,9 +1256,30 @@ Public Class clsActionMidiSendString
     End Property
 
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
-        'TODO: Uhhh, this is sorta hacky, but should work...
-        SendMidi(_dev, _str)
-        Return True
+        'TODO: This is ugly shit! Fix this problem.
+        Dim dev As String = ""
+        For Each d As String In Configuration.Connections.Keys
+            If (Configuration.Connections(d).Name = Device) Then
+                dev = d
+                Exit For
+            End If
+        Next
+        If (dev = "") Then
+            For Each d As String In Configuration.Connections.Keys
+                If (Configuration.Connections(d).InputName = Device) Then
+                    dev = d
+                    Exit For
+                End If
+            Next
+        End If
+
+        If Not (dev = "") Then
+            'TODO: Uhhh, this is sorta hacky, but should work...
+            SendMidi(_dev, _str)
+            Return True
+        Else
+            Return False
+        End If
     End Function
 
     <Browsable(False)> _
@@ -1219,6 +1311,100 @@ Public Class clsActionMidiSendString
         End Get
         Set(ByVal value As String)
             _str = value
+        End Set
+    End Property
+End Class
+
+<Serializable()> _
+Public Class clsActionMidiControlChange
+    Implements iAction
+
+    <NonSerialized()> _
+    Public Const _Name As String = "Send MIDI (Control Change)"
+    <NonSerialized()> _
+    Public Const _Description As String = "Sends MIDI Control Change messages."
+
+    Private _cont As Byte
+    Private _chan As Byte
+    Private _dev As String
+
+    <Browsable(False)> _
+    Public ReadOnly Property Description() As String Implements iAction.Description
+        Get
+            Return _Description
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
+        'TODO: This is ugly shit! Fix this problem.
+        Dim dev As String = ""
+        For Each d As String In Configuration.Connections.Keys
+            If (Configuration.Connections(d).Name = Device) Then
+                dev = d
+                Exit For
+            End If
+        Next
+        If (dev = "") Then
+            For Each d As String In Configuration.Connections.Keys
+                If (Configuration.Connections(d).InputName = Device) Then
+                    dev = d
+                    Exit For
+                End If
+            Next
+        End If
+
+        If Not (dev = "") Then
+            'TODO: checks to make sure _chan is <= 15, _cont <= 127
+            Dim cntstr As String = "B" & _chan.ToString("X") & _cont.ToString("X2") & VelVal.ToString("X2")
+            'Diagnostics.Debug.WriteLine("Control Change: " & cntstr)
+            SendMidi(dev, cntstr)
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
+    <Browsable(False)> _
+    Public ReadOnly Property Name() As String Implements iAction.Name
+        Get
+            Return _Name
+        End Get
+    End Property
+
+    <TypeConverter(GetType(OutDeviceList)), _
+        DisplayName("Device"), _
+        Description("Which MIDI output device to send to."), _
+        DefaultValue("ALL DEVICES")> _
+    Public Property dev() As String
+        Get
+            Return _dev
+        End Get
+        Set(ByVal value As String)
+            _dev = value
+        End Set
+    End Property
+
+    <DisplayName("Channel"), _
+        Description("Which MIDI channel to direct the message. (0-15)"), _
+        DefaultValue(0)> _
+    Public Property chan() As Byte
+        Get
+            Return _chan
+        End Get
+        Set(ByVal value As Byte)
+            _chan = value
+        End Set
+    End Property
+
+    <DisplayName("Control"), _
+        Description("The MIDI control from which to send the message."), _
+        DefaultValue(0)> _
+    Public Property cont() As Byte
+        Get
+            Return _cont
+        End Get
+        Set(ByVal value As Byte)
+            _cont = value
         End Set
     End Property
 End Class
