@@ -106,6 +106,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ActionInterface\ActionInterface.vbproj">
+      <Project>{C242BFED-C9F6-493A-8DC4-FB9571E3A8E0}</Project>
+      <Name>ActionInterface</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MIDI\MIDI.csproj">
       <Project>{F60D8B7B-2D2E-4B94-A736-3783FFE1A25C}</Project>
       <Name>MIDI</Name>

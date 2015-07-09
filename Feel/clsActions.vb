@@ -7,6 +7,36 @@ Interface iAction
 End Interface
 
 #Region "Internal Actions"
+'TODO: Figure this cross threading problem out.
+<Serializable()> _
+Public Class clsActionIntConfigActions
+    Implements iAction
+
+    <NonSerialized()> _
+    Public Const _Name As String = "Configure Actions"
+    <NonSerialized()> _
+    Public Const _Description As String = "Opens the 'Configure Actions' window." & vbCrLf & vbCrLf & "***NOT CURRENTLY STABLE****"
+
+    <Browsable(False)> _
+    Public ReadOnly Property Description() As String Implements iAction.Description
+        Get
+            Return _Description
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
+        main.OpenActionWindow()
+        Return True
+    End Function
+
+    <Browsable(False)> _
+    Public ReadOnly Property Name() As String Implements iAction.Name
+        Get
+            Return _Name
+        End Get
+    End Property
+End Class
+
 <Serializable()> _
 Public Class clsActionIntPage
     Implements iAction
@@ -69,6 +99,7 @@ Public Class clsActionIntPage
     End Property
 End Class
 
+'TODO: update with "Device" field?
 <Serializable()> _
 Public Class clsActionIntChangeControlState
     Implements iAction
@@ -113,7 +144,7 @@ Public Class clsActionIntChangeControlState
     End Property
 
     <DisplayName("State Change Command"), _
-        Description("A string representation of the MIDI signal to send this device in order to change this controls illumination state."), _
+        Description("A string representation of the MIDI signal to send this device in order to change this control's illumination state."), _
         DefaultValue("")> _
     Public Property State() As String
         Get
@@ -123,6 +154,141 @@ Public Class clsActionIntChangeControlState
             _state = value
         End Set
     End Property
+End Class
+
+<Serializable()> _
+Public Class clsActionIntToggleControlState
+    Implements iAction
+
+    <NonSerialized()> _
+    Public Const _Name As String = "Toggle Control State"
+    <NonSerialized()> _
+    Public Const _Description As String = "Sends MIDI to a device, with the intention of changing the status of a control, for example button illumination, looping through a defined list of states." & vbCrLf & vbCrLf & "• This action is identical to the 'Change' action, with the exception that it accepts a list of states, and advances to the next state in the list based on the control's current state."
+
+    <Browsable(False)> _
+    Private _states As String()
+
+    <Browsable(False)> _
+    Public ReadOnly Property Description() As String Implements iAction.Description
+        Get
+            Return _Description
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
+        If Not (Configuration.Connections.ContainsKey(Device)) Then
+            Return False
+        Else
+            Dim ContStr As String = If(Type = 144 Or Type = 128, "9", "B") & Channel.ToString & NoteCon.ToString("X2")
+            If Not (Configuration.Connections(Device).Control.ContainsKey(ContStr)) Then
+                Return False
+            Else
+                'TODO: Usint ".PageCurrent" is a hacky shortcut, and could lead to trouble down the line
+                Dim newState As String = _states(Array.IndexOf(_states, Configuration.Connections(Device).Control(ContStr).Page(Configuration.Connections(Device).PageCurrent).CurrentState) + 1)
+                Configuration.Connections(Device).Control(ContStr).Page(Configuration.Connections(Device).PageCurrent).CurrentState = newState
+                UpdateControlState(Device, newState)
+                ''OR:
+                'UpdateControlState(Device, Configuration.Connections(Device).Control(ContStr).Page(Configuration.Connections(Device).PageCurrent).CurrentState)
+                Return True
+            End If
+        End If
+    End Function
+
+    <Browsable(False)> _
+    Public ReadOnly Property Name() As String Implements iAction.Name
+        Get
+            Return _Name
+        End Get
+    End Property
+
+    <DisplayName("List of State Change Commands"), _
+        Description("String representations of the MIDI signal to send this device in order to change this control's illumination state. Place each command on its own line."), _
+        DefaultValue("")> _
+    Public Property State() As String()
+        Get
+            Return _states
+        End Get
+        Set(ByVal value As String())
+            _states = value
+        End Set
+    End Property
+End Class
+
+<Serializable()> _
+Public Class clsActionIntGroupResetState
+    Implements iAction
+
+    <NonSerialized()> _
+    Public Const _Name As String = "Reset Group State"
+    <NonSerialized()> _
+    Public Const _Description As String = "Sets all controls in group to 'Initial State.'"
+
+    Private _group As Byte
+    Private _device As String
+
+    <Browsable(False)> _
+    Public ReadOnly Property Description() As String Implements iAction.Description
+        Get
+            Return _Description
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
+        'TODO:
+        'If (_device = "ALL DEVICES") Then
+        'Else
+        'End If
+
+
+        For Each dev As String In Configuration.Connections.Keys
+            For Each cont As String In Configuration.Connections(dev).Control.Keys
+                For Each pag As Byte In Configuration.Connections(dev).Control(cont).Page.Keys
+                    If (Configuration.Connections(dev).Control(cont).Page(pag).ControlGroup = _group) Then
+                        Configuration.Connections(dev).Control(cont).Page(pag).CurrentState = Configuration.Connections(dev).Control(cont).Page(pag).InitialState
+                    End If
+                Next
+            Next
+        Next
+        RedrawControls(_device)
+        Return True
+    End Function
+
+    <Browsable(False)> _
+    Public ReadOnly Property Name() As String Implements iAction.Name
+        Get
+            Return _Name
+        End Get
+    End Property
+
+    <DisplayName("Group"), _
+        Description("Which group to reset to 'Initial State.'"), _
+        DefaultValue(0)> _
+    Public Property Group() As Byte
+        Get
+            Return _group
+        End Get
+        Set(ByVal value As Byte)
+            _group = value
+        End Set
+    End Property
+
+    <TypeConverter(GetType(DeviceList)), _
+        DisplayName("Target Device"), _
+        Description("Which device(s) to change."), _
+        DefaultValue("ALL DEVICES")> _
+    Public Property Device() As String
+        Get
+            Return _device
+        End Get
+        Set(ByVal value As String)
+            _device = value
+        End Set
+    End Property
+
+    Friend Sub New()
+        _group = 0
+        _device = "ALL DEVICES"
+    End Sub
 End Class
 #End Region
 
@@ -394,6 +560,77 @@ Public Class clsActionLoadCueList
 End Class
 
 <Serializable()> _
+Public Class clsActionLoadBackgroundCue
+    Implements iAction
+
+    <NonSerialized()> _
+    Public Const _Name As String = "Load Backround Cue"
+    <NonSerialized()> _
+    Public Const _Description As String = "Load or merge the selected Background Cue, or clear the Background Cue."
+
+    <Browsable(False)> _
+    Private _bgcue As Integer
+    Private _merge As Boolean
+
+    <Browsable(False)> _
+    Public ReadOnly Property Description() As String Implements iAction.Description
+        Get
+            Return _Description
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
+        Dim ret As Integer
+        If (_bgcue = -1) Then
+            ret = PostMessage(114, 9, 0) ''Clear BGCue
+        Else
+            If _merge Then
+                ret = PostMessage(114, 10, _bgcue) ''Merge BGCue ("transparent")
+            Else
+                ret = PostMessage(114, 7, _bgcue) ''Load BGCue
+            End If
+        End If
+
+        If (ret = -1) Then
+            Return False
+        Else
+            Return True
+        End If
+    End Function
+
+    <Browsable(False)> _
+    Public ReadOnly Property Name() As String Implements iAction.Name
+        Get
+            Return _Name
+        End Get
+    End Property
+
+    <DisplayName("Background Cue"), _
+    Description("The number of the Background Cue to load." & vbCrLf & vbCrLf & "Set to -1 to clear the Background Cue."), _
+    DefaultValue(0)> _
+    Public Property bgcue() As Integer
+        Get
+            Return _bgcue
+        End Get
+        Set(ByVal value As Integer)
+            _bgcue = value
+        End Set
+    End Property
+
+    <DisplayName("Merge"), _
+        Description("Merge the new Background Cue with the currently running Background Cue. Occupied slots in the new cue will replace those slots in the old cue."), _
+        DefaultValue(False)> _
+    Public Property merge() As Boolean
+        Get
+            Return _merge
+        End Get
+        Set(ByVal value As Boolean)
+            _merge = value
+        End Set
+    End Property
+End Class
+
+<Serializable()> _
 Public Class clsActionCueMacroAmplitudeRelative
     Implements iAction
 
@@ -467,6 +704,83 @@ Public Class clsActionCueMacroAmplitudeRelative
 
     Public Sub New()
         _multiplier = 100
+        _invert = False
+    End Sub
+End Class
+
+<Serializable()> _
+Public Class clsActionCueMacroAmplitudeAbsolute
+    Implements iAction
+
+    <NonSerialized()> _
+    Public Const _Name As String = "Macro Amplitude (Absolute)"
+    <NonSerialized()> _
+    Public Const _Description As String = "Adjusts Cue Macro Control Amplitude by absolute adjustments." & vbCrLf & vbCrLf & "Intended for use with absolute controls, such as faders and non-endless encoders."
+
+    <Browsable(False)> _
+    Private _double As Boolean
+    <Browsable(False)> _
+    Private _invert As Boolean
+
+    <Browsable(False)> _
+    Public ReadOnly Property Description() As String Implements iAction.Description
+        Get
+            Return _Description
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
+        Dim amt As Integer = VelVal
+
+        If (_double) Then
+            amt = amt * 2
+            If (amt = 254) Then amt = 255 ''A little hack to avoid a maximum intensity of 254
+        End If
+
+        If (_invert) Then amt = amt * -1
+
+        Dim ret As Integer = PostMessage(167, 8150796, -256)
+        ret = PostMessage(167, 8150796, amt)
+        If (ret = -1) Then
+            Return False
+        Else
+            Return True
+        End If
+    End Function
+
+    <Browsable(False)> _
+    Public ReadOnly Property Name() As String Implements iAction.Name
+        Get
+            Return _Name
+        End Get
+    End Property
+
+    <DisplayName("Double"), _
+        Description("This should ALWAYS be set to 'True' unless you have a controller which breaks MIDI standard and has 'high resolution' faders which send values higher than 0-127."), _
+        DefaultValue(True)> _
+    Public Property vDouble() As Boolean
+        Get
+            Return _double
+        End Get
+        Set(ByVal value As Boolean)
+            _double = value
+        End Set
+    End Property
+
+    <DisplayName("Invert Direction"), _
+        Description("Set to 'True' to swap increment/decrement direction."), _
+        DefaultValue(False)> _
+    Public Property Invert() As Boolean
+        Get
+            Return _invert
+        End Get
+        Set(ByVal value As Boolean)
+            _invert = value
+        End Set
+    End Property
+
+    Public Sub New()
+        _double = True
         _invert = False
     End Sub
 End Class
@@ -550,13 +864,90 @@ Public Class clsActionCueMacroSpeedRelative
 End Class
 
 <Serializable()> _
+Public Class clsActionCueMacroSpeedAbsolute
+    Implements iAction
+
+    <NonSerialized()> _
+    Public Const _Name As String = "Macro Speed (Absolute)"
+    <NonSerialized()> _
+    Public Const _Description As String = "Adjusts Cue Macro Control Speed by absolute adjustments." & vbCrLf & vbCrLf & "Intended for use with absolute controls, such as faders and non-endless encoders."
+
+    <Browsable(False)> _
+    Private _double As Boolean
+    <Browsable(False)> _
+    Private _invert As Boolean
+
+    <Browsable(False)> _
+    Public ReadOnly Property Description() As String Implements iAction.Description
+        Get
+            Return _Description
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
+        Dim amt As Integer = VelVal
+
+        If (_double) Then
+            amt = amt * 2
+            If (amt = 254) Then amt = 255 ''A little hack to avoid a maximum intensity of 254
+        End If
+
+        If (_invert) Then amt = amt * -1
+
+        Dim ret As Integer = PostMessage(167, 8150800, -256)
+        ret = PostMessage(167, 8150800, amt)
+        If (ret = -1) Then
+            Return False
+        Else
+            Return True
+        End If
+    End Function
+
+    <Browsable(False)> _
+    Public ReadOnly Property Name() As String Implements iAction.Name
+        Get
+            Return _Name
+        End Get
+    End Property
+
+    <DisplayName("Double"), _
+        Description("This should ALWAYS be set to 'True' unless you have a controller which breaks MIDI standard and has 'high resolution' faders which send values higher than 0-127."), _
+        DefaultValue(True)> _
+    Public Property vDouble() As Boolean
+        Get
+            Return _double
+        End Get
+        Set(ByVal value As Boolean)
+            _double = value
+        End Set
+    End Property
+
+    <DisplayName("Invert Direction"), _
+        Description("Set to 'True' to swap increment/decrement direction."), _
+        DefaultValue(False)> _
+    Public Property Invert() As Boolean
+        Get
+            Return _invert
+        End Get
+        Set(ByVal value As Boolean)
+            _invert = value
+        End Set
+    End Property
+
+    Public Sub New()
+        _double = True
+        _invert = False
+    End Sub
+End Class
+
+<Serializable()> _
 Public Class clsActionIntensityGroupAbsolute
     Implements iAction
 
     <NonSerialized()> _
     Public Const _Name As String = "Intensity Group (Absolute)"
     <NonSerialized()> _
-    Public Const _Description As String = "Control the value of an Intensity Group, or Master fader." & vbCrLf & vbCrLf & "This Action is intended to be used with controls that give absolute values (such as standard faders, or non-continuous encoders)."
+    Public Const _Description As String = "Control the value of an Intensity Group, or Master fader." & vbCrLf & vbCrLf & "This action is intended to be used with controls that give absolute values (such as standard faders, or non-continuous encoders)."
 
     <Browsable(False)> _
     Private _group As Byte
@@ -669,6 +1060,168 @@ Public Class clsActionIntensityGroupAbsolute
         _invert = False
     End Sub
 End Class
+
+'TODO:
+Public Class clsActionIntensityGroupRelative
+    ''See uMsg 135, 53, x
+End Class
+#End Region
+
+#Region "MIDI Actions"
+'TODO:
+<Serializable()> _
+Public Class clsActionMidiSend
+    Implements iAction
+
+    <NonSerialized()> _
+    Public Const _Name As String = "Send MIDI Note"
+    <NonSerialized()> _
+    Public Const _Description As String = "Sends an arbitrary MIDI note command to a specified output."
+
+    Private _dev As String
+    Private _type As Boolean
+    Private _chan As Byte
+    Private _note As Byte
+    Private _vel As Byte
+
+    <Browsable(False)> _
+    Public ReadOnly Property Description() As String Implements iAction.Description
+        Get
+            Return _Description
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
+        'TODO: Uhhh, this is sorta hacky, but should work...
+        'SendMidi(_dev, _str)
+    End Function
+
+    <Browsable(False)> _
+    Public ReadOnly Property Name() As String Implements iAction.Name
+        Get
+            Return _Name
+        End Get
+    End Property
+
+    <TypeConverter(GetType(OutDeviceList)), _
+        DisplayName("Device"), _
+        Description("Which MIDI output device to send to."), _
+        DefaultValue("ALL DEVICES")> _
+    Public Property dev() As String
+        Get
+            Return _dev
+        End Get
+        Set(ByVal value As String)
+            _dev = value
+        End Set
+    End Property
+
+    <DisplayName("Note On"), _
+        Description("True for a Note On command. False for a Note Off command."), _
+        DefaultValue(True)> _
+    Public Property type() As Boolean
+        Get
+            Return _type
+        End Get
+        Set(ByVal value As Boolean)
+            _type = value
+        End Set
+    End Property
+
+    <DisplayName("Channel"), _
+        Description("MIDI channel (1-16)."), _
+        DefaultValue(1)> _
+    Public Property chan() As Byte
+        Get
+            Return _chan
+        End Get
+        Set(ByVal value As Byte)
+            _chan = value
+        End Set
+    End Property
+
+    <DisplayName("Note"), _
+        Description("MIDI note (0-127)."), _
+        DefaultValue(0)> _
+    Public Property note() As Byte
+        Get
+            Return _note
+        End Get
+        Set(ByVal value As Byte)
+            _note = value
+        End Set
+    End Property
+
+    <DisplayName("Velocity"), _
+        Description("Note velocity (0-127)."), _
+        DefaultValue(127)> _
+    Public Property vel() As Byte
+        Get
+            Return _vel
+        End Get
+        Set(ByVal value As Byte)
+            _vel = value
+        End Set
+    End Property
+End Class
+
+<Serializable()> _
+Public Class clsActionMidiSendString
+    Implements iAction
+
+    <NonSerialized()> _
+    Public Const _Name As String = "Send MIDI (String)"
+    <NonSerialized()> _
+    Public Const _Description As String = "Sends an arbitrary MIDI command formatted as a hexadecimal string." & vbCrLf & vbCrLf & "To explicitly set each MIDI component (Channel, Note, Velocity, etc..) use the 'Send MIDI' action instead."
+
+    Private _str As String
+    Private _dev As String
+
+    <Browsable(False)> _
+    Public ReadOnly Property Description() As String Implements iAction.Description
+        Get
+            Return _Description
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
+        'TODO: Uhhh, this is sorta hacky, but should work...
+        SendMidi(_dev, _str)
+        Return True
+    End Function
+
+    <Browsable(False)> _
+    Public ReadOnly Property Name() As String Implements iAction.Name
+        Get
+            Return _Name
+        End Get
+    End Property
+
+    <TypeConverter(GetType(OutDeviceList)), _
+        DisplayName("Device"), _
+        Description("Which MIDI output device to send to."), _
+        DefaultValue("ALL DEVICES")> _
+    Public Property dev() As String
+        Get
+            Return _dev
+        End Get
+        Set(ByVal value As String)
+            _dev = value
+        End Set
+    End Property
+
+    <DisplayName("MIDI String"), _
+        Description("The MIDI command to send, in hexadecimal string format." & vbCrLf & vbCrLf & "Example: '9F 00 01' is Note 0 Off, Channel 16, Velocity 1"), _
+        DefaultValue(0)> _
+    Public Property str() As String
+        Get
+            Return _str
+        End Get
+        Set(ByVal value As String)
+            _str = value
+        End Set
+    End Property
+End Class
 #End Region
 
 
@@ -683,7 +1236,11 @@ Public Class DeviceList
     Public Overloads Overrides Function GetStandardValues(ByVal context As ComponentModel.ITypeDescriptorContext) As StandardValuesCollection
         Dim devArr As Collections.Generic.List(Of String) = New Collections.Generic.List(Of String)
         devArr.Add("ALL DEVICES")
-        devArr.AddRange(Configuration.Connections.Keys)
+
+        For Each device As String In Configuration.Connections.Keys
+            devArr.Add(Configuration.Connections(device).Name)
+        Next
+
         Return New StandardValuesCollection(devArr.ToArray)
         'Return New StandardValuesCollection(New String() {"ALL DEVICES", "Device 1", "Device 2", "Device 3"})
     End Function
@@ -698,8 +1255,9 @@ Public Class OutDeviceList
 
     Public Overloads Overrides Function GetStandardValues(ByVal context As ComponentModel.ITypeDescriptorContext) As StandardValuesCollection
         Dim devArr As Collections.Generic.List(Of String) = New Collections.Generic.List(Of String)
+        devArr.Add("ALL DEVICES")
         For Each device As String In Configuration.Connections.Keys
-            If Configuration.Connections(device).OutputEnable Then devArr.Add(device)
+            If Configuration.Connections(device).OutputEnable Then devArr.Add(Configuration.Connections(device).Name)
         Next
         Return New StandardValuesCollection(devArr.ToArray)
     End Function
@@ -816,25 +1374,6 @@ Public Class clsIntRedrawControls
         End Get
         Set(ByVal value As String)
             _device = value
-        End Set
-    End Property
-End Class
-
-<Serializable()> _
-Public Class clsIntChangeControlState
-    Public Const Name As String = "Change Control State"
-    Public Const Description As String = "Sends MIDI to a device, with the intention of changing the status of a control, for example button illumination, and preserves this state until modified." & vbCrLf & vbCrLf & "• This action is identical to the 'Send MIDI' action, with the exception that 'Change Control State' preserves the control's state for repeated use, for example when changing pages."
-    Private _state As String
-
-    <DisplayName("State Change Command"), _
-        Description("A string representation of the MIDI signal to send this device in order to change this controls illumination state."), _
-        DefaultValue("")> _
-    Public Property State() As String
-        Get
-            Return _state
-        End Get
-        Set(ByVal value As String)
-            _state = value
         End Set
     End Property
 End Class

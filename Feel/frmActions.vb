@@ -8,11 +8,32 @@ Public Class frmActions
     Private curCont As curControl
     Public WriteOnly Property CurrentControl() As curControl
         Set(ByVal value As curControl)
+            ''Update last control's state, if available
+            updateLastControl()
+
             'Update the current control marker
             curCont = value
             updateCurrentControl(value)
         End Set
     End Property
+
+    Private Sub updateLastControl()
+        If Not (curCont Is Nothing) Then
+            If (Configuration.Connections.ContainsKey(curCont.Device)) Then
+                If (Configuration.Connections(curCont.Device).Control.ContainsKey(curCont.ContStr)) Then
+                    If (Configuration.Connections(curCont.Device).Control(curCont.ContStr).Page.ContainsKey(curCont.ContPage)) Then
+                        With Configuration.Connections(curCont.Device).Control(curCont.ContStr).Page(curCont.ContPage)
+                            If Not (.CurrentState = "") Then
+                                main.UpdateControlState(curCont.Device, .CurrentState)
+                                'ElseIf Not (.InitialState = "") Then
+                                '    main.UpdateControlState(Configuration.Connections(curCont.Device).Name, .InitialState)
+                            End If
+                        End With
+                    End If
+                End If
+            End If
+        End If
+    End Sub
 
     'sub and its deleage to allow cross-threaded updating of form controls
     Delegate Sub updateCurrentControlCallback(ByVal value As curControl)
@@ -70,6 +91,9 @@ Public Class frmActions
             Else
                 ''No Control is configured, so give things default values
                 chkPaged.Checked = False
+                txtInitialState.Text = ""
+                nudControlGroup.Value = 0
+                rdoMomentaryAbsolute.Checked = True
             End If
         End If
     End Sub
@@ -77,8 +101,8 @@ Public Class frmActions
     Public Sub DeselectAction()
         txtActionName.Text = ""
         cboActionFunction.SelectedIndex = -1
+        pgAction.SelectedObject = Nothing
         nudActionPage.Value = 0
-        grpAction.Enabled = False
 
         cmdActionRemove.Enabled = False
         cmdActionUp.Enabled = False
@@ -197,21 +221,27 @@ Public Class frmActions
         cboActionFunction.GroupMember = "Group"
         'TODO: Get rid of temporary placeholder actions
         cboActionFunction.DataSource = New Collections.ArrayList(New Object() { _
-            New With {Key .Value = 101, Key .Group = "1. Internal Functions", Key .Display = "Go to Page"}, _
-            New With {Key .Value = 102, Key .Group = "1. Internal Functions", Key .Display = "Change Control State"}, _
-            New With {Key .Value = 301, Key .Group = "4. LightJockey Functions", Key .Display = "Send Windows Message"}, _
-            New With {Key .Value = 302, Key .Group = "4. LightJockey Functions", Key .Display = "Post Windows Message"}, _
-            New With {Key .Value = 303, Key .Group = "4. LightJockey Functions", Key .Display = "Load Cue"}, _
-            New With {Key .Value = 304, Key .Group = "4. LightJockey Functions", Key .Display = "Load CueList"}, _
-            New With {Key .Value = 305, Key .Group = "4. LightJockey Functions", Key .Display = "Macro Amplitude"}, _
-            New With {Key .Value = 306, Key .Group = "4. LightJockey Functions", Key .Display = "Macro Speed"}, _
-            New With {Key .Value = 307, Key .Group = "4. LightJockey Functions", Key .Display = "Intensity Group"} _
+            New With {Key .Value = 101, Key .Group = "1. Internal Functions", Key .Display = "01. Configure Actions"}, _
+            New With {Key .Value = 102, Key .Group = "1. Internal Functions", Key .Display = "02. Go to Page"}, _
+            New With {Key .Value = 103, Key .Group = "1. Internal Functions", Key .Display = "03. Change Control State"}, _
+            New With {Key .Value = 104, Key .Group = "1. Internal Functions", Key .Display = "04. Toggle Control State"}, _
+            New With {Key .Value = 105, Key .Group = "1. Internal Functions", Key .Display = "05. Reset Group State"}, _
+            New With {Key .Value = 202, Key .Group = "2. MIDI Functions", Key .Display = "02. Send MIDI (String)"}, _
+            New With {Key .Value = 301, Key .Group = "4. LightJockey Functions", Key .Display = "01. Send Windows Message"}, _
+            New With {Key .Value = 302, Key .Group = "4. LightJockey Functions", Key .Display = "02. Post Windows Message"}, _
+            New With {Key .Value = 303, Key .Group = "4. LightJockey Functions", Key .Display = "03. Load Cue"}, _
+            New With {Key .Value = 304, Key .Group = "4. LightJockey Functions", Key .Display = "04. Load CueList"}, _
+            New With {Key .Value = 305, Key .Group = "4. LightJockey Functions", Key .Display = "05. Load Background Cue"}, _
+            New With {Key .Value = 306, Key .Group = "4. LightJockey Functions", Key .Display = "06. Macro Amplitude (Relative)"}, _
+            New With {Key .Value = 307, Key .Group = "4. LightJockey Functions", Key .Display = "07. Macro Amplitude (Absolute)"}, _
+            New With {Key .Value = 308, Key .Group = "4. LightJockey Functions", Key .Display = "08. Macro Speed (Relative)"}, _
+            New With {Key .Value = 309, Key .Group = "4. LightJockey Functions", Key .Display = "09. Macro Speed (Absolute)"}, _
+            New With {Key .Value = 310, Key .Group = "4. LightJockey Functions", Key .Display = "10. Intensity Group"} _
             })
 
         'New With {Key .Value = 103, Key .Group = "1. Internal Functions", Key .Display = "Shift"}, _
         'New With {Key .Value = 102, Key .Group = "1. Internal Functions", Key .Display = "Skip Pages"}, _
         'New With {Key .Value = 104, Key .Group = "1. Internal Functions", Key .Display = "Redraw Controls"}, _
-        'New With {Key .Value = 201, Key .Group = "2. MIDI Functions", Key .Display = "Send MIDI"}, _
         'New With {Key .Value = 202, Key .Group = "2. MIDI Functions", Key .Display = "Send Sysex"}, _
         'New With {Key .Value = 302, Key .Group = "3. Windows Functions", Key .Display = "Execute Command Line"}, _
         'New With {Key .Value = 303, Key .Group = "3. Windows Functions", Key .Display = "Run Program"}, _
@@ -232,6 +262,13 @@ Public Class frmActions
                 If (cboActionFunctionQualify(whichGroup, curIndex)) Then
                     Select Case CType(cboActionFunction.SelectedValue, Integer)
                         Case 101
+                            If (whichGroup = 1) Then
+                                .ActionsOff(curIndex).Action = New clsActionIntConfigActions
+                            Else
+                                .Actions(curIndex).Action = New clsActionIntConfigActions
+                            End If
+                            txtActionDescription.Text = clsActionIntConfigActions._Description
+                        Case 102
                             'activeProperty = New clsIntPage
                             'txtActionDescription.Text = clsIntPage.Description
                             ''txtActionDescription.Text = CType(activeProperty, clsIntPage).Description
@@ -241,7 +278,7 @@ Public Class frmActions
                                 .Actions(curIndex).Action = New clsActionIntPage
                             End If
                             txtActionDescription.Text = clsActionIntPage._Description 'CType(.Actions(curIndex).Action, clsIntPage).Description
-                        Case 102
+                        Case 103
                             'activeProperty = New clsIntChangeControlState
                             'txtActionDescription.Text = clsIntChangeControlState.Description
                             If (whichGroup = 1) Then
@@ -250,6 +287,27 @@ Public Class frmActions
                                 .Actions(curIndex).Action = New clsActionIntChangeControlState
                             End If
                             txtActionDescription.Text = clsActionIntChangeControlState._Description
+                        Case 104
+                            If (whichGroup = 1) Then
+                                .ActionsOff(curIndex).Action = New clsActionIntToggleControlState
+                            Else
+                                .Actions(curIndex).Action = New clsActionIntToggleControlState
+                            End If
+                            txtActionDescription.Text = clsActionIntToggleControlState._Description
+                        Case 105
+                            If (whichGroup = 1) Then
+                                .ActionsOff(curIndex).Action = New clsActionIntGroupResetState
+                            Else
+                                .Actions(curIndex).Action = New clsActionIntGroupResetState
+                            End If
+                            txtActionDescription.Text = clsActionIntGroupResetState._Description
+                        Case 202
+                            If (whichGroup = 1) Then
+                                .ActionsOff(curIndex).Action = New clsActionMidiSendString
+                            Else
+                                .Actions(curIndex).Action = New clsActionMidiSendString
+                            End If
+                            txtActionDescription.Text = clsActionMidiSendString._Description
                         Case 301
                             If (whichGroup = 1) Then
                                 .ActionsOff(curIndex).Action = New clsActionSendMessage
@@ -257,7 +315,7 @@ Public Class frmActions
                                 .Actions(curIndex).Action = New clsActionSendMessage
                             End If
                             txtActionDescription.Text = clsActionSendMessage._Description 'CType(.Actions(curIndex).Action, clsActionSendMessage).Description
-                        Case 301
+                        Case 302
                             If (whichGroup = 1) Then
                                 .ActionsOff(curIndex).Action = New clsActionPostMessage
                             Else
@@ -280,19 +338,40 @@ Public Class frmActions
                             txtActionDescription.Text = clsActionLoadCueList._Description
                         Case 305
                             If (whichGroup = 1) Then
+                                .ActionsOff(curIndex).Action = New clsActionLoadBackgroundCue
+                            Else
+                                .Actions(curIndex).Action = New clsActionLoadBackgroundCue
+                            End If
+                            txtActionDescription.Text = clsActionLoadBackgroundCue._Description
+                        Case 306
+                            If (whichGroup = 1) Then
                                 .ActionsOff(curIndex).Action = New clsActionCueMacroAmplitudeRelative
                             Else
                                 .Actions(curIndex).Action = New clsActionCueMacroAmplitudeRelative
                             End If
                             txtActionDescription.Text = clsActionCueMacroAmplitudeRelative._Description
-                        Case 306
+                        Case 307
+                            If (whichGroup = 1) Then
+                                .ActionsOff(curIndex).Action = New clsActionCueMacroAmplitudeAbsolute
+                            Else
+                                .Actions(curIndex).Action = New clsActionCueMacroAmplitudeAbsolute
+                            End If
+                            txtActionDescription.Text = clsActionCueMacroAmplitudeAbsolute._Description
+                        Case 308
                             If (whichGroup = 1) Then
                                 .ActionsOff(curIndex).Action = New clsActionCueMacroSpeedRelative
                             Else
                                 .Actions(curIndex).Action = New clsActionCueMacroSpeedRelative
                             End If
                             txtActionDescription.Text = clsActionCueMacroSpeedRelative._Description
-                        Case 307
+                        Case 309
+                            If (whichGroup = 1) Then
+                                .ActionsOff(curIndex).Action = New clsActionCueMacroSpeedAbsolute
+                            Else
+                                .Actions(curIndex).Action = New clsActionCueMacroSpeedAbsolute
+                            End If
+                            txtActionDescription.Text = clsActionCueMacroSpeedAbsolute._Description
+                        Case 310
                             If (whichGroup = 1) Then
                                 .ActionsOff(curIndex).Action = New clsActionIntensityGroupAbsolute
                             Else
@@ -318,8 +397,6 @@ Public Class frmActions
                             'Case 104
                             '    activeProperty = New clsIntRedrawControls
                             '    txtActionDescription.Text = clsIntRedrawControls.Description
-                            'Case 201
-                            '    activeProperty = New clsMidiSend
                             'Case 202
                             '    activeProperty = New clsMidiSysex
                             'Case 302
@@ -395,6 +472,7 @@ Public Class frmActions
     End Sub
     Private Sub lvActions_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lvActions.SelectedIndexChanged
         ''Update grpAction fields
+        'lvActions_ItemSelectionChanged()
     End Sub
 
     Private Sub lvActions_ItemChecked(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckedEventArgs) Handles lvActions.ItemChecked

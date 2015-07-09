@@ -117,7 +117,7 @@ Partial Class frmActions
         Me.chkPaged.Location = New System.Drawing.Point(18, 204)
         Me.chkPaged.Name = "chkPaged"
         Me.chkPaged.Size = New System.Drawing.Size(93, 17)
-        Me.chkPaged.TabIndex = 13
+        Me.chkPaged.TabIndex = 1
         Me.chkPaged.Text = "Paged Control"
         Me.chkPaged.UseVisualStyleBackColor = True
         '
@@ -128,7 +128,7 @@ Partial Class frmActions
         Me.nudDevicePage.Maximum = New Decimal(New Integer() {255, 0, 0, 0})
         Me.nudDevicePage.Name = "nudDevicePage"
         Me.nudDevicePage.Size = New System.Drawing.Size(72, 20)
-        Me.nudDevicePage.TabIndex = 12
+        Me.nudDevicePage.TabIndex = 0
         '
         'lblControlPage
         '
@@ -266,7 +266,7 @@ Partial Class frmActions
         Me.txtInitialState.Location = New System.Drawing.Point(83, 22)
         Me.txtInitialState.Name = "txtInitialState"
         Me.txtInitialState.Size = New System.Drawing.Size(112, 20)
-        Me.txtInitialState.TabIndex = 14
+        Me.txtInitialState.TabIndex = 2
         '
         'lblInitialState
         '
@@ -294,7 +294,7 @@ Partial Class frmActions
         Me.rdoLatchRelative.Location = New System.Drawing.Point(15, 42)
         Me.rdoLatchRelative.Name = "rdoLatchRelative"
         Me.rdoLatchRelative.Size = New System.Drawing.Size(52, 17)
-        Me.rdoLatchRelative.TabIndex = 17
+        Me.rdoLatchRelative.TabIndex = 5
         Me.rdoLatchRelative.Text = "Latch"
         Me.rdoLatchRelative.UseVisualStyleBackColor = True
         '
@@ -305,7 +305,7 @@ Partial Class frmActions
         Me.rdoMomentaryAbsolute.Location = New System.Drawing.Point(15, 20)
         Me.rdoMomentaryAbsolute.Name = "rdoMomentaryAbsolute"
         Me.rdoMomentaryAbsolute.Size = New System.Drawing.Size(77, 17)
-        Me.rdoMomentaryAbsolute.TabIndex = 16
+        Me.rdoMomentaryAbsolute.TabIndex = 4
         Me.rdoMomentaryAbsolute.TabStop = True
         Me.rdoMomentaryAbsolute.Text = "Momentary"
         Me.rdoMomentaryAbsolute.UseVisualStyleBackColor = True
@@ -316,7 +316,7 @@ Partial Class frmActions
         Me.nudControlGroup.Maximum = New Decimal(New Integer() {255, 0, 0, 0})
         Me.nudControlGroup.Name = "nudControlGroup"
         Me.nudControlGroup.Size = New System.Drawing.Size(72, 20)
-        Me.nudControlGroup.TabIndex = 15
+        Me.nudControlGroup.TabIndex = 3
         '
         'lblControlGroup
         '
@@ -365,7 +365,7 @@ Partial Class frmActions
         Me.cmdActionMove.Location = New System.Drawing.Point(236, 375)
         Me.cmdActionMove.Name = "cmdActionMove"
         Me.cmdActionMove.Size = New System.Drawing.Size(26, 26)
-        Me.cmdActionMove.TabIndex = 4
+        Me.cmdActionMove.TabIndex = 17
         Me.ttActions.SetToolTip(Me.cmdActionMove, "Move this action")
         Me.cmdActionMove.UseVisualStyleBackColor = False
         '
@@ -375,7 +375,7 @@ Partial Class frmActions
         Me.pgAction.Name = "pgAction"
         Me.pgAction.PropertySort = System.Windows.Forms.PropertySort.NoSort
         Me.pgAction.Size = New System.Drawing.Size(247, 205)
-        Me.pgAction.TabIndex = 2
+        Me.pgAction.TabIndex = 15
         Me.pgAction.ToolbarVisible = False
         '
         'lblActionFunction
@@ -393,7 +393,7 @@ Partial Class frmActions
         Me.txtActionName.MaxLength = 256
         Me.txtActionName.Name = "txtActionName"
         Me.txtActionName.Size = New System.Drawing.Size(193, 20)
-        Me.txtActionName.TabIndex = 0
+        Me.txtActionName.TabIndex = 13
         '
         'lblActionName
         '
@@ -410,7 +410,7 @@ Partial Class frmActions
         Me.nudActionPage.Maximum = New Decimal(New Integer() {255, 0, 0, 0})
         Me.nudActionPage.Name = "nudActionPage"
         Me.nudActionPage.Size = New System.Drawing.Size(72, 20)
-        Me.nudActionPage.TabIndex = 3
+        Me.nudActionPage.TabIndex = 16
         '
         'lblActionPage
         '
@@ -429,7 +429,7 @@ Partial Class frmActions
         Me.cmdActionSwap.Location = New System.Drawing.Point(131, 335)
         Me.cmdActionSwap.Name = "cmdActionSwap"
         Me.cmdActionSwap.Size = New System.Drawing.Size(26, 26)
-        Me.cmdActionSwap.TabIndex = 10
+        Me.cmdActionSwap.TabIndex = 11
         Me.ttActions.SetToolTip(Me.cmdActionSwap, "Move selected action between events.")
         Me.cmdActionSwap.UseVisualStyleBackColor = True
         '
@@ -441,7 +441,7 @@ Partial Class frmActions
         Me.cmdActionRemove.Location = New System.Drawing.Point(15, 368)
         Me.cmdActionRemove.Name = "cmdActionRemove"
         Me.cmdActionRemove.Size = New System.Drawing.Size(26, 26)
-        Me.cmdActionRemove.TabIndex = 7
+        Me.cmdActionRemove.TabIndex = 8
         Me.ttActions.SetToolTip(Me.cmdActionRemove, "Remove selected action.")
         Me.cmdActionRemove.UseVisualStyleBackColor = True
         '
@@ -453,7 +453,7 @@ Partial Class frmActions
         Me.cmdActionAdd.Location = New System.Drawing.Point(15, 336)
         Me.cmdActionAdd.Name = "cmdActionAdd"
         Me.cmdActionAdd.Size = New System.Drawing.Size(26, 26)
-        Me.cmdActionAdd.TabIndex = 6
+        Me.cmdActionAdd.TabIndex = 7
         Me.ttActions.SetToolTip(Me.cmdActionAdd, "Add new action.")
         Me.cmdActionAdd.UseVisualStyleBackColor = True
         '
@@ -465,7 +465,7 @@ Partial Class frmActions
         Me.cmdActionDown.Location = New System.Drawing.Point(73, 368)
         Me.cmdActionDown.Name = "cmdActionDown"
         Me.cmdActionDown.Size = New System.Drawing.Size(26, 26)
-        Me.cmdActionDown.TabIndex = 9
+        Me.cmdActionDown.TabIndex = 10
         Me.ttActions.SetToolTip(Me.cmdActionDown, "Move selected action down.")
         Me.cmdActionDown.UseVisualStyleBackColor = True
         '
@@ -477,7 +477,7 @@ Partial Class frmActions
         Me.cmdActionUp.Location = New System.Drawing.Point(73, 336)
         Me.cmdActionUp.Name = "cmdActionUp"
         Me.cmdActionUp.Size = New System.Drawing.Size(26, 26)
-        Me.cmdActionUp.TabIndex = 8
+        Me.cmdActionUp.TabIndex = 9
         Me.ttActions.SetToolTip(Me.cmdActionUp, "Move selected action up.")
         Me.cmdActionUp.UseVisualStyleBackColor = True
         '
@@ -489,7 +489,7 @@ Partial Class frmActions
         Me.cmdActionClear.Location = New System.Drawing.Point(189, 335)
         Me.cmdActionClear.Name = "cmdActionClear"
         Me.cmdActionClear.Size = New System.Drawing.Size(26, 26)
-        Me.cmdActionClear.TabIndex = 11
+        Me.cmdActionClear.TabIndex = 12
         Me.ttActions.SetToolTip(Me.cmdActionClear, "Clear all actions.")
         Me.cmdActionClear.UseVisualStyleBackColor = True
         '
@@ -552,7 +552,7 @@ Partial Class frmActions
         Me.lvActions.Name = "lvActions"
         Me.lvActions.ShowItemToolTips = True
         Me.lvActions.Size = New System.Drawing.Size(200, 307)
-        Me.lvActions.TabIndex = 5
+        Me.lvActions.TabIndex = 6
         Me.lvActions.UseCompatibleStateImageBehavior = False
         Me.lvActions.View = System.Windows.Forms.View.Details
         '
@@ -572,7 +572,7 @@ Partial Class frmActions
         Me.cboActionFunction.Location = New System.Drawing.Point(69, 44)
         Me.cboActionFunction.Name = "cboActionFunction"
         Me.cboActionFunction.Size = New System.Drawing.Size(193, 21)
-        Me.cboActionFunction.TabIndex = 1
+        Me.cboActionFunction.TabIndex = 14
         '
         'frmActions
         '

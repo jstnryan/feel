@@ -29,12 +29,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("MidiDotNet")]
+[assembly: AssemblyTitle("MIDI")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("MidiDotNet")]
-[assembly: AssemblyCopyright("Copyright © Tom Lokovic 2009")]
+[assembly: AssemblyProduct("Feel MIDI Library")]
+[assembly: AssemblyCopyright("Justin Ryan - justin@lb1productions.com")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -44,7 +44,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0550bef0-b706-4626-a02e-168b7be06af9")]
+[assembly: Guid("15ABCE5A-D91E-4d65-946A-58394B9FE474")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -56,5 +56,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: AssemblyVersion("1.2.0.0")]
+[assembly: AssemblyFileVersion("1.2.0.0")]

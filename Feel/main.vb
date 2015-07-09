@@ -98,7 +98,7 @@ Module main
         'configForm.Focus()
     End Sub
 
-    Private Sub OpenActionWindow() Handles menuConfigActions.Click
+    Friend Sub OpenActionWindow() Handles menuConfigActions.Click
         If actionForm Is Nothing Then
             actionForm = New frmActions
         End If
@@ -176,63 +176,95 @@ LoadConfig:
 #End Region
 
 #Region "Connections"
-    ''TODO: Rewrite this so workflow is more clear?
+    ''' <summary>
+    ''' Makes MIDI connections to all enabled devices
+    ''' </summary>
+    ''' <remarks>Ver:2.1</remarks>
     Private Sub ConnectDevices()
-        'TODO: Add a Try..Catch block, to determine if Configuration is corrupted/wrong version
         For Each device As clsConnection In Configuration.Connections.Values
             If (device.Enabled) Then
-                If (device.Input + 1 <= InputDevice.InstalledDevices.Count) And (device.Output + 1 <= OutputDevice.InstalledDevices.Count) Then 'Is the stored connection index out of bounds?
-                    If Not (InputDevice.InstalledDevices.Item(device.Input).IsOpen) And Not (OutputDevice.InstalledDevices.Item(device.Output).IsOpen) Then 'Are the stored ports already in use?
-                        If (InputDevice.InstalledDevices.Item(device.Input).Name = device.InputName) And (OutputDevice.InstalledDevices.Item(device.Output).Name = device.OutputName) Then 'Ensure stored indexes match stored names for that port
-                            ''We've passed all of our checks at this point, and it should be safe to connect.
-                            Dim inDevice As InputDevice
-                            inDevice = InputDevice.InstalledDevices.Item(device.Input)
-                            midiIn.Add(device.InputName, inDevice)
-                            With midiIn(device.InputName)
-                                .Open()
-                                .StartReceiving(Nothing, True)
-                                AddHandler .NoteOn, AddressOf NoteOn
-                                AddHandler .NoteOff, AddressOf NoteOff
-                                AddHandler .ControlChange, AddressOf ControlChange
-                            End With
-                            inDevice = Nothing
-                            Dim outDevice As OutputDevice
-                            outDevice = OutputDevice.InstalledDevices.Item(device.Output)
-                            midiOut.Add(device.OutputName, outDevice)
-                            midiOut.Item(device.OutputName).Open()
-                            outDevice = Nothing
-
-                            ''Device should be connected, so now we take any "initialization" steps listed in the config
-                            If Not (String.IsNullOrEmpty(device.Init)) Then
-                                Dim initCmds() As String = device.Init.Split(Environment.NewLine.ToCharArray, StringSplitOptions.RemoveEmptyEntries)
-                                UpdateControlState(device.OutputName, initCmds)
-                            End If
-
-                            RedrawControls(device.OutputName)
-                        Else
-                            ''If we end up in this block, the stored name for a given input or output index does not match the 
-                            '' current name of the connection at that index. This is a pretty good indicator that indexes have 
-                            '' changed, and we'd try to connect to the wrong device.
-                            device.Enabled = False
-                            System.Diagnostics.Debug.WriteLine("Disabled 1")
-                            '.Input = -1
-                            '.InputName = ""
-                            '.Output = -1
-                            '.OutputName = ""
-                        End If
-                    Else
-                        System.Windows.Forms.MessageBox.Show("Warning: One or both of the input/output ports for the device named " & device.Name & " is already in use! Either the device is already in use elsewhere, or the connection information is incorrectly set." & vbCrLf & vbCrLf & "If you receive this error and you believe the device is connected properly, update this device's connection info by opening the 'Configure Connections' window and adjusting this device's Input and Output settings.", "Feel: MIDI Port In Use")
-                    End If
-                Else
-                    ''If we end up in this block, the stored index for .Input or .Output is greater than
-                    '' the number of currently installed input devices. We can then assume the
-                    '' connection information is old, and reset it.
+                ''Check the stored connection index to make sure it is not greater than the number of currently connected devices
+                If (device.Input + 1 > InputDevice.InstalledDevices.Count) Or (device.Output + 1 > OutputDevice.InstalledDevices.Count) Then
+                    'System.Diagnostics.Debug.WriteLine("Disabled 2: Connection index out of bounds." & vbCrLf & "Device: " & device.Name)
                     device.Enabled = False
-                    System.Diagnostics.Debug.WriteLine("Disabled 2")
-                    '.Input = -1
-                    '.InputName = ""
-                    '.Output = -1
-                    '.OutputName = ""
+                    'With device
+                    '    .InputEnable = False
+                    '    .Input = -1
+                    '    .InputName = ""
+                    '    .OutputEnable = False
+                    '    .Output = -1
+                    '    .OutputName = ""
+                    'End With
+                    System.Windows.Forms.MessageBox.Show("Warning: One or both of the input/output ports for the device named " & device.Name & " no longer exists! Usually this is an indication that other devices have been removed from the system recently, or have not been powered on." & vbCrLf & vbCrLf & "The device has been disabled. Please update this device's connection info by opening the 'Configure Connections' window and adjusting this device's Input and Output settings, then re-enable the device.", "Feel: MIDI Configuration Has Changed", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Continue For
+                    'Else
+                    '    System.Diagnostics.Debug.WriteLine("ConnectDevices:: Device: " & device.Name & ", Index within range: " & device.Input & ":" & InputDevice.InstalledDevices.Count & "||" & device.Output & ":" & OutputDevice.InstalledDevices.Count)
+                End If
+
+                ''Check that the stored connection names match the system's current names for the stored index
+                If Not If(device.InputEnable, device.InputName = InputDevice.InstalledDevices.Item(device.Input).Name, True) Or Not If(device.OutputEnable, device.OutputName = OutputDevice.InstalledDevices.Item(device.Output).Name, True) Then
+                    'System.Diagnostics.Debug.WriteLine("Disabled 1: Connection name does not match associated index." & vbCrLf & "Device: " & device.Name)
+                    device.Enabled = False
+                    System.Windows.Forms.MessageBox.Show("Warning: One or both of the names of the input/output ports for the device named " & device.Name & " do not match the name of the system's port at the same address! Usually this is an indication that additional devices have been added or removed from the system recently, or powered on in a different order." & vbCrLf & vbCrLf & "The device has been disabled. Please update this device's connection info by opening the 'Configure Connections' window and adjusting this device's Input and Output settings, then re-enable the device.", "Feel: MIDI Configuration Has Changed", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Continue For
+                    'Else
+                    '    System.Diagnostics.Debug.WriteLine("ConnectDevices:: Device: " & device.Name & ", Names = Indexes:")
+                End If
+
+                ''Determine if connections are already in use
+                If If(device.InputEnable, InputDevice.InstalledDevices.Item(device.Input).IsOpen, False) Or If(device.OutputEnable, OutputDevice.InstalledDevices.Item(device.Output).IsOpen, False) Then
+                    device.Enabled = False
+                    System.Windows.Forms.MessageBox.Show("Warning: One or both of the input/output ports for the device named " & device.Name & " is already in use! Either the device is already in use elsewhere, or the connection information is incorrectly set." & vbCrLf & vbCrLf & "The device has been disabled. If you receive this error and you believe the device is connected properly, update this device's connection info by opening the 'Configure Connections' window and adjusting this device's Input and Output settings, then re-enable the device.", "Feel: MIDI Port In Use", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Continue For
+                    'Else
+                    '    System.Diagnostics.Debug.WriteLine("ConnectDevices:: Device: " & device.Name & ", In/Outputs not in use.")
+                End If
+
+                ''If we end up here, we should be good to connect the device
+                If device.InputEnable Then
+                    Try
+                        Dim inDevice As InputDevice
+                        inDevice = InputDevice.InstalledDevices.Item(device.Input)
+                        midiIn.Add(device.InputName, inDevice)
+                        With midiIn(device.InputName)
+                            .Open()
+                            .StartReceiving(Nothing, True)
+                            AddHandler .NoteOn, AddressOf NoteOn
+                            AddHandler .NoteOff, AddressOf NoteOff
+                            AddHandler .ControlChange, AddressOf ControlChange
+                        End With
+                        inDevice = Nothing
+                    Catch ex As Exception
+                        System.Diagnostics.Debug.WriteLine("ConnectDevices:: Try/Catch Exception (Input). Details: " & ex.Message)
+                        device.Enabled = False
+                        System.Windows.Forms.MessageBox.Show("There has been an unexpected error when trying to connect the input for the device named " & device.Name & "." & vbCrLf & vbCrLf & "The device has been disabled. Please check this device's connection information in the 'Configure Connections' window.", "Feel: Unknown MIDI Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        Continue For
+                    End Try
+                End If
+                If device.OutputEnable Then
+                    Try
+                        Dim outDevice As OutputDevice
+                        outDevice = OutputDevice.InstalledDevices.Item(device.Output)
+                        midiOut.Add(device.OutputName, outDevice)
+                        midiOut.Item(device.OutputName).Open()
+                        outDevice = Nothing
+                    Catch ex As Exception
+                        System.Diagnostics.Debug.WriteLine("ConnectDevices:: Try/Catch Exception (Output). Details: " & ex.Message)
+                        device.Enabled = False
+                        System.Windows.Forms.MessageBox.Show("There has been an unexpected error when trying to connect the output for the device named " & device.Name & "." & vbCrLf & vbCrLf & "The device has been disabled. Please check this device's connection information in the 'Configure Connections' window.", "Feel: Unknown MIDI Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        Continue For
+                    End Try
+                End If
+
+                ''Device should be connected, so now we take any "initialization" steps listed in the config
+                If device.OutputEnable Then
+                    If Not (String.IsNullOrEmpty(device.Init)) Then
+                        Dim initCmds() As String = device.Init.Split(Environment.NewLine.ToCharArray, StringSplitOptions.RemoveEmptyEntries)
+                        UpdateControlState(device.OutputName, initCmds)
+                    End If
+
+                    'RedrawControls(device.OutputName)
+                    RedrawControls(device.Name)
                 End If
             End If
         Next
@@ -242,7 +274,8 @@ LoadConfig:
     ''' Closes and clears all connections, and removes all event handlers
     ''' </summary>
     ''' <param name="which">(Byte) 1: Close incoming, 2: Close outgoing, 0: Close both</param>
-    ''' <remarks>Called when closing application, or opening Connection Configuration window</remarks>
+    ''' <remarks>Ver: 1.0
+    ''' Called when closing application, or opening Connection Configuration window</remarks>
     Public Sub DisconnectDevices(Optional ByVal which As Byte = 0)
         Select Case which
             Case 1 ''Close incoming
@@ -296,28 +329,42 @@ LoadConfig:
                 If (Configuration.Connections(msg.Device.Name).Control.ContainsKey(ContStr)) Then
                     If (Configuration.Connections(msg.Device.Name).Control(ContStr).Page.ContainsKey(Configuration.Connections(msg.Device.Name).PageCurrent)) Then
                         ''End Checks
-                        If (Configuration.Connections(msg.Device.Name).NoteOff) And (msg.Velocity = 0) Then
-                            'This is actually a "NoteOff"
-                            For Each actn As clsAction In Configuration.Connections(msg.Device.Name).Control(ContStr).Page(Configuration.Connections(msg.Device.Name).PageCurrent).ActionsOff
-                                If (actn.Enabled) Then
-                                    If Not (actn.Action Is Nothing) Then
-                                        If Not (DirectCast(actn.Action, iAction).Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
-                                            Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                        With Configuration.Connections(msg.Device.Name).Control(ContStr).Page(Configuration.Connections(msg.Device.Name).PageCurrent)
+                            If (Configuration.Connections(msg.Device.Name).NoteOff) And (msg.Velocity = 0) Then
+                                ''This is actually a "NoteOff", or is to be treated as one according to configuration
+                                If ((.Behavior = 1) And Not (.IsActive)) Or (.Behavior = 0) Then
+                                    ''This is a 'momentary' button [AND "IsActive" so is waiting to be turned off]
+                                    '' OR
+                                    ''This is a 'latch' button
+                                    For Each actn As clsAction In .ActionsOff
+                                        If (actn.Enabled) Then
+                                            If Not (actn.Action Is Nothing) Then
+                                                If Not (DirectCast(actn.Action, iAction).Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
+                                                    Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                                                End If
+                                            End If
                                         End If
-                                    End If
+                                    Next
+                                    If (.Behavior = 0) Then .IsActive = False
                                 End If
-                            Next
-                        Else
-                            For Each actn As clsAction In Configuration.Connections(msg.Device.Name).Control(ContStr).Page(Configuration.Connections(msg.Device.Name).PageCurrent).Actions
-                                If (actn.Enabled) Then
-                                    If Not (actn.Action Is Nothing) Then
-                                        If Not (DirectCast(actn.Action, iAction).Execute(msg.Device.Name, 144, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
-                                            Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                            Else
+                                If ((.Behavior = 1) And Not (.IsActive)) Or (.Behavior = 0) Then
+                                    ''This is a 'latch' button [AND "IsActive" = False so is waiting to be turned on]
+                                    '' OR
+                                    ''This is a 'momentary' button
+                                    For Each actn As clsAction In .Actions
+                                        If (actn.Enabled) Then
+                                            If Not (actn.Action Is Nothing) Then
+                                                If Not (DirectCast(actn.Action, iAction).Execute(msg.Device.Name, 144, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
+                                                    Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                                                End If
+                                            End If
                                         End If
-                                    End If
+                                    Next
                                 End If
-                            Next
-                        End If
+                                .IsActive = Not (.IsActive)
+                            End If
+                        End With
                     End If
                 End If
             End If
@@ -333,15 +380,23 @@ LoadConfig:
                 If (Configuration.Connections(msg.Device.Name).Control.ContainsKey(ContStr)) Then
                     If (Configuration.Connections(msg.Device.Name).Control(ContStr).Page.ContainsKey(Configuration.Connections(msg.Device.Name).PageCurrent)) Then
                         ''End Checks
-                        For Each actn As clsAction In Configuration.Connections(msg.Device.Name).Control(ContStr).Page(Configuration.Connections(msg.Device.Name).PageCurrent).ActionsOff
-                            If (actn.Enabled) Then
-                                If Not (actn.Action Is Nothing) Then
-                                    If Not (DirectCast(actn.Action, iAction).Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
-                                        Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                        With Configuration.Connections(msg.Device.Name).Control(ContStr).Page(Configuration.Connections(msg.Device.Name).PageCurrent)
+                            If ((.Behavior = 1) And (Not .IsActive)) Or (.Behavior = 0) Then
+                                ''This is a 'momentary' button [AND "IsActive" so is waiting to be turned off]
+                                '' OR
+                                ''This is a 'latch' button
+                                For Each actn As clsAction In .ActionsOff
+                                    If (actn.Enabled) Then
+                                        If Not (actn.Action Is Nothing) Then
+                                            If Not (DirectCast(actn.Action, iAction).Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
+                                                Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                                            End If
+                                        End If
                                     End If
-                                End If
+                                Next
+                                If (.Behavior = 0) Then .IsActive = False
                             End If
-                        Next
+                        End With
                     End If
                 End If
             End If
@@ -411,6 +466,10 @@ LoadConfig:
     ''    End If
     ''End If
     Public Sub UpdateControlState(ByVal Device As String, ByVal State As String)
+        'TODO: Currently checking this twice, because the regex doesn't like being served an empty string.
+        ' Need to do after because NullOrEmpty does not include spaces.
+        If (String.IsNullOrEmpty(State)) Then Exit Sub
+
         ''Remove whitespace from commands, and convert to uppercase
         Dim regex As New Text.RegularExpressions.Regex("\s")
         State = regex.Replace(State, String.Empty)
@@ -422,6 +481,9 @@ LoadConfig:
         ''Get first character to determine command type (See Select statement below)
         Dim cmdType As String = State.Substring(0, 1)
         If (cmdType = "#") Then Exit Sub 'Comment
+
+        ''Check to make sure we have all information needed
+        If (State.Length < 6) Then Exit Sub
 
         ''Convert to byte array
         Dim len As Integer = State.Length
@@ -444,21 +506,22 @@ LoadConfig:
 
             Case "8" 'MIDI Note Off
                 'midiOut.Item(device.OutputName).SendNoteOff(CType(cmd.Substring(1, 1), Midi.Channel), CType(Convert.ToInt16(cmd.Substring(2, 2)), Midi.Pitch), Convert.ToInt16(cmd.Substring(4, 2)))
-                midiOut.Item(Device).SendNoteOff(CType(State.Substring(1, 1), Midi.Channel), CType(cmdArr(1), Midi.Pitch), cmdArr(2))
+                midiOut.Item(Device).SendNoteOff(CType(Convert.ToByte(State.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Pitch), cmdArr(2))
             Case "9" 'MIDI Note On
-                midiOut.Item(Device).SendNoteOn(CType(State.Substring(1, 1), Midi.Channel), CType(cmdArr(1), Midi.Pitch), cmdArr(2))
+                midiOut.Item(Device).SendNoteOn(CType(Convert.ToByte(State.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Pitch), cmdArr(2))
             Case "B" 'Control Change
-                midiOut.Item(Device).SendControlChange(CType(State.Substring(1, 1), Midi.Channel), CType(cmdArr(1), Midi.Control), cmdArr(2))
+                midiOut.Item(Device).SendControlChange(CType(Convert.ToByte(State.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Control), cmdArr(2))
             Case "C" 'Program Change
-                midiOut.Item(Device).SendProgramChange(CType(State.Substring(1, 1), Midi.Channel), CType(cmdArr(1), Midi.Instrument))
+                midiOut.Item(Device).SendProgramChange(CType(Convert.ToByte(State.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Instrument))
             Case "E" 'Pitch Wheel Change (Pitch Bend)
-                midiOut.Item(Device).SendPitchBend(CType(State.Substring(1, 1), Midi.Channel), cmdArr(1))
+                midiOut.Item(Device).SendPitchBend(CType(Convert.ToByte(State.Substring(1, 1), 16), Midi.Channel), cmdArr(1))
             Case "F" 'MIDI System-Common Message
                 If (State.Substring(1, 1) = "0") Then 'MIDI Sysex Message
                     midiOut.Item(Device).SendSysEx(cmdArr)
                 End If
         End Select
     End Sub
+    'TODO: Update for "ALL DEVICES"!!
     Public Sub UpdateControlState(ByVal Device As String, ByVal State As String())
         For Each _state As String In State
             UpdateControlState(Device, _state)
@@ -492,18 +555,29 @@ LoadConfig:
     Public Function RedrawControls(ByVal Device As String) As Boolean
         If (Device = "ALL DEVICES") Then
             For Each dev As clsConnection In Configuration.Connections.Values
-                _RedrawControls(Device)
+                RedrawControls(dev.Name)
             Next
         Else
-            _RedrawControls(Device)
+            For Each key As String In Configuration.Connections.Keys
+                If (Configuration.Connections(key).Name) = Device Then
+                    If (Configuration.Connections(key).Control.Count > 0) Then
+                        For Each cont As clsControl In Configuration.Connections(key).Control.Values
+                            If (cont.Page.ContainsKey(Configuration.Connections(key).PageCurrent)) Then
+                                ''If this is the first time setting state, also set current state
+                                '' otherwise use only CurrentState
+                                If (cont.Page(Configuration.Connections(key).PageCurrent).CurrentState = "") Then
+                                    UpdateControlState(Configuration.Connections(key).OutputName, cont.Page(Configuration.Connections(key).PageCurrent).InitialState)
+                                    cont.Page(Configuration.Connections(key).PageCurrent).CurrentState = cont.Page(Configuration.Connections(key).PageCurrent).InitialState
+                                Else
+                                    UpdateControlState(Configuration.Connections(key).OutputName, cont.Page(Configuration.Connections(key).PageCurrent).CurrentState)
+                                End If
+                            End If
+                        Next
+                    End If
+                    Exit For
+                End If
+            Next
         End If
-    End Function
-    Private Function _RedrawControls(ByVal Device As String) As Boolean
-        For Each cont As clsControl In Configuration.Connections(Device).Control.Values
-            If (cont.Page.ContainsKey(Configuration.Connections(Device).PageCurrent)) Then
-                UpdateControlState(Device, cont.Page(Configuration.Connections(Device).PageCurrent).CurrentState)
-            End If
-        Next
     End Function
 
     Public Function SendMidiNoteOn(ByVal Device As String, ByVal Channel As Byte, ByVal Note As Byte, ByVal Velocity As Byte) As Boolean
@@ -520,6 +594,16 @@ LoadConfig:
         Diagnostics.Debug.WriteLine("Device.SendSysex handled: " & Message(0).ToString)
         Return True
     End Function
+
+    'TODO: Restructure all these 'helper functions' that are surpurflous
+    Public Sub SendMidi(ByVal dev As String, ByVal mid As String)
+        UpdateControlState(dev, mid)
+        'For Each device As String In Configuration.Connections.Keys
+        '    If Configuration.Connections(device).Name = dev Then
+        '        UpdateControlState(Configuration.Connections(device).OutputName, mid)
+        '    End If
+        'Next
+    End Sub
 #End Region
 
 #Region "Windows Message Functions"
