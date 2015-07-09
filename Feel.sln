@@ -23,6 +23,12 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Actions.LJFixtureControls",
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Actions.LJExternal", "Actions.LJExternal\Actions.LJExternal.vbproj", "{38302576-87E8-4DDD-AE7C-749BC0F9891A}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Actions.LJSystemCommands", "Actions.LJSystemCommands\Actions.LJSystemCommands.vbproj", "{98021C49-2A61-4574-A483-AA6BB24C2F00}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Actions.LJBackgroundCueFunctions", "Actions.LJBackgroundCueFunctions\Actions.LJBackgroundCueFunctions.vbproj", "{FAC89057-2507-4E70-AA35-4B787B98001C}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Actions.LJSequenceFunctions", "Actions.LJSequenceFunctions\Actions.LJSequenceFunctions.vbproj", "{5A2840B2-A504-4E8A-BC4E-05DA64FBD25E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +79,18 @@ Global
 		{38302576-87E8-4DDD-AE7C-749BC0F9891A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38302576-87E8-4DDD-AE7C-749BC0F9891A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38302576-87E8-4DDD-AE7C-749BC0F9891A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98021C49-2A61-4574-A483-AA6BB24C2F00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98021C49-2A61-4574-A483-AA6BB24C2F00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98021C49-2A61-4574-A483-AA6BB24C2F00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98021C49-2A61-4574-A483-AA6BB24C2F00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAC89057-2507-4E70-AA35-4B787B98001C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAC89057-2507-4E70-AA35-4B787B98001C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAC89057-2507-4E70-AA35-4B787B98001C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAC89057-2507-4E70-AA35-4B787B98001C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A2840B2-A504-4E8A-BC4E-05DA64FBD25E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A2840B2-A504-4E8A-BC4E-05DA64FBD25E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A2840B2-A504-4E8A-BC4E-05DA64FBD25E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A2840B2-A504-4E8A-BC4E-05DA64FBD25E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

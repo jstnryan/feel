@@ -176,6 +176,7 @@
     <ProjectReference Include="..\ActionInterface\Action.Interface.vbproj">
       <Project>{C242BFED-C9F6-493A-8DC4-FB9571E3A8E0}</Project>
       <Name>Action.Interface</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\FeelConfig\FeelConfig.vbproj">
       <Project>{B4A03EF1-9D1C-4388-B9FE-2B46E4C23E88}</Project>

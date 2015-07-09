@@ -1,57 +1,90 @@
-##MIDI ("MIDI Functions")
-SendMidiString                15ABCE5A-D91E-4d65-946B-58394B9FE400
-SendMidiComponents            15ABCE5A-D91E-4d65-946B-58394B9FE401
+##MIDI Functions
+SendMidiString                  15ABCE5A-D91E-4d65-946B-58394B9FE400
+SendMidiComponents              15ABCE5A-D91E-4d65-946B-58394B9FE401
 
-##INTERNAL ("Internal Functions")
-ExitProgram                   15ABCE5A-D91E-4d65-946A-58394B9FE470  ##internal only?
-SaveConfiguration             15ABCE5A-D91E-4d65-946A-58394B9FE471  ##internal only?
-ConfigureConnections          15ABCE5A-D91E-4d65-946A-58394B9FE472
-ConfigureActions              15ABCE5A-D91E-4d65-946A-58394B9FE473
-ChangePage                    15ABCE5A-D91E-4d65-946A-58394B9FE474
-ShowMessageBox                15ABCE5A-D91E-4d65-946A-58394B9FE475  ##internal only?
-ChangeControlState            15ABCE5A-D91E-4d65-946A-58394B9FE476
-ResetControlGroup             15ABCE5A-D91E-4d65-946A-58394B9FE477
-ConfigureProgram              15ABCE5A-D91E-4d65-946A-58394B9FE478
+##Internal Functions
+ExitProgram                     15ABCE5A-D91E-4d65-946A-58394B9FE470  ##internal only?
+SaveConfiguration               15ABCE5A-D91E-4d65-946A-58394B9FE471  ##internal only?
+ConfigureConnections            15ABCE5A-D91E-4d65-946A-58394B9FE472
+ConfigureActions                15ABCE5A-D91E-4d65-946A-58394B9FE473
+ChangePage                      15ABCE5A-D91E-4d65-946A-58394B9FE474
+ShowMessageBox                  15ABCE5A-D91E-4d65-946A-58394B9FE475  ##internal only?
+ChangeControlState              15ABCE5A-D91E-4d65-946A-58394B9FE476
+ResetControlGroup               15ABCE5A-D91E-4d65-946A-58394B9FE477
+ConfigureProgram                15ABCE5A-D91E-4d65-946A-58394B9FE478
 
-##EXTERNAL ("LJ External Hotkeys")
-ExternalSystem                D5644026-BD84-482b-AF02-BB844852BF00
-ExternalGlobalIntensity       D5644026-BD84-482b-AF02-BB844852BF01
-ExternalControls              D5644026-BD84-482b-AF02-BB844852BF02
-ExternalSequenceFunctions     D5644026-BD84-482b-AF02-BB844852BF03
-ExternalCue                   D5644026-BD84-482b-AF02-BB844852BF04
-ExternalCueBuilder            D5644026-BD84-482b-AF02-BB844852BF05
-ExternalGenericMacro          D5644026-BD84-482b-AF02-BB844852BF06
-ExternalCuelist               D5644026-BD84-482b-AF02-BB844852BF07
-ExternalBackgroundCues        D5644026-BD84-482b-AF02-BB844852BF08
-ExternalStaticsControl        D5644026-BD84-482b-AF02-BB844852BF09
-ExternalFixtureSelection      D5644026-BD84-482b-AF02-BB844852BF10
-ExternalOfflineVisualizer     D5644026-BD84-482b-AF02-BB844852BF11
-ExternalEmulate2532           D5644026-BD84-482b-AF02-BB844852BF12
-ExternalDMXIN                 D5644026-BD84-482b-AF02-BB844852BF13
+#LJ External Hotkeys
+ExternalSystem                  D5644026-BD84-482b-AF02-BB844852BF00
+ExternalGlobalIntensity         D5644026-BD84-482b-AF02-BB844852BF01
+ExternalControls                D5644026-BD84-482b-AF02-BB844852BF02
+ExternalSequenceFunctions       D5644026-BD84-482b-AF02-BB844852BF03
+ExternalCue                     D5644026-BD84-482b-AF02-BB844852BF04
+ExternalCueBuilder              D5644026-BD84-482b-AF02-BB844852BF05
+ExternalGenericMacro            D5644026-BD84-482b-AF02-BB844852BF06
+ExternalCuelist                 D5644026-BD84-482b-AF02-BB844852BF07
+ExternalBackgroundCues          D5644026-BD84-482b-AF02-BB844852BF08
+ExternalStaticsControl          D5644026-BD84-482b-AF02-BB844852BF09
+ExternalFixtureSelection        D5644026-BD84-482b-AF02-BB844852BF10
+ExternalOfflineVisualizer       D5644026-BD84-482b-AF02-BB844852BF11
+ExternalEmulate2532             D5644026-BD84-482b-AF02-BB844852BF12
+ExternalDMXIN                   D5644026-BD84-482b-AF02-BB844852BF13
 
-#WINDOWS MESSAGES ("Windows Messages")
-SendWMessage                  4CDE2694-8BA6-415d-94EA-EDA045149BCF
-PostWMessage                  4CDE2694-8BA6-415d-94EA-EDA045149BCE
-ResetLJWindowHandle           4CDE2694-8BA6-415d-94EA-EDA045149BCD
+#LJ Windows Messages
+SendWMessage                    4CDE2694-8BA6-415d-94EA-EDA045149BCF
+PostWMessage                    4CDE2694-8BA6-415d-94EA-EDA045149BCE
+ResetLJWindowHandle             4CDE2694-8BA6-415d-94EA-EDA045149BCD
 
-#LJ Functions ("LJ Advanced Functions")
-Intensity Group Value (abs)   88F81E46-596B-4aa3-A5C4-8FB475DA21A0
-Intensity Group Value (rel)   88F81E46-596B-4aa3-A5C4-8FB475DA21A1
-Cue Macro Amplitude (abs)     88F81E46-596B-4aa3-A5C4-8FB475DA21A2
-Cue Macro Amplitude (rel)     88F81E46-596B-4aa3-A5C4-8FB475DA21A3
-Cue Macro Speed (abs)         88F81E46-596B-4aa3-A5C4-8FB475DA21A4
-Cue Macro Speed (rel)         88F81E46-596B-4aa3-A5C4-8FB475DA21A5
-Load Cue                      88F81E46-596B-4aa3-A5C4-8FB475DA21A6
-Load CueList                  88F81E46-596B-4aa3-A5C4-8FB475DA21A7
-Load Background Cue           88F81E46-596B-4aa3-A5C4-8FB475DA21A8
-Flash Sequence                88F81E46-596B-4aa3-A5C4-8FB475DA21A9
+#LJ Advanced Functions
+Intensity Group Value (abs)     88F81E46-596B-4aa3-A5C4-8FB475DA21A0
+Intensity Group Value (rel)     88F81E46-596B-4aa3-A5C4-8FB475DA21A1
+Cue Macro Amplitude (abs)       88F81E46-596B-4aa3-A5C4-8FB475DA21A2
+Cue Macro Amplitude (rel)       88F81E46-596B-4aa3-A5C4-8FB475DA21A3
+Cue Macro Speed (abs)           88F81E46-596B-4aa3-A5C4-8FB475DA21A4
+Cue Macro Speed (rel)           88F81E46-596B-4aa3-A5C4-8FB475DA21A5
+Load Cue                        88F81E46-596B-4aa3-A5C4-8FB475DA21A6
+Load CueList                    88F81E46-596B-4aa3-A5C4-8FB475DA21A7
+Flash Sequence                  88F81E46-596B-4aa3-A5C4-8FB475DA21A9
 
-#LJ Fixture Controls ("LJ Fixture Controls")
-Fixture Control Show/Hide     287BC6EB-94D9-481f-891C-11D63FEC4200
-Fixture Control Toggle        287BC6EB-94D9-481f-891C-11D63FEC4201
-Deselect All Fixtures         287BC6EB-94D9-481f-891C-11D63FEC4202
-Select All Fixtures           287BC6EB-94D9-481f-891C-11D63FEC4203
-Select All Fixtures Of Type   287BC6EB-94D9-481f-891C-11D63FEC4204
-Deselect All Fixtures Of Type 287BC6EB-94D9-481f-891C-11D63FEC4205
-Deselect All Fixtures Except  287BC6EB-94D9-481f-891C-11D63FEC4206
-Change Fixture Attribute State287BC6EB-94D9-481f-891C-11D63FEC4207
+#LJ Fixture Controls
+Fixture Control Show/Hide       287BC6EB-94D9-481f-891C-11D63FEC4200
+Fixture Control Toggle          287BC6EB-94D9-481f-891C-11D63FEC4201
+Deselect All Fixtures           287BC6EB-94D9-481f-891C-11D63FEC4202
+Select All Fixtures             287BC6EB-94D9-481f-891C-11D63FEC4203
+Select All Fixtures Of Type     287BC6EB-94D9-481f-891C-11D63FEC4204
+Deselect All Fixtures Of Type   287BC6EB-94D9-481f-891C-11D63FEC4205
+Deselect All Fixtures Except    287BC6EB-94D9-481f-891C-11D63FEC4206
+Change Fixture Attribute State  287BC6EB-94D9-481f-891C-11D63FEC4207
+Reset Selected Fixtures         287BC6EB-94D9-481f-891C-11D63FEC4208
+
+#LJ System Commands
+Close Active Window             1686F2F4-FEFC-4618-8305-B6FAED070024
+Close All Windows               1686F2F4-FEFC-4618-8305-B6FAED070025
+Restart LightJockey             1686F2F4-FEFC-4618-8305-B6FAED070026
+Shutdown LightJockey            1686F2F4-FEFC-4618-8305-B6FAED070027
+
+#LJ Background Cue Functions
+Background Cue Window           7A20357E-9779-44b6-9515-D51DFC1848A4
+Background Cue Save Dialog      7A20357E-9779-44b6-9515-D51DFC1848A5
+Save Background Cue             7A20357E-9779-44b6-9515-D51DFC1848A6
+Save New Background Cue         7A20357E-9779-44b6-9515-D51DFC1848A7
+Load Background Cue             88F81E46-596B-4aa3-A5C4-8FB475DA21A8  ##Moved from "LJ Advanced"
+Clear/New Background Cue        7A20357E-9779-44b6-9515-D51DFC1848A8
+Select Background Cue Window    7A20357E-9779-44b6-9515-D51DFC1848A9
+Set All BGCue Slots State       7A20357E-9779-44b6-9515-D51DFC1848AA
+Toggle BGCue Slot State         7A20357E-9779-44b6-9515-D51DFC1848AB
+
+#LJ Sequence Functions
+Clear/New Sequence              20E33D32-7502-4e6c-B2BC-C6F7CF482D66
+Add Scene                       20E33D32-7502-4e6c-B2BC-C6F7CF482D67
+Show Delete Sequences Window    20E33D32-7502-4e6c-B2BC-C6F7CF482D68
+Delete Sequence                 20E33D32-7502-4e6c-B2BC-C6F7CF482D69
+Previous Scene (Back)           20E33D32-7502-4e6c-B2BC-C6F7CF482D6A
+Next Scene (Forward)            20E33D32-7502-4e6c-B2BC-C6F7CF482D6B
+Save Sequence Dialog            20E33D32-7502-4e6c-B2BC-C6F7CF482D6C
+Save Sequence (Quick)           20E33D32-7502-4e6c-B2BC-C6F7CF482D6D
+Select Sequence Window          20E33D32-7502-4e6c-B2BC-C6F7CF482D6E
+Edit Playback (Forward)         20E33D32-7502-4e6c-B2BC-C6F7CF482D6F
+Edit Playback (Reverse)         20E33D32-7502-4e6c-B2BC-C6F7CF482D70
+Edit Playback (Stop)            20E33D32-7502-4e6c-B2BC-C6F7CF482D71
+Delete Scene(s) Window          20E33D32-7502-4e6c-B2BC-C6F7CF482D72
+Delete Scene(s)                 20E33D32-7502-4e6c-B2BC-C6F7CF482D73
