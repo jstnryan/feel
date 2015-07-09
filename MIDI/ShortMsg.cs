@@ -30,6 +30,7 @@ namespace Midi
     /// <summary>
     /// Utility functions for encoding and decoding short messages.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     static class ShortMsg
     {
         /// <summary>

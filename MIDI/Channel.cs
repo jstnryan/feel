@@ -83,6 +83,7 @@ namespace Midi
     /// <summary>
     /// Extension methods for the Channel enum.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public static class ChannelExtensionMethods
     {
         /// <summary>

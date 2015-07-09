@@ -66,14 +66,14 @@ Partial Class frmMidiEditor
         Me.cboMessageType.Location = New System.Drawing.Point(98, 6)
         Me.cboMessageType.Name = "cboMessageType"
         Me.cboMessageType.Size = New System.Drawing.Size(182, 21)
-        Me.cboMessageType.TabIndex = 1
+        Me.cboMessageType.TabIndex = 0
         '
         'txtMidiMessage
         '
         Me.txtMidiMessage.Location = New System.Drawing.Point(98, 141)
         Me.txtMidiMessage.Name = "txtMidiMessage"
         Me.txtMidiMessage.Size = New System.Drawing.Size(182, 20)
-        Me.txtMidiMessage.TabIndex = 2
+        Me.txtMidiMessage.TabIndex = 7
         '
         'lblMidiMessage
         '
@@ -89,7 +89,7 @@ Partial Class frmMidiEditor
         Me.cmdInsert.Location = New System.Drawing.Point(205, 167)
         Me.cmdInsert.Name = "cmdInsert"
         Me.cmdInsert.Size = New System.Drawing.Size(75, 23)
-        Me.cmdInsert.TabIndex = 4
+        Me.cmdInsert.TabIndex = 9
         Me.cmdInsert.Text = "Insert"
         Me.cmdInsert.UseVisualStyleBackColor = True
         '
@@ -98,7 +98,7 @@ Partial Class frmMidiEditor
         Me.cmdCancel.Location = New System.Drawing.Point(15, 167)
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.Size = New System.Drawing.Size(75, 23)
-        Me.cmdCancel.TabIndex = 5
+        Me.cmdCancel.TabIndex = 8
         Me.cmdCancel.Text = "Cancel"
         Me.cmdCancel.UseVisualStyleBackColor = True
         '
@@ -132,7 +132,7 @@ Partial Class frmMidiEditor
         Me.cboNotConNotCon.Location = New System.Drawing.Point(138, 49)
         Me.cboNotConNotCon.Name = "cboNotConNotCon"
         Me.cboNotConNotCon.Size = New System.Drawing.Size(121, 21)
-        Me.cboNotConNotCon.TabIndex = 14
+        Me.cboNotConNotCon.TabIndex = 2
         '
         'nudNotConVelVal
         '
@@ -140,7 +140,7 @@ Partial Class frmMidiEditor
         Me.nudNotConVelVal.Maximum = New Decimal(New Integer() {127, 0, 0, 0})
         Me.nudNotConVelVal.Name = "nudNotConVelVal"
         Me.nudNotConVelVal.Size = New System.Drawing.Size(121, 20)
-        Me.nudNotConVelVal.TabIndex = 13
+        Me.nudNotConVelVal.TabIndex = 3
         '
         'lblNotConVelVal
         '
@@ -157,7 +157,7 @@ Partial Class frmMidiEditor
         Me.cboNotConChannel.Location = New System.Drawing.Point(138, 22)
         Me.cboNotConChannel.Name = "cboNotConChannel"
         Me.cboNotConChannel.Size = New System.Drawing.Size(121, 21)
-        Me.cboNotConChannel.TabIndex = 11
+        Me.cboNotConChannel.TabIndex = 1
         '
         'lblNotConChannel
         '
@@ -187,7 +187,7 @@ Partial Class frmMidiEditor
         Me.nudProgPitchProgVal.Maximum = New Decimal(New Integer() {16383, 0, 0, 0})
         Me.nudProgPitchProgVal.Name = "nudProgPitchProgVal"
         Me.nudProgPitchProgVal.Size = New System.Drawing.Size(121, 20)
-        Me.nudProgPitchProgVal.TabIndex = 13
+        Me.nudProgPitchProgVal.TabIndex = 5
         '
         'lblProgPitchProgVal
         '
@@ -204,7 +204,7 @@ Partial Class frmMidiEditor
         Me.cboProgPitchChannel.Location = New System.Drawing.Point(138, 22)
         Me.cboProgPitchChannel.Name = "cboProgPitchChannel"
         Me.cboProgPitchChannel.Size = New System.Drawing.Size(121, 21)
-        Me.cboProgPitchChannel.TabIndex = 11
+        Me.cboProgPitchChannel.TabIndex = 4
         '
         'lblProgPitchChannel
         '
@@ -232,7 +232,7 @@ Partial Class frmMidiEditor
         Me.txtSysexData.Multiline = True
         Me.txtSysexData.Name = "txtSysexData"
         Me.txtSysexData.Size = New System.Drawing.Size(204, 74)
-        Me.txtSysexData.TabIndex = 11
+        Me.txtSysexData.TabIndex = 6
         '
         'lblSysexData
         '

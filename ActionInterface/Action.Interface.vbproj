@@ -33,7 +33,7 @@
     <DefineDebug>false</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\Feel\bin\Release\</OutputPath>
     <DocumentationFile>Action.Interface.xml</DocumentationFile>
     <NoWarn>
     </NoWarn>

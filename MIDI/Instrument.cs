@@ -353,6 +353,7 @@ namespace Midi
     /// <summary>
     /// Extension methods for the Instrument enum.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public static class InstrumentExtensionMethods
     {
         /// <summary>

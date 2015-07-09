@@ -54,6 +54,7 @@ namespace Midi
     /// <threadsafety static="true" instance="true"/>
     /// <seealso cref="Clock"/>
     /// <seealso cref="InputDevice"/>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class InputDevice : DeviceBase
     {
         #region Delegates

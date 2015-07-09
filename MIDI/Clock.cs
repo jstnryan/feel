@@ -83,6 +83,7 @@ namespace Midi
     /// to use <see cref="CallbackMessage"/> to call-out to your own code instead.</para>
     /// </remarks>
     /// <threadsafety static="true" instance="true" />
+    [System.Diagnostics.DebuggerNonUserCode]
     public class Clock
     {
         /// <summary>

@@ -116,7 +116,7 @@ Partial Class frmEvents
         Me.cmdEditInitalState.Location = New System.Drawing.Point(173, 22)
         Me.cmdEditInitalState.Name = "cmdEditInitalState"
         Me.cmdEditInitalState.Size = New System.Drawing.Size(22, 20)
-        Me.cmdEditInitalState.TabIndex = 16
+        Me.cmdEditInitalState.TabIndex = 6
         Me.ttActions.SetToolTip(Me.cmdEditInitalState, "MIDI String Editor")
         Me.cmdEditInitalState.UseVisualStyleBackColor = True
         '
@@ -125,7 +125,7 @@ Partial Class frmEvents
         Me.txtInitialState.Location = New System.Drawing.Point(86, 22)
         Me.txtInitialState.Name = "txtInitialState"
         Me.txtInitialState.Size = New System.Drawing.Size(87, 20)
-        Me.txtInitialState.TabIndex = 2
+        Me.txtInitialState.TabIndex = 5
         '
         'lblInitialState
         '
@@ -153,7 +153,7 @@ Partial Class frmEvents
         Me.rdoLatchRelative.Location = New System.Drawing.Point(14, 43)
         Me.rdoLatchRelative.Name = "rdoLatchRelative"
         Me.rdoLatchRelative.Size = New System.Drawing.Size(52, 17)
-        Me.rdoLatchRelative.TabIndex = 5
+        Me.rdoLatchRelative.TabIndex = 9
         Me.rdoLatchRelative.Text = "Latch"
         Me.rdoLatchRelative.UseVisualStyleBackColor = True
         '
@@ -164,7 +164,7 @@ Partial Class frmEvents
         Me.rdoMomentaryAbsolute.Location = New System.Drawing.Point(14, 20)
         Me.rdoMomentaryAbsolute.Name = "rdoMomentaryAbsolute"
         Me.rdoMomentaryAbsolute.Size = New System.Drawing.Size(77, 17)
-        Me.rdoMomentaryAbsolute.TabIndex = 4
+        Me.rdoMomentaryAbsolute.TabIndex = 8
         Me.rdoMomentaryAbsolute.TabStop = True
         Me.rdoMomentaryAbsolute.Text = "Momentary"
         Me.rdoMomentaryAbsolute.UseVisualStyleBackColor = True
@@ -175,7 +175,7 @@ Partial Class frmEvents
         Me.nudControlGroup.Maximum = New Decimal(New Integer() {255, 0, 0, 0})
         Me.nudControlGroup.Name = "nudControlGroup"
         Me.nudControlGroup.Size = New System.Drawing.Size(64, 20)
-        Me.nudControlGroup.TabIndex = 3
+        Me.nudControlGroup.TabIndex = 7
         '
         'lblControlGroup
         '
@@ -211,7 +211,7 @@ Partial Class frmEvents
         Me.txtActionDescription.ReadOnly = True
         Me.txtActionDescription.ScrollBars = System.Windows.Forms.ScrollBars.Both
         Me.txtActionDescription.Size = New System.Drawing.Size(247, 114)
-        Me.txtActionDescription.TabIndex = 0
+        Me.txtActionDescription.TabIndex = 20
         Me.txtActionDescription.TabStop = False
         '
         'pgAction
@@ -220,7 +220,7 @@ Partial Class frmEvents
         Me.pgAction.Name = "pgAction"
         Me.pgAction.PropertySort = System.Windows.Forms.PropertySort.NoSort
         Me.pgAction.Size = New System.Drawing.Size(247, 228)
-        Me.pgAction.TabIndex = 15
+        Me.pgAction.TabIndex = 19
         Me.pgAction.ToolbarVisible = False
         '
         'lblActionFunction
@@ -238,7 +238,7 @@ Partial Class frmEvents
         Me.txtActionName.MaxLength = 256
         Me.txtActionName.Name = "txtActionName"
         Me.txtActionName.Size = New System.Drawing.Size(193, 20)
-        Me.txtActionName.TabIndex = 13
+        Me.txtActionName.TabIndex = 17
         '
         'lblActionName
         '
@@ -257,7 +257,7 @@ Partial Class frmEvents
         Me.cmdActionSwap.Location = New System.Drawing.Point(131, 360)
         Me.cmdActionSwap.Name = "cmdActionSwap"
         Me.cmdActionSwap.Size = New System.Drawing.Size(26, 26)
-        Me.cmdActionSwap.TabIndex = 11
+        Me.cmdActionSwap.TabIndex = 15
         Me.ttActions.SetToolTip(Me.cmdActionSwap, "Move selected action between events.")
         Me.cmdActionSwap.UseVisualStyleBackColor = True
         '
@@ -269,7 +269,7 @@ Partial Class frmEvents
         Me.cmdActionRemove.Location = New System.Drawing.Point(15, 393)
         Me.cmdActionRemove.Name = "cmdActionRemove"
         Me.cmdActionRemove.Size = New System.Drawing.Size(26, 26)
-        Me.cmdActionRemove.TabIndex = 8
+        Me.cmdActionRemove.TabIndex = 12
         Me.ttActions.SetToolTip(Me.cmdActionRemove, "Remove selected action.")
         Me.cmdActionRemove.UseVisualStyleBackColor = True
         '
@@ -281,7 +281,7 @@ Partial Class frmEvents
         Me.cmdActionAdd.Location = New System.Drawing.Point(15, 361)
         Me.cmdActionAdd.Name = "cmdActionAdd"
         Me.cmdActionAdd.Size = New System.Drawing.Size(26, 26)
-        Me.cmdActionAdd.TabIndex = 7
+        Me.cmdActionAdd.TabIndex = 11
         Me.ttActions.SetToolTip(Me.cmdActionAdd, "Add new action.")
         Me.cmdActionAdd.UseVisualStyleBackColor = True
         '
@@ -293,7 +293,7 @@ Partial Class frmEvents
         Me.cmdActionDown.Location = New System.Drawing.Point(73, 393)
         Me.cmdActionDown.Name = "cmdActionDown"
         Me.cmdActionDown.Size = New System.Drawing.Size(26, 26)
-        Me.cmdActionDown.TabIndex = 10
+        Me.cmdActionDown.TabIndex = 14
         Me.ttActions.SetToolTip(Me.cmdActionDown, "Move selected action down.")
         Me.cmdActionDown.UseVisualStyleBackColor = True
         '
@@ -305,7 +305,7 @@ Partial Class frmEvents
         Me.cmdActionUp.Location = New System.Drawing.Point(73, 361)
         Me.cmdActionUp.Name = "cmdActionUp"
         Me.cmdActionUp.Size = New System.Drawing.Size(26, 26)
-        Me.cmdActionUp.TabIndex = 9
+        Me.cmdActionUp.TabIndex = 13
         Me.ttActions.SetToolTip(Me.cmdActionUp, "Move selected action up.")
         Me.cmdActionUp.UseVisualStyleBackColor = True
         '
@@ -317,7 +317,7 @@ Partial Class frmEvents
         Me.cmdActionClear.Location = New System.Drawing.Point(189, 360)
         Me.cmdActionClear.Name = "cmdActionClear"
         Me.cmdActionClear.Size = New System.Drawing.Size(26, 26)
-        Me.cmdActionClear.TabIndex = 12
+        Me.cmdActionClear.TabIndex = 16
         Me.ttActions.SetToolTip(Me.cmdActionClear, "Clear all actions.")
         Me.cmdActionClear.UseVisualStyleBackColor = True
         '
@@ -381,7 +381,7 @@ Partial Class frmEvents
         Me.lvActions.Name = "lvActions"
         Me.lvActions.ShowItemToolTips = True
         Me.lvActions.Size = New System.Drawing.Size(200, 332)
-        Me.lvActions.TabIndex = 6
+        Me.lvActions.TabIndex = 10
         Me.lvActions.UseCompatibleStateImageBehavior = False
         Me.lvActions.View = System.Windows.Forms.View.Details
         '
@@ -401,10 +401,11 @@ Partial Class frmEvents
         Me.cboActionFunction.MaxDropDownItems = 20
         Me.cboActionFunction.Name = "cboActionFunction"
         Me.cboActionFunction.Size = New System.Drawing.Size(193, 21)
-        Me.cboActionFunction.TabIndex = 14
+        Me.cboActionFunction.TabIndex = 18
         '
         'grpInput
         '
+        Me.grpInput.CheckBoxToolTip = "When checked, the last input will be retained (for editing) until unchecked."
         Me.grpInput.Checked = False
         Me.grpInput.CheckState = System.Windows.Forms.CheckState.Unchecked
         Me.grpInput.Controls.Add(Me.txtDefaultState)
@@ -422,7 +423,7 @@ Partial Class frmEvents
         Me.grpInput.Location = New System.Drawing.Point(12, 12)
         Me.grpInput.Name = "grpInput"
         Me.grpInput.Size = New System.Drawing.Size(213, 260)
-        Me.grpInput.TabIndex = 2
+        Me.grpInput.TabIndex = 0
         Me.grpInput.TabStop = False
         Me.grpInput.Text = "Input"
         '
@@ -432,7 +433,7 @@ Partial Class frmEvents
         Me.txtDefaultState.Location = New System.Drawing.Point(87, 226)
         Me.txtDefaultState.Name = "txtDefaultState"
         Me.txtDefaultState.Size = New System.Drawing.Size(87, 20)
-        Me.txtDefaultState.TabIndex = 13
+        Me.txtDefaultState.TabIndex = 3
         '
         'lblDefaultState
         '
@@ -529,7 +530,7 @@ Partial Class frmEvents
         Me.cmdEditDefaultState.Location = New System.Drawing.Point(174, 226)
         Me.cmdEditDefaultState.Name = "cmdEditDefaultState"
         Me.cmdEditDefaultState.Size = New System.Drawing.Size(22, 20)
-        Me.cmdEditDefaultState.TabIndex = 15
+        Me.cmdEditDefaultState.TabIndex = 4
         Me.ttActions.SetToolTip(Me.cmdEditDefaultState, "MIDI String Editor")
         Me.cmdEditDefaultState.UseVisualStyleBackColor = True
         '
@@ -587,7 +588,7 @@ Partial Class frmEvents
         Me.nudDevicePage.Maximum = New Decimal(New Integer() {255, 0, 0, 0})
         Me.nudDevicePage.Name = "nudDevicePage"
         Me.nudDevicePage.Size = New System.Drawing.Size(63, 20)
-        Me.nudDevicePage.TabIndex = 0
+        Me.nudDevicePage.TabIndex = 2
         '
         'frmEvents
         '

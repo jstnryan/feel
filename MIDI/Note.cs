@@ -40,6 +40,7 @@ namespace Midi
     /// potentially many notes.  For example, the notes F, E#, D###, and Gbb all resolve to the
     /// same pitch, though the last two names are unlikely to be used in practice.</para>
     /// </remarks>
+    [System.Diagnostics.DebuggerNonUserCode]
     public struct Note
     {
         /// <summary>Double-flat accidental value.</summary>

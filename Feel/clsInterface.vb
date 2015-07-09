@@ -1,4 +1,5 @@
-﻿Public Class Interfaces
+﻿<Diagnostics.DebuggerStepThrough()> _
+Public Class Interfaces
     Friend Class ServiceHost
         Inherits ActionInterface.IServices
 

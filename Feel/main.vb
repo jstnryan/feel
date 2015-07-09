@@ -39,9 +39,11 @@ Module main
 
     Private _configMode As Boolean = False    ''when configuring actions, override output to LJ
     Public Property configMode(Optional ByVal reConnect As Boolean = False) As Boolean
+        <Diagnostics.DebuggerStepThrough()> _
         Get
             Return _configMode
         End Get
+        <Diagnostics.DebuggerStepThrough()> _
         Set(ByVal value As Boolean)
             If Not (configForm Is Nothing) Then
                 If (configForm.Visible) Then
@@ -67,19 +69,26 @@ Module main
         End Set
     End Property
 
-    ''Returns a boolean indicating whether it is safe to handle an event's actions.
-    '' True = do not handle event's actions
     Private _connecting As Boolean = False
+    ''' <summary>A Boolean representing whether or not connections are actively being setup or destroyed.</summary>
+    ''' <returns>True while connections are being established, otherwise False</returns>
+    ''' <remarks>This is used for a user-configuratble setting to ignore any events raised by connections while being connected to (for example, any "handshake" type messages)</remarks>
     Public Property Connecting() As Boolean
+        <Diagnostics.DebuggerStepThrough()> _
         Get
             Return (_connecting And FeelConfig.IgnoreEvents)
         End Get
+        <Diagnostics.DebuggerStepThrough()> _
         Set(ByVal value As Boolean)
             _connecting = value
         End Set
     End Property
 
     Public Sub Main()
+        'Try
+
+        ''See: <project directory>\feel_commandlineargs.txt
+        'For Each arg As String In Environment.GetCommandLineArgs()
         For Each arg As String In My.Application.CommandLineArgs
             'TODO:
             System.Diagnostics.Debug.WriteLine("Command Line Arg: " & arg)
@@ -88,18 +97,16 @@ Module main
         ''Aparently this is required to show Groups in ListView controls
         System.Windows.Forms.Application.EnableVisualStyles()
 
-        ''create system tray icon and context menu items
+        ''System Tray menu
         menuExit.Text = "E&xit"
         menuConfigProgram.Text = "&Program Configuration"
         menuConfigConnections.Text = "Configure &Connections"
         menuConfigEvents.Text = "Configure &Events"
-        ''NEW:
         menuAdvancedTasks.Text = "Advanced &Tasks"
         menuSaveConfiguration.Text = "&Save Configuration"
         menuRefreshWindowHandle.Text = "&Refresh LJ Handle"
         menuUpdateAvailableDevices.Text = "Update Available &Devices"
         menuUpdateAvailablePlugins.Text = "Update Available &Plugins"
-        '':NEW
         menuAbout.Text = "About"
         trayMenu.MenuItems.Add(menuExit)
         trayMenu.MenuItems.Add("-")
@@ -134,9 +141,21 @@ Module main
         'If _threadcontext Is Nothing Then Diagnostics.Debug.WriteLine("Thread Context is Nothing!")
 
         Application.Run()
+        'Catch ex As Exception
+        '    MessageBox.Show("You caught an error!")
+        '    Dim er As New Text.StringBuilder("")
+        '    er.Append(".Message:" & Environment.NewLine)
+        '    er.Append(ex.Message & Environment.NewLine & Environment.NewLine)
+        '    er.Append(".InnerException:" & Environment.NewLine)
+        '    er.Append(ex.InnerException)
+        '    Using file As New IO.StreamWriter("error.txt")
+        '        file.Write(er.ToString)
+        '    End Using
+        'End Try
     End Sub
 
 #Region "Windows & Menus"
+    <Diagnostics.DebuggerStepThrough()> _
     Private Sub menuExit_Click() Handles menuExit.Click
         If _configMode Then
             Dim quitNoSave As System.Windows.Forms.DialogResult = MessageBox.Show("One or more configuration windows are open; any changes made have not been saved. Do you want to exit without saving?", "Feel: Configuration Not Saved", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)
@@ -148,6 +167,7 @@ Module main
         trayIcon.Visible = False
         Application.Exit()
     End Sub
+    <Diagnostics.DebuggerStepThrough()> _
     Friend Sub ExitProgram(ByVal state As Object)
         'TODO: handle Restart = True
         If Not CType(state, Boolean) Then
@@ -157,6 +177,7 @@ Module main
         End If
     End Sub
 
+    <Diagnostics.DebuggerStepThrough()> _
     Private Sub OpenProgramWindow() Handles menuConfigProgram.Click
         ''Singleton: See designer code.
         '' http://www.codeproject.com/Articles/5000/Simple-Singleton-Forms
@@ -171,6 +192,7 @@ Module main
         OpenProgramWindow()
     End Sub
 
+    <Diagnostics.DebuggerStepThrough()> _
     Private Sub OpenConnectWindow() Handles menuConfigConnections.Click
         ''The Connections Configuration form makes its own connections to
         '' test devices, so we must disconnect existing connections first.
@@ -182,11 +204,13 @@ Module main
         connectForm.Show()
         'configForm.Focus()
     End Sub
+    <Diagnostics.DebuggerStepThrough()> _
     Friend Sub OpenConnectWindow_Ext(ByVal state As Object)
         OpenConnectWindow()
     End Sub
 
-    Private Sub OpenEventWindow() Handles menuConfigEvents.Click
+    <Diagnostics.DebuggerStepThrough()> _
+    Private Sub OpenEventWindow() Handles menuConfigEvents.Click, trayIcon.DoubleClick
         'If actionForm Is Nothing Then
         '    actionForm = New frmActions
         '    actionForm.Show()
@@ -215,10 +239,12 @@ Module main
     'Friend Sub OpenActionWindow_Ext()
     '    _threadcontext.Post(AddressOf OpenActionWindow_Del, _threadcontext)
     'End Sub
+    <Diagnostics.DebuggerStepThrough()> _
     Friend Sub OpenEventWindow_Ext(ByVal state As Object)
         OpenEventWindow()
     End Sub
 
+    <Diagnostics.DebuggerStepThrough()> _
     Private Sub OpenAbout() Handles menuAbout.Click
         If aboutForm Is Nothing Then
             aboutForm = New frmAbout
@@ -226,11 +252,10 @@ Module main
         aboutForm.Show()
     End Sub
 
-    ''' <summary>
-    ''' Sets the _ljHandle variable to a blank pointer.
-    ''' </summary>
+    ''' <summary>Sets the _ljHandle variable to a blank pointer.</summary>
     ''' <remarks>'Resetting' _ljHandle triggers a new search for LightJockey's window handle
     '''  upon the next use. Useful, for instance, if LightJockey was restarted.</remarks>
+    <Diagnostics.DebuggerStepThrough()> _
     Friend Sub RefreshHandle() Handles menuRefreshWindowHandle.Click
         _ljHandle = IntPtr.Zero
     End Sub
@@ -238,6 +263,7 @@ Module main
     ''See: #Region "File I/O", SaveConfiguration()
     'Private Sub SaveConfiguration() Handles menuSaveConfiguration.Click
 
+    <Diagnostics.DebuggerStepThrough()> _
     Friend Sub UpdateAvailableDevices() Handles menuUpdateAvailableDevices.Click
         Midi.InputDevice.UpdateInstalledDevices()
         Midi.OutputDevice.UpdateInstalledDevices()
@@ -287,10 +313,12 @@ LoadConfig:
     End Sub
 
     ''TODO: Does this really need to be broken out into its own subroutine?
+    <Diagnostics.DebuggerStepThrough()> _
     Friend Sub CreateNewConfiguration()
         FeelConfig = New clsConfig
     End Sub
 
+    <Diagnostics.DebuggerStepThrough()> _
     Private Function CreateUserDirectory() As Boolean
         Try
             Dim dInfo As IO.DirectoryInfo = IO.Directory.CreateDirectory(Application.StartupPath & "\user")
@@ -301,6 +329,7 @@ LoadConfig:
         End Try
     End Function
 
+    <Diagnostics.DebuggerStepThrough()> _
     Public Sub SaveConfiguration() Handles menuSaveConfiguration.Click
         Dim fs As IO.FileStream
         Dim bf As New Runtime.Serialization.Formatters.Binary.BinaryFormatter()
@@ -316,10 +345,8 @@ LoadConfig:
         End Try
     End Sub
 
-    ''' <summary>
-    ''' Serializes Action plug-in .Data Objects independently to prepare Configuration for storage.
-    ''' </summary>
-    ''' <remarks></remarks>
+    ''' <summary>Serializes Action plug-in .Data Objects independently to prepare Configuration for storage.</summary>
+    <Diagnostics.DebuggerStepThrough()> _
     Private Function ConfigSerialize(ByRef Configuration As clsConfig) As clsConfig
         Dim _newConfig As clsConfig = ObjectCopier.Clone(Configuration)
         Dim st As New IO.MemoryStream
@@ -363,48 +390,54 @@ LoadConfig:
         Return _newConfig
     End Function
 
-    ''' <summary>
-    ''' Deserializes Action plug-in .Data Objects and returns a usable Configuration.
-    ''' </summary>
+    ''' <summary>Deserializes Action plug-in .Data Objects and returns a usable Configuration.</summary>
     ''' <remarks>Must be run after plug-ins are loaded. ConfigDeserialzie searches availability of plug-ins before deserialziing the .Data object for each plug-in; unavailable plug-ins' .Data are ignored.</remarks>
+    <Diagnostics.DebuggerStepThrough()> _
     Private Function ConfigDeserialize(ByRef Configuration As clsConfig) As clsConfig
         For Each conx As clsConnection In Configuration.Connections.Values
             For Each cont As clsControl In conx.Control.Values
                 For Each page As clsControlPage In cont.Page.Values
                     For Each act As clsAction In page.Actions
-                        If (actionModules.ContainsKey(act.Type)) Then
-                            act._available = True
-                        Else
-                            act._available = False
-                        End If
+                        ''TODO (Delete):
+                        'If (actionModules.ContainsKey(act.Type)) Then
+                        '    act._available = True
+                        'Else
+                        '    act._available = False
+                        'End If
+                        act._available = CheckPluginAvailability(act.Type)
                     Next
                     For Each act As clsAction In page.ActionsOff
-                        If (actionModules.ContainsKey(act.Type)) Then
-                            act._available = True
-                        Else
-                            act._available = False
-                        End If
+                        ''TODO (Delete):
+                        'If (actionModules.ContainsKey(act.Type)) Then
+                        '    act._available = True
+                        'Else
+                        '    act._available = False
+                        'End If
+                        act._available = CheckPluginAvailability(act.Type)
                     Next
                 Next
             Next
         Next
         Return Configuration
     End Function
+
+    <Diagnostics.DebuggerStepThrough()> _
+    Public Function CheckPluginAvailability(ByRef PluginGuid As Guid) As Boolean
+        Return actionModules.ContainsKey(PluginGuid)
+    End Function
 #End Region
 
 #Region "Connections"
-    ''' <summary>
-    ''' Makes MIDI connections to all enabled devices
-    ''' </summary>
+    ''' <summary>Establishes MIDI connections to all enabled devices</summary>
     ''' <remarks>Ver:2.1</remarks>
+    <Diagnostics.DebuggerStepThrough()> _
     Private Sub ConnectDevices()
         Connecting = True
 
         For Each device As clsConnection In FeelConfig.Connections.Values
             If (device.Enabled) Then
                 ''Check the stored connection index to make sure it is not greater than the number of currently connected devices
-                If (device.Input + 1 > InputDevice.InstalledDevices.Count) Or (device.Output + 1 > OutputDevice.InstalledDevices.Count) Then
-                    'System.Diagnostics.Debug.WriteLine("Disabled 2: Connection index out of bounds." & vbCrLf & "Device: " & device.Name)
+                If (device.Input + 1 > InputDevice.InstalledDevices.Count) OrElse (device.Output + 1 > OutputDevice.InstalledDevices.Count) Then
                     device.Enabled = False
                     'With device
                     '    .InputEnable = False
@@ -417,27 +450,20 @@ LoadConfig:
                     System.Windows.Forms.MessageBox.Show("Warning: One or both of the input/output ports for the device named " & device.Name & " no longer exists! Usually this is an indication that other devices have been removed from the system recently, or have not been powered on." & vbCrLf & vbCrLf & "The device has been disabled. Please update this device's connection info by opening the 'Configure Connections' window and adjusting this device's Input and Output settings, then re-enable the device.", "Feel: MIDI Configuration Has Changed", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                     'trayIcon.ShowBalloonTip(10000, "Feel: MIDI Configuration has changed", "", ToolTipIcon.Warning)
                     Continue For
-                    'Else
-                    '    System.Diagnostics.Debug.WriteLine("ConnectDevices:: Device: " & device.Name & ", Index within range: " & device.Input & ":" & InputDevice.InstalledDevices.Count & "||" & device.Output & ":" & OutputDevice.InstalledDevices.Count)
                 End If
 
                 ''Check that the stored connection names match the system's current names for the stored index
-                If Not If(device.InputEnable, device.InputName = InputDevice.InstalledDevices.Item(device.Input).Name, True) Or Not If(device.OutputEnable, device.OutputName = OutputDevice.InstalledDevices.Item(device.Output).Name, True) Then
-                    'System.Diagnostics.Debug.WriteLine("Disabled 1: Connection name does not match associated index." & vbCrLf & "Device: " & device.Name)
+                If Not If(device.InputEnable, device.InputName = InputDevice.InstalledDevices.Item(device.Input).Name, True) OrElse Not If(device.OutputEnable, device.OutputName = OutputDevice.InstalledDevices.Item(device.Output).Name, True) Then
                     device.Enabled = False
                     System.Windows.Forms.MessageBox.Show("Warning: One or both of the names of the input/output ports for the device named " & device.Name & " do not match the name of the system's port at the same address! Usually this is an indication that additional devices have been added or removed from the system recently, or powered on in a different order." & vbCrLf & vbCrLf & "The device has been disabled. Please update this device's connection info by opening the 'Configure Connections' window and adjusting this device's Input and Output settings, then re-enable the device.", "Feel: MIDI Configuration Has Changed", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                     Continue For
-                    'Else
-                    '    System.Diagnostics.Debug.WriteLine("ConnectDevices:: Device: " & device.Name & ", Names = Indexes:")
                 End If
 
                 ''Determine if connections are already in use
-                If If(device.InputEnable, InputDevice.InstalledDevices.Item(device.Input).IsOpen, False) Or If(device.OutputEnable, OutputDevice.InstalledDevices.Item(device.Output).IsOpen, False) Then
+                If If(device.InputEnable, InputDevice.InstalledDevices.Item(device.Input).IsOpen, False) OrElse If(device.OutputEnable, OutputDevice.InstalledDevices.Item(device.Output).IsOpen, False) Then
                     device.Enabled = False
                     System.Windows.Forms.MessageBox.Show("Warning: One or both of the input/output ports for the device named " & device.Name & " is already in use! Either the device is already in use elsewhere, or the connection information is incorrectly set." & vbCrLf & vbCrLf & "The device has been disabled. If you receive this error and you believe the device is connected properly, update this device's connection info by opening the 'Configure Connections' window and adjusting this device's Input and Output settings, then re-enable the device.", "Feel: MIDI Port In Use", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                     Continue For
-                    'Else
-                    '    System.Diagnostics.Debug.WriteLine("ConnectDevices:: Device: " & device.Name & ", In/Outputs not in use.")
                 End If
 
                 ''If we end up here, we should be good to connect the device
@@ -489,12 +515,11 @@ LoadConfig:
         Connecting = False
     End Sub
 
-    ''' <summary>
-    ''' Closes and clears all connections, and removes all event handlers
-    ''' </summary>
+    ''' <summary>Closes and clears all connections, and removes all event handlers</summary>
     ''' <param name="which">(Byte) 1: Close incoming, 2: Close outgoing, 0: Close both</param>
     ''' <remarks>Ver: 1.0
     ''' Called when closing application, or opening Connection Configuration window</remarks>
+    <Diagnostics.DebuggerStepThrough()> _
     Public Sub DisconnectDevices(Optional ByVal which As Byte = 0)
         Connecting = True
 
@@ -532,9 +557,10 @@ LoadConfig:
 #End Region
 
 #Region "MIDI Event Handlers"
+    <Diagnostics.DebuggerStepThrough()> _
     Private Sub NoteOn(ByVal msg As NoteOnMessage)
-        If configMode And Not (eventForm Is Nothing) Then
-            ''override programmed action, redirect action to Configure Actions window
+        If configMode AndAlso Not (eventForm Is Nothing) Then
+            ''Override programmed action, redirect action to Configure Actions window
             If (eventForm.Visible) Then
                 Dim newCont As frmEvents.curControl = New frmEvents.curControl
                 newCont.Device = msg.Device.Name.ToString
@@ -545,8 +571,7 @@ LoadConfig:
                 eventForm.CurrentControl = newCont
                 newCont = Nothing
             End If
-        ElseIf Not configMode And Not Connecting Then
-            'Diagnostics.Debug.WriteLine("On : " & msg.Device.Name & " (" & Configuration.Connections(msg.Device.Name).Name & "), " & msg.Channel.ToString & ", " & msg.Pitch.ToString & ", " & msg.Velocity.ToString)
+        ElseIf Not configMode AndAlso Not Connecting Then
             Dim device As Integer = serviceHost.FindDeviceIndex(msg.Device.Name)
             'TODO: Previous line makes next line unneccessary:
             If (FeelConfig.Connections.ContainsKey(device)) Then
@@ -556,22 +581,20 @@ LoadConfig:
                     If (FeelConfig.Connections(device).Control(ContStr).Page.ContainsKey(_page)) Then
                         ''End Checks
                         With FeelConfig.Connections(device).Control(ContStr).Page(_page)
-                            If (FeelConfig.Connections(device).NoteOff) And (msg.Velocity = 0) Then
+                            If (FeelConfig.Connections(device).NoteOff) AndAlso (msg.Velocity = 0) Then
                                 ''This is actually a "NoteOff", or is to be treated as one according to configuration
-                                If ((.Behavior = 1) And Not (.IsActive)) Or (.Behavior = 0) Then
-                                    ''This is a 'momentary' button [AND "IsActive" so is waiting to be turned off]
+                                If ((.Behavior = 1) AndAlso Not (.IsActive)) OrElse (.Behavior = 0) Then
+                                    ''This is a 'momentary' button (AND "IsActive" so is waiting to be turned off)
                                     '' OR
                                     ''This is a 'latch' button
                                     For Each actn As clsAction In .ActionsOff
-                                        If (actn.Enabled) And (actn._available) Then
+                                        If (actn.Enabled) AndAlso (actn._available) Then
                                             'TODO: actn.Data should never be Nothing, if ._available is set to True
                                             If Not (actn.Data Is Nothing) Then
-                                                'If Not (DirectCast(actn.Data, iAction).Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
-                                                '    Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
-                                                'End If
                                                 With actionModules.Item(actn.Type)
                                                     .Data = actn.Data
                                                     If Not (.Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
+                                                        'TODO: Something here in release version
                                                         Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
                                                     End If
                                                 End With
@@ -581,16 +604,10 @@ LoadConfig:
                                     If (.Behavior = 0) Then .IsActive = False
                                 End If
                             Else
-                                If ((.Behavior = 1) And Not (.IsActive)) Or (.Behavior = 0) Then
-                                    ''This is a 'latch' button [AND "IsActive" = False so is waiting to be turned on]
-                                    '' OR
-                                    ''This is a 'momentary' button
+                                If ((.Behavior = 1) AndAlso Not (.IsActive)) OrElse (.Behavior = 0) Then
                                     For Each actn As clsAction In .Actions
-                                        If (actn.Enabled) And (actn._available) Then
+                                        If (actn.Enabled) AndAlso (actn._available) Then
                                             If Not (actn.Data Is Nothing) Then
-                                                'If Not (DirectCast(actn.Data, iAction).Execute(msg.Device.Name, 144, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
-                                                '    Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
-                                                'End If
                                                 With actionModules.Item(actn.Type)
                                                     .Data = actn.Data
                                                     If Not (.Execute(msg.Device.Name, 144, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
@@ -610,10 +627,10 @@ LoadConfig:
         End If
     End Sub
 
+    <Diagnostics.DebuggerStepThrough()> _
     Private Sub NoteOff(ByVal msg As NoteOffMessage)
-        ''Really no need to send this to actionForm in configMode, because we'd probably end up associating actions to button up actions by mistake.
-        If Not configMode And Not Connecting Then
-            'System.Diagnostics.Debug.WriteLine("Off: " & msg.Device.Name & " (" & Configuration.Connections(msg.Device.Name).Name & "), " & msg.Channel.ToString & ", " & msg.Pitch.ToString & ", " & msg.Velocity.ToString)
+        ''No need to send this to actionForm in configMode, because we'd probably end up associating actions to button up actions by mistake.
+        If Not configMode AndAlso Not Connecting Then
             Dim device As Integer = serviceHost.FindDeviceIndex(msg.Device.Name)
             'TODO: Previous line makes next line unneccessary:
             If (FeelConfig.Connections.ContainsKey(device)) Then
@@ -623,19 +640,17 @@ LoadConfig:
                     If (FeelConfig.Connections(device).Control(ContStr).Page.ContainsKey(_page)) Then
                         ''End Checks
                         With FeelConfig.Connections(device).Control(ContStr).Page(_page)
-                            If ((.Behavior = 1) And (Not .IsActive)) Or (.Behavior = 0) Then
-                                ''This is a 'momentary' button [AND "IsActive" so is waiting to be turned off]
+                            If ((.Behavior = 1) AndAlso (Not .IsActive)) OrElse (.Behavior = 0) Then
+                                ''This is a 'momentary' button (AND "IsActive" so is waiting to be turned off)
                                 '' OR
                                 ''This is a 'latch' button
                                 For Each actn As clsAction In .ActionsOff
-                                    If (actn.Enabled) And (actn._available) Then
+                                    If (actn.Enabled) AndAlso (actn._available) Then
                                         If Not (actn.Data Is Nothing) Then
-                                            'If Not (DirectCast(actn.Data, iAction).Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
-                                            '    Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
-                                            'End If
                                             With actionModules.Item(actn.Type)
                                                 .Data = actn.Data
                                                 If Not (.Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
+                                                    'TODO: Something here in release version
                                                     Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
                                                 End If
                                             End With
@@ -651,8 +666,9 @@ LoadConfig:
         End If
     End Sub
 
+    <Diagnostics.DebuggerStepThrough()> _
     Private Sub ControlChange(ByVal msg As ControlChangeMessage)
-        If configMode And Not (eventForm Is Nothing) Then
+        If configMode AndAlso Not (eventForm Is Nothing) Then
             ''override programmed action, redirect action to Configure Actions window
             If (eventForm.Visible) Then
                 Dim newCont As frmEvents.curControl = New frmEvents.curControl
@@ -664,7 +680,7 @@ LoadConfig:
                 eventForm.CurrentControl = newCont
                 newCont = Nothing
             End If
-        ElseIf Not configMode And Not Connecting Then
+        ElseIf Not configMode AndAlso Not Connecting Then
             Dim device As Integer = serviceHost.FindDeviceIndex(msg.Device.Name)
             'TODO: Previous line makes next line unneccessary:
             If (FeelConfig.Connections.ContainsKey(device)) Then
@@ -673,14 +689,12 @@ LoadConfig:
                     Dim _page As Byte = If(FeelConfig.Connections(device).Control(ContStr).Paged, FeelConfig.Connections(device).PageCurrent, CByte(0))
                     If (FeelConfig.Connections(device).Control(ContStr).Page.ContainsKey(_page)) Then
                         For Each actn As clsAction In FeelConfig.Connections(device).Control(ContStr).Page(_page).Actions
-                            If (actn.Enabled) And (actn._available) Then
+                            If (actn.Enabled) AndAlso (actn._available) Then
                                 If Not (actn.Data Is Nothing) Then
-                                    'If Not (DirectCast(actn.Data, iAction).Execute(msg.Device.Name, 176, CType(msg.Channel, Byte), CType(msg.Control, Byte), CType(msg.Value, Byte))) Then
-                                    '    Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
-                                    'End If
                                     With actionModules.Item(actn.Type)
                                         .Data = actn.Data
                                         If Not (.Execute(msg.Device.Name, 176, CType(msg.Channel, Byte), CType(msg.Control, Byte), CType(msg.Value, Byte))) Then
+                                            'TODO: Something here in release version
                                             Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
                                         End If
                                     End With
@@ -724,6 +738,7 @@ LoadConfig:
 
     Private _ljHandle As IntPtr = IntPtr.Zero
     Private ReadOnly Property LJHandle() As IntPtr
+        <Diagnostics.DebuggerStepThrough()> _
         Get
             If (_ljHandle = IntPtr.Zero) Or (_ljHandle = Nothing) Then
                 _ljHandle = GetHandle()
@@ -734,6 +749,7 @@ LoadConfig:
 #End Region
 
 #Region "Primary Functions"
+    <Diagnostics.DebuggerStepThrough()> _
     Public Function GetHandle() As IntPtr
         ''Find LightJockey Window
         ''Class name "TLJMainForm", window name "LightJockey"
@@ -747,14 +763,17 @@ LoadConfig:
     '    'Return SendMessage(handle, WM_USER + uMsg, wParam, lParam)
     '    Return CType(WindowsMessages.SendMessage(New IntPtr(handle), WM_USER + uMsg, New IntPtr(wParam), New IntPtr(lParam)), Integer)
     'End Function
+    <Diagnostics.DebuggerStepThrough()> _
     Public Function SendMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
         Return If(FeelConfig.WmEnable, CType(SendMessage(LJHandle, ActionInterface.WM_USER + uMsg, New IntPtr(wParam), New IntPtr(lParam)), Integer), -1)
     End Function
 
+    <Diagnostics.DebuggerStepThrough()> _
     Public Function PostMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
         Return If(FeelConfig.WmEnable, CType(PostMessage(LJHandle, ActionInterface.WM_USER + uMsg, wParam, lParam), Integer), -1)
     End Function
 
+    <Diagnostics.DebuggerStepThrough()> _
     Public Function SendCopyData(ByVal lParam As ActionInterface.CopyData) As Integer
         'wParam is supposed to be a pointer to the handle of this process, or an HWND
         Return If(FeelConfig.WmEnable, CType(SendMessage(LJHandle, ActionInterface.WM_COPYDATA, New IntPtr(0), lParam), Integer), -1)
@@ -762,12 +781,14 @@ LoadConfig:
 #End Region
 
 #Region "Secondary Functions"
+    <Diagnostics.DebuggerStepThrough()> _
     Public Function GetReadyState(ByVal handle As IntPtr) As IntPtr
         ''Find out if LightJockey is ready
         ''Returns 1 if LJ is ready to receive messages, else returns 0
         Return SendMessage(handle, ActionInterface.WM_USER + 1502, New IntPtr(0), New IntPtr(0))
     End Function
 
+    <Diagnostics.DebuggerStepThrough()> _
     Public Function GetVersion(ByVal handle As IntPtr) As IntPtr
         ''Returns an integer value. To get actual version number in "standard, human readable" form
         '' convert to hex, split by byte, convert to integer
@@ -796,6 +817,7 @@ LoadConfig:
 #End Region
 
 #Region "Action Plugins"
+    <Diagnostics.DebuggerStepThrough()> _
     Friend Sub LoadModules()
         Dim addonsRootDirectory As String = My.Application.Info.DirectoryPath & "\actions\"
         Dim addonsLoaded As New Collections.Generic.List(Of System.Type)
@@ -819,6 +841,7 @@ LoadConfig:
         End If
     End Sub
 
+    <Diagnostics.DebuggerStepThrough()> _
     Private Function TryLoadAssemblyReference(ByVal dllFilePath As String) As Collections.Generic.List(Of System.Type)
         Dim loadedAssembly As Reflection.Assembly = Nothing
         Dim listOfModules As New Collections.Generic.List(Of System.Type)
@@ -844,6 +867,7 @@ LoadConfig:
         Return listOfModules
     End Function
 
+    <Diagnostics.DebuggerStepThrough()> _
     Private Sub ReloadModules() Handles menuUpdateAvailablePlugins.Click
         actionModules.Clear()
         LoadModules()

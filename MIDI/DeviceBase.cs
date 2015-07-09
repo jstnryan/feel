@@ -29,6 +29,7 @@ namespace Midi
     /// </summary>
     /// This base class exists mainly so that input and output devices can both go into the same
     /// kinds of MidiMessages.
+    [System.Diagnostics.DebuggerNonUserCode]
     public class DeviceBase
     {
         /// <summary>
@@ -56,6 +57,7 @@ namespace Midi
     /// <summary>
     /// Exception thrown when an operation on a MIDI device cannot be satisfied.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class DeviceException : System.ApplicationException
     {
         /// <summary>

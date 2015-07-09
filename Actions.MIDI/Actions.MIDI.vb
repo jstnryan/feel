@@ -2,6 +2,7 @@
 Imports System.ComponentModel
 Imports Feel.ActionInterface
 
+
 <Guid("15ABCE5A-D91E-4d65-946B-58394B9FE400")> _
 Public Class SendMidiString
     Implements IAction

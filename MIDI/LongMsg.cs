@@ -8,6 +8,7 @@ namespace Midi
     /// <summary>
     /// Utility functions for encoding and decoding short messages.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     static class LongMsg
     {
         /// <summary>
@@ -48,6 +49,7 @@ namespace Midi
             timestamp = (UInt32)dwParam2;
         }
 
+        /*
         /// <summary>
         /// Encodes a SysEx long message.
         /// </summary>
@@ -57,5 +59,6 @@ namespace Midi
         //public static UInt32 EncodeSysEx(Byte[] data)
         //{
         //}
+        */
     }
 }

@@ -169,12 +169,14 @@ Public Class clsAction
         Data = Nothing
         _available = False
     End Sub
+
+    <Runtime.Serialization.OnDeserialized()> _
+    Private Sub SetValues(ByVal context As System.Runtime.Serialization.StreamingContext)
+        _available = False
+    End Sub
 End Class
 
-''' <summary>
-''' A shell class for de-/serializing copy/pasted actions
-''' </summary>
-''' <remarks></remarks>
+''' <summary>A shell class for [de-]serializing copy/pasted actions</summary>
 <Serializable()> _
 Public Class clsCopiedActions
     Public Actions As Collections.Generic.List(Of clsAction)

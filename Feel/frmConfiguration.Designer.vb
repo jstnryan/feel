@@ -94,7 +94,7 @@ Partial Class frmConfiguration
         Me.rdoTransposeC3.Location = New System.Drawing.Point(15, 65)
         Me.rdoTransposeC3.Name = "rdoTransposeC3"
         Me.rdoTransposeC3.Size = New System.Drawing.Size(191, 17)
-        Me.rdoTransposeC3.TabIndex = 2
+        Me.rdoTransposeC3.TabIndex = 18
         Me.rdoTransposeC3.TabStop = True
         Me.rdoTransposeC3.Text = "C3 (Note 48, Octaves -2 through 8)"
         Me.rdoTransposeC3.UseVisualStyleBackColor = True
@@ -105,7 +105,7 @@ Partial Class frmConfiguration
         Me.rdoTransposeC4.Location = New System.Drawing.Point(15, 42)
         Me.rdoTransposeC4.Name = "rdoTransposeC4"
         Me.rdoTransposeC4.Size = New System.Drawing.Size(191, 17)
-        Me.rdoTransposeC4.TabIndex = 1
+        Me.rdoTransposeC4.TabIndex = 17
         Me.rdoTransposeC4.TabStop = True
         Me.rdoTransposeC4.Text = "C4 (Note 60, Octaves -1 through 9)"
         Me.rdoTransposeC4.UseVisualStyleBackColor = True
@@ -116,7 +116,7 @@ Partial Class frmConfiguration
         Me.rdoTransposeC5.Location = New System.Drawing.Point(15, 19)
         Me.rdoTransposeC5.Name = "rdoTransposeC5"
         Me.rdoTransposeC5.Size = New System.Drawing.Size(194, 17)
-        Me.rdoTransposeC5.TabIndex = 0
+        Me.rdoTransposeC5.TabIndex = 16
         Me.rdoTransposeC5.TabStop = True
         Me.rdoTransposeC5.Text = "C5 (Note 72, Octaves 0 through 10)"
         Me.rdoTransposeC5.UseVisualStyleBackColor = True
@@ -138,7 +138,7 @@ Partial Class frmConfiguration
         Me.rdoNumbering1.Location = New System.Drawing.Point(15, 42)
         Me.rdoNumbering1.Name = "rdoNumbering1"
         Me.rdoNumbering1.Size = New System.Drawing.Size(155, 17)
-        Me.rdoNumbering1.TabIndex = 1
+        Me.rdoNumbering1.TabIndex = 15
         Me.rdoNumbering1.TabStop = True
         Me.rdoNumbering1.Text = "One Based (Channels 1-16)"
         Me.rdoNumbering1.UseVisualStyleBackColor = True
@@ -149,7 +149,7 @@ Partial Class frmConfiguration
         Me.rdoNumbering0.Location = New System.Drawing.Point(15, 19)
         Me.rdoNumbering0.Name = "rdoNumbering0"
         Me.rdoNumbering0.Size = New System.Drawing.Size(157, 17)
-        Me.rdoNumbering0.TabIndex = 0
+        Me.rdoNumbering0.TabIndex = 14
         Me.rdoNumbering0.TabStop = True
         Me.rdoNumbering0.Text = "Zero Based (Channels 0-15)"
         Me.rdoNumbering0.UseVisualStyleBackColor = True
@@ -174,7 +174,7 @@ Partial Class frmConfiguration
         Me.rdoNotationDecS.Location = New System.Drawing.Point(15, 65)
         Me.rdoNotationDecS.Name = "rdoNotationDecS"
         Me.rdoNotationDecS.Size = New System.Drawing.Size(90, 17)
-        Me.rdoNotationDecS.TabIndex = 23
+        Me.rdoNotationDecS.TabIndex = 11
         Me.rdoNotationDecS.TabStop = True
         Me.rdoNotationDecS.Text = "Decimal (54d)"
         Me.rdoNotationDecS.UseVisualStyleBackColor = True
@@ -185,7 +185,7 @@ Partial Class frmConfiguration
         Me.rdoNotationHexS.Location = New System.Drawing.Point(15, 111)
         Me.rdoNotationHexS.Name = "rdoNotationHexS"
         Me.rdoNotationHexS.Size = New System.Drawing.Size(113, 17)
-        Me.rdoNotationHexS.TabIndex = 22
+        Me.rdoNotationHexS.TabIndex = 13
         Me.rdoNotationHexS.TabStop = True
         Me.rdoNotationHexS.Text = "Hexadecimal (36h)"
         Me.rdoNotationHexS.UseVisualStyleBackColor = True
@@ -196,7 +196,7 @@ Partial Class frmConfiguration
         Me.rdoNotationDec.Location = New System.Drawing.Point(15, 42)
         Me.rdoNotationDec.Name = "rdoNotationDec"
         Me.rdoNotationDec.Size = New System.Drawing.Size(84, 17)
-        Me.rdoNotationDec.TabIndex = 21
+        Me.rdoNotationDec.TabIndex = 10
         Me.rdoNotationDec.TabStop = True
         Me.rdoNotationDec.Text = "Decimal (54)"
         Me.rdoNotationDec.UseVisualStyleBackColor = True
@@ -207,7 +207,7 @@ Partial Class frmConfiguration
         Me.rdoNotationHexP.Location = New System.Drawing.Point(15, 88)
         Me.rdoNotationHexP.Name = "rdoNotationHexP"
         Me.rdoNotationHexP.Size = New System.Drawing.Size(118, 17)
-        Me.rdoNotationHexP.TabIndex = 20
+        Me.rdoNotationHexP.TabIndex = 12
         Me.rdoNotationHexP.TabStop = True
         Me.rdoNotationHexP.Text = "Hexadecimal (0x36)"
         Me.rdoNotationHexP.UseVisualStyleBackColor = True
@@ -218,7 +218,7 @@ Partial Class frmConfiguration
         Me.rdoNotationNot.Location = New System.Drawing.Point(15, 19)
         Me.rdoNotationNot.Name = "rdoNotationNot"
         Me.rdoNotationNot.Size = New System.Drawing.Size(115, 17)
-        Me.rdoNotationNot.TabIndex = 19
+        Me.rdoNotationNot.TabIndex = 9
         Me.rdoNotationNot.TabStop = True
         Me.rdoNotationNot.Text = "Musical Note (F#3)"
         Me.rdoNotationNot.UseVisualStyleBackColor = True
@@ -243,7 +243,7 @@ Partial Class frmConfiguration
         Me.chkDmxover.Location = New System.Drawing.Point(16, 65)
         Me.chkDmxover.Name = "chkDmxover"
         Me.chkDmxover.Size = New System.Drawing.Size(129, 17)
-        Me.chkDmxover.TabIndex = 17
+        Me.chkDmxover.TabIndex = 8
         Me.chkDmxover.Text = "Enable DMX-Override"
         Me.chkDmxover.UseVisualStyleBackColor = True
         '
@@ -254,7 +254,7 @@ Partial Class frmConfiguration
         Me.chkDmxin.Location = New System.Drawing.Point(16, 42)
         Me.chkDmxin.Name = "chkDmxin"
         Me.chkDmxin.Size = New System.Drawing.Size(176, 17)
-        Me.chkDmxin.TabIndex = 16
+        Me.chkDmxin.TabIndex = 7
         Me.chkDmxin.Text = "Enable DMX-In (to LightJockey)"
         Me.chkDmxin.UseVisualStyleBackColor = True
         '
@@ -264,7 +264,7 @@ Partial Class frmConfiguration
         Me.chkWindowsMessages.Location = New System.Drawing.Point(16, 19)
         Me.chkWindowsMessages.Name = "chkWindowsMessages"
         Me.chkWindowsMessages.Size = New System.Drawing.Size(229, 17)
-        Me.chkWindowsMessages.TabIndex = 15
+        Me.chkWindowsMessages.TabIndex = 6
         Me.chkWindowsMessages.Text = "Enable Windows Messages to LightJockey"
         Me.chkWindowsMessages.UseVisualStyleBackColor = True
         '
@@ -286,7 +286,7 @@ Partial Class frmConfiguration
         Me.chkReconnectDevices.Location = New System.Drawing.Point(16, 19)
         Me.chkReconnectDevices.Name = "chkReconnectDevices"
         Me.chkReconnectDevices.Size = New System.Drawing.Size(210, 17)
-        Me.chkReconnectDevices.TabIndex = 16
+        Me.chkReconnectDevices.TabIndex = 4
         Me.chkReconnectDevices.Text = "Find Connections Upon Config Change"
         Me.chkReconnectDevices.UseVisualStyleBackColor = True
         '
@@ -296,7 +296,7 @@ Partial Class frmConfiguration
         Me.chkIgnoreWhileConnecting.Location = New System.Drawing.Point(16, 42)
         Me.chkIgnoreWhileConnecting.Name = "chkIgnoreWhileConnecting"
         Me.chkIgnoreWhileConnecting.Size = New System.Drawing.Size(205, 17)
-        Me.chkIgnoreWhileConnecting.TabIndex = 14
+        Me.chkIgnoreWhileConnecting.TabIndex = 5
         Me.chkIgnoreWhileConnecting.Text = "Ignore MIDI Events While Connecting"
         Me.chkIgnoreWhileConnecting.UseVisualStyleBackColor = True
         '
@@ -365,7 +365,7 @@ Partial Class frmConfiguration
         Me.txtLicense.ReadOnly = True
         Me.txtLicense.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.txtLicense.Size = New System.Drawing.Size(237, 58)
-        Me.txtLicense.TabIndex = 0
+        Me.txtLicense.TabIndex = 19
         Me.txtLicense.Text = "Protection device found" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Feel single license found" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Plug-in licenses:" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Advanced L" & _
             "J Functions license" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "OSC license."
         '

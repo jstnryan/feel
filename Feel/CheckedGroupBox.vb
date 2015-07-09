@@ -107,6 +107,20 @@ Partial Public Class CheckedGroupBox
             'End If
         End Set
     End Property
+
+    ''' <summary>
+    ''' ToolTip to be shown when user hovers mouse over the CheckBox.
+    ''' </summary>
+    <Description("Sets the ToolTip text to be shown for CheckBox.")> _
+    <DefaultValue("")> _
+    Public Property CheckBoxToolTip() As String
+        Get
+            Return Me.m_checkBox.ToolTip
+        End Get
+        Set(ByVal value As String)
+            Me.m_checkBox.ToolTip = value
+        End Set
+    End Property
 #End Region
 
 #Region "Event Handlers"

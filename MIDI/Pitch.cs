@@ -324,6 +324,7 @@ namespace Midi
     /// <summary>
     /// Extension methods for the Pitch enum.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public static class PitchExtensionMethods
     {
         /// <summary>

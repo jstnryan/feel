@@ -31,6 +31,7 @@ namespace Midi
     /// A time-sorted queue of MIDI messages.
     /// </summary>
     /// Messages can be added in any order, and can be popped off in timestamp order.
+    [System.Diagnostics.DebuggerNonUserCode]
     class MessageQueue
     {
         /// <summary>

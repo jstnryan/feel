@@ -29,6 +29,7 @@ namespace Midi
     /// <summary>
     /// Base class for all MIDI messages.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public abstract class Message
     {
         /// <summary>
@@ -60,6 +61,7 @@ namespace Midi
     /// <summary>
     /// Base class for messages relevant to a specific device.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public abstract class DeviceMessage : Message
     {
         /// <summary>
@@ -91,6 +93,7 @@ namespace Midi
     /// <summary>
     /// Base class for messages relevant to a specific device channel.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public abstract class ChannelMessage : DeviceMessage
     {
         /// <summary>
@@ -113,6 +116,7 @@ namespace Midi
     /// <summary>
     /// Base class for messages relevant to a specific note.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public abstract class NoteMessage : ChannelMessage
     {
         /// <summary>
@@ -148,6 +152,7 @@ namespace Midi
     /// <summary>
     /// Note On message.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class NoteOnMessage : NoteMessage
     {
         /// <summary>
@@ -187,6 +192,7 @@ namespace Midi
     /// percussion-specific note.  This message can be sent to an OutputDevice but will be received
     /// by an InputDevice as a NoteOn message.
     /// </remarks>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class PercussionMessage : DeviceMessage
     {
         /// <summary>
@@ -241,6 +247,7 @@ namespace Midi
     /// <summary>
     /// Note Off message.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class NoteOffMessage : NoteMessage
     {
         /// <summary>
@@ -275,6 +282,7 @@ namespace Midi
     /// <summary>
     /// A Note On message which schedules its own Note Off message when played.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class NoteOnOffMessage : NoteMessage
     {
         /// <summary>
@@ -329,6 +337,7 @@ namespace Midi
     /// <summary>
     /// Control change message.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ControlChangeMessage : ChannelMessage
     {
         /// <summary>
@@ -384,6 +393,7 @@ namespace Midi
     /// <summary>
     /// Pitch Bend message.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class PitchBendMessage : ChannelMessage
     {
         /// <summary>
@@ -429,6 +439,7 @@ namespace Midi
     /// <summary>
     /// Program Change message.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ProgramChangeMessage : ChannelMessage
     {
         /// <summary>
@@ -481,6 +492,7 @@ namespace Midi
     /// an opportunity for some additional processing.</para>
     /// <para>The callback is invoked on the MidiOutputDevice's worker thread.</para>
     /// </remarks>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class CallbackMessage : Message
     {
         /// <summary>
@@ -530,6 +542,7 @@ namespace Midi
     /// <summary>
     /// SysEx message
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class SysExMessage : DeviceMessage
     {
         /// <summary>

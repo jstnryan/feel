@@ -15,8 +15,6 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Actions.Messages", "Actions
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Actions.LJAdvanced", "Actions.LJAdvanced\Actions.LJAdvanced.vbproj", "{FDF029BF-D9EF-476E-8C1A-B89B27D3870D}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "FeelConvert", "FeelConvert\FeelConvert.vbproj", "{320FDA33-3AE3-4060-9F05-681880D4C6F4}"
-EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "FeelConfig", "FeelConfig\FeelConfig.vbproj", "{B4A03EF1-9D1C-4388-B9FE-2B46E4C23E88}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Actions.LJFixtureControls", "Actions.LJFixtureControls\Actions.LJFixtureControls.vbproj", "{33C8C60C-D759-46C1-A3BA-803079E684B9}"
@@ -63,10 +61,6 @@ Global
 		{FDF029BF-D9EF-476E-8C1A-B89B27D3870D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDF029BF-D9EF-476E-8C1A-B89B27D3870D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDF029BF-D9EF-476E-8C1A-B89B27D3870D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{320FDA33-3AE3-4060-9F05-681880D4C6F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{320FDA33-3AE3-4060-9F05-681880D4C6F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{320FDA33-3AE3-4060-9F05-681880D4C6F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{320FDA33-3AE3-4060-9F05-681880D4C6F4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B4A03EF1-9D1C-4388-B9FE-2B46E4C23E88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B4A03EF1-9D1C-4388-B9FE-2B46E4C23E88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4A03EF1-9D1C-4388-B9FE-2B46E4C23E88}.Release|Any CPU.ActiveCfg = Release|Any CPU

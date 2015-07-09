@@ -44,6 +44,7 @@ namespace Midi
     ///
     /// Some of the C functions are not typesafe when wrapped, so those wrappers are made private
     /// and typesafe variants are provided.
+    [System.Diagnostics.DebuggerNonUserCode]
     static class Win32API
     {
         #region Constants

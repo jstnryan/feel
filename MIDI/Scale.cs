@@ -35,6 +35,7 @@ namespace Midi
     /// the next tonic.  It is described in terms of semitones relative to the tonic; to apply it to
     /// a particular tonic, pass one of these to the constructor of <see cref="Scale"/>.
     /// </remarks>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ScalePattern
     {
         #region Properties
@@ -185,6 +186,7 @@ namespace Midi
     /// <para>This class comes with a collection of predefined patterns, such as
     /// <see cref="Major"/> and <see cref="Scale.HarmonicMinor"/>.</para>
     /// </remarks>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class Scale
     {
         #region Properties

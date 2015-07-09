@@ -2,17 +2,16 @@
 Imports System.Runtime.Serialization
 Imports System.Runtime.Serialization.Formatters.Binary
 
-''' <summary>
+''' <summary>Provides a method for performing a deep copy of an object.</summary>
+''' <remarks>
 ''' Reference Article http://www.codeproject.com/KB/tips/SerializedObjectCloner.aspx
-''' Provides a method for performing a deep copy of an object.
 ''' Binary Serialization is used to perform the copy.
-''' </summary>
+''' </remarks>
+<Diagnostics.DebuggerStepThrough()> _
 Public NotInheritable Class ObjectCopier
     Private Sub New()
     End Sub
-    ''' <summary>
-    ''' Perform a deep Copy of the object.
-    ''' </summary>
+    ''' <summary>Perform a deep Copy of the object.</summary>
     ''' <typeparam name="T">The type of object being copied.</typeparam>
     ''' <param name="source">The object instance to copy.</param>
     ''' <returns>The copied object.</returns>
@@ -41,11 +40,12 @@ Public NotInheritable Class ObjectCopier
     End Function
 End Class
 
-''' <summary>
-''' A fix for the Clone method of ObjectCopier class throwing "Assembly not found" exceptions
-''' </summary>
-''' <remarks>http://stackoverflow.com/questions/24673376/unable-to-find-assembly-with-binaryformatter-deserialize
-'''  and: http://social.msdn.microsoft.com/Forums/vstudio/en-US/e5f0c371-b900-41d8-9a5b-1052739f2521/deserialize-unable-to-find-an-assembly-?forum=netfxbcl</remarks>
+''' <summary>A fix for the Clone method of ObjectCopier class throwing "Assembly not found" exceptions.</summary>
+''' <remarks>
+''' See: http://stackoverflow.com/questions/24673376/unable-to-find-assembly-with-binaryformatter-deserialize
+''' and: http://social.msdn.microsoft.com/Forums/vstudio/en-US/e5f0c371-b900-41d8-9a5b-1052739f2521/deserialize-unable-to-find-an-assembly-?forum=netfxbcl
+''' </remarks>
+<Diagnostics.DebuggerStepThrough()> _
 Public Class DeserializationBinder
     Inherits SerializationBinder
     Public Overrides Function BindToType(ByVal assemblyName As String, ByVal typeName As String) As Type

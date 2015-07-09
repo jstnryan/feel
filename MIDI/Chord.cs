@@ -36,6 +36,7 @@ namespace Midi
     /// relative to the root.  To apply it to particular tonic, pass one of these to the
     /// constructor of <see cref="Chord"/>.
     /// </remarks>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ChordPattern
     {
         #region Properties
@@ -237,6 +238,7 @@ namespace Midi
     /// <para>This class comes with a collection of predefined chord patterns, such as
     /// <see cref="Major"/> and <see cref="Chord.Minor"/>.</para>
     /// </remarks>
+    [System.Diagnostics.DebuggerNonUserCode]
     public class Chord
     {
         #region Properties

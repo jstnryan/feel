@@ -149,6 +149,7 @@ namespace Midi
     /// Extension methods for the Percussion enum.
     /// </summary>
     /// Be sure to "using midi" if you want to use these as extension methods.
+    [System.Diagnostics.DebuggerNonUserCode]
     public static class PercussionExtensionMethods
     {
         /// <summary>

@@ -49,13 +49,13 @@ Partial Class frmAbout
         '
         'txtAcknowledgements
         '
-        txtAcknowledgements.Location = New System.Drawing.Point(82, 59)
+        txtAcknowledgements.Location = New System.Drawing.Point(147, 59)
         txtAcknowledgements.Multiline = True
         txtAcknowledgements.Name = "txtAcknowledgements"
         txtAcknowledgements.ReadOnly = True
         txtAcknowledgements.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         txtAcknowledgements.Size = New System.Drawing.Size(298, 202)
-        txtAcknowledgements.TabIndex = 1
+        txtAcknowledgements.TabIndex = 0
         txtAcknowledgements.TabStop = False
         txtAcknowledgements.Text = resources.GetString("txtAcknowledgements.Text")
         '
@@ -72,7 +72,7 @@ Partial Class frmAbout
         'lblVersion
         '
         Me.lblVersion.AutoSize = True
-        Me.lblVersion.Location = New System.Drawing.Point(253, 36)
+        Me.lblVersion.Location = New System.Drawing.Point(318, 37)
         Me.lblVersion.Name = "lblVersion"
         Me.lblVersion.Size = New System.Drawing.Size(127, 13)
         Me.lblVersion.TabIndex = 5
@@ -83,7 +83,7 @@ Partial Class frmAbout
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(392, 273)
+        Me.ClientSize = New System.Drawing.Size(457, 273)
         Me.Controls.Add(txtAcknowledgements)
         Me.Controls.Add(Me.lblVersion)
         Me.Controls.Add(lblTitle)

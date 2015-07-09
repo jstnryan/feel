@@ -4,6 +4,7 @@ Imports System.Windows.Forms
 ''SendMessage(s) to ListView controls, used for "Select All"
 '' Source: http://stackoverflow.com/questions/1019388/adding-a-select-all-shortcut-ctrl-a-to-a-net-listview
 '' Source: http://stackoverflow.com/a/1118396/242584
+<Diagnostics.DebuggerStepThrough()> _
 Public Class NativeMethods
     Private Const LVM_FIRST As Integer = &H1000
     Private Const LVM_SETITEMSTATE As Integer = LVM_FIRST + 43

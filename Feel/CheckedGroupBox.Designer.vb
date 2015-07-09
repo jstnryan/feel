@@ -21,7 +21,8 @@
     ''' the contents of this method with the code editor.
     ''' </summary>
     Private Sub InitializeComponent()
-        Me.m_checkBox = New System.Windows.Forms.CheckBox()
+        'Me.m_checkBox = New System.Windows.Forms.CheckBox()
+        Me.m_checkBox = New ToolTipCheckBox
         Me.SuspendLayout()
         ' 
         ' m_checkBox
@@ -53,5 +54,26 @@
 #End Region
 
     ''Private
-    Public m_checkBox As System.Windows.Forms.CheckBox
+    'Public m_checkBox As System.Windows.Forms.CheckBox
+    Private m_checkBox As ToolTipCheckBox
+
+    Private Class ToolTipCheckBox
+        Inherits System.Windows.Forms.CheckBox
+
+        Private _tooltip As String
+        Private _tt As System.Windows.Forms.ToolTip = New System.Windows.Forms.ToolTip
+
+        ''' <summary>
+        ''' ToolTip to be shown when user hovers mouse over the CheckBox.
+        ''' </summary>
+        Friend Property ToolTip() As String
+            Get
+                Return Me._tooltip
+            End Get
+            Set(ByVal value As String)
+                Me._tooltip = value
+                Me._tt.SetToolTip(Me, Me._tooltip)
+            End Set
+        End Property
+    End Class
 End Class

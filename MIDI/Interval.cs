@@ -77,6 +77,7 @@ namespace Midi
     /// <summary>
     /// Extension methods for the Interval enum.
     /// </summary>
+    [System.Diagnostics.DebuggerNonUserCode]
     public static class IntervalExtensionMethods
     {
         /// <summary>

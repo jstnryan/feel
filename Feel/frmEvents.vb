@@ -3,11 +3,10 @@
 Public Class frmEvents
     Dim DeviceList As Collections.Generic.Dictionary(Of String, Integer)
 
-    ''' <summary>
-    ''' Currently active contrrol
-    ''' </summary>
+    ''' <summary>Currently active contrrol</summary>
     ''' <remarks>Used by <see cref="frmEvents">frmEvents</see>, this class holds details of the last control
     ''' which was manipulated on the connected devices.</remarks>
+    <Diagnostics.DebuggerStepThrough()> _
     Public Class curControl
         Public Device As String
         Public Type As String
@@ -35,6 +34,7 @@ Public Class frmEvents
     'Holds information about the last touched control
     Private _curCont As curControl
     Public WriteOnly Property CurrentControl() As curControl
+        <Diagnostics.DebuggerStepThrough()> _
         Set(ByVal value As curControl)
             If Not (holdControl) Then
                 ''Update last control's state, if available
@@ -54,6 +54,7 @@ Public Class frmEvents
     ''Container for Copy/Paste
     Dim CopyData As New clsCopiedActions
 
+    <Diagnostics.DebuggerStepThrough()> _
     Private Sub updateLastControl()
         If Not (_curCont Is Nothing) Then
             Dim _device As Integer = serviceHost.FindDeviceIndexByInput(_curCont.Device)
@@ -79,6 +80,7 @@ Public Class frmEvents
     End Sub
 
     Delegate Sub updateCurrentControlCallback()
+    <Diagnostics.DebuggerStepThrough()> _
     Public Sub updateCurrentControl()
         If Me.InvokeRequired Then
             Dim d As New updateCurrentControlCallback(AddressOf updateCurrentControl)
@@ -153,9 +155,8 @@ Public Class frmEvents
         End If
     End Sub
 
-    ''' <summary>
-    ''' Sets control properties according to <see cref="lvActions">lvActions</see> SelectedItems.
-    ''' </summary>
+    ''' <summary>Sets control properties according to <see cref="lvActions">lvActions</see> SelectedItems.</summary>
+    <Diagnostics.DebuggerStepThrough()> _
     Private Sub SetControlStates()
         If (lvActions.SelectedItems.Count = 1) Then
             cmdActionAdd.Enabled = True
@@ -183,6 +184,7 @@ Public Class frmEvents
     End Sub
 
     Delegate Sub SetLblCallback(ByVal Device As String, ByVal Description As String, ByVal Channel As String, ByVal NoteControl As String, ByVal VelocityValue As String)
+    <Diagnostics.DebuggerStepThrough()> _
     Public Sub setLabels(Optional ByVal Device As String = "%", Optional ByVal Description As String = "%", Optional ByVal Channel As String = "%", Optional ByVal NoteControl As String = "%", Optional ByVal VelocityValue As String = "%")
         If lblDevice.InvokeRequired Then
             Invoke(New SetLblCallback(AddressOf setLabels), New Object() {Device, Description, Channel, NoteControl, VelocityValue})
@@ -215,9 +217,10 @@ Public Class frmEvents
         End If
     End Sub
 
-    ''Redraws all actions in Actions List, since sorting is so damned difficult
+    ''' <summary>Redraws all actions in Actions List, since sorting is so damned difficult</summary>
     <ComponentModel.Description("Redraws the Actions List after individual Actions are sorted."), _
-        ComponentModel.EditorBrowsable(ComponentModel.EditorBrowsableState.Always)> _
+        ComponentModel.EditorBrowsable(ComponentModel.EditorBrowsableState.Always), _
+        Diagnostics.DebuggerStepThrough()> _
     Private Sub PopulateActions()
         lvActions.Items.Clear()
         If (SetPage(False)) Then
@@ -247,7 +250,8 @@ Public Class frmEvents
         End If
     End Sub
     <ComponentModel.Description("Redraws the Actions List after individual Actions are sorted, and subsequently highlights the desired Action."), _
-        ComponentModel.EditorBrowsable(ComponentModel.EditorBrowsableState.Always)> _
+        ComponentModel.EditorBrowsable(ComponentModel.EditorBrowsableState.Always), _
+        Diagnostics.DebuggerStepThrough()> _
     Private Sub PopulateActions(ByRef selAction As clsAction)
         PopulateActions()
 
@@ -271,9 +275,7 @@ Public Class frmEvents
         lvActions.Select()
     End Sub
 
-    ''' <summary>
-    ''' Populates <see cref="cboActionFunction">cboActionFunction</see> with the currently available Action plugins.
-    ''' </summary>
+    ''' <summary>Populates <see cref="cboActionFunction">cboActionFunction</see> with the currently available Action plugins.</summary>
     Private Sub PopulateActionFunctions()
         cboActionFunction.ValueMember = "Value"
         cboActionFunction.DisplayMember = "Display"
@@ -287,6 +289,38 @@ Public Class frmEvents
         actionlist = Nothing
     End Sub
 
+    ''' <summary>Form Load 'event'</summary>
+    Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
+        'TODO: clear the actions list of design-time items in the editor
+        lvActions.Items.Clear()
+
+        PopulateActionFunctions()
+        ChangeDescriptionHeight(pgAction, 128)
+        main.configMode = True
+
+        MyBase.OnLoad(e)
+    End Sub
+    Private Sub frmActions_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        'Form size: 765, 460
+        ' New size: 765, 486
+    End Sub
+
+    '''<summary>Changes the height of the Description pane in a PropertyGrid</summary>
+    Private Shared Sub ChangeDescriptionHeight(ByVal grid As Windows.Forms.PropertyGrid, ByVal height As Integer)
+        If grid Is Nothing Then
+            Throw New ArgumentNullException("grid")
+        End If
+
+        For Each control As Windows.Forms.Control In grid.Controls
+            If control.[GetType]().Name = "DocComment" Then
+                Dim fieldInfo As Reflection.FieldInfo = control.[GetType]().BaseType.GetField("userSized", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
+                fieldInfo.SetValue(control, True)
+                control.Height = height
+                Return
+            End If
+        Next
+    End Sub
+
     Private Sub frmActions_FormClosed(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
         main.configMode = False
     End Sub
@@ -296,6 +330,9 @@ Public Class frmEvents
         'main.SaveConfiguration()
     End Sub
 
+    ''' <summary>Track KeyDown events to control advanced editing inside <see cref="lvActions">lvActions</see>.</summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
     Private Sub frmEvents_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
         ''If Shift or Control keys are pressed, enable MultiSelect[ion]
         If (e.Shift Or e.Control) Then
@@ -320,22 +357,19 @@ Public Class frmEvents
                         End If
                     Next
                 End With
-
-                'TODO: Diagnostic tests
-                Diagnostics.Debug.WriteLine("CopyData Actions Count, On: " & CopyData.Actions.Count.ToString & ", Off: " & CopyData.ActionsOff.Count.ToString)
-                For Each itm As clsAction In CopyData.Actions
-                    Diagnostics.Debug.WriteLine("ActionOn, Name: " & itm.Name & ", Enabled: " & itm.Enabled.ToString)
-                Next
-                For Each itm As clsAction In CopyData.ActionsOff
-                    Diagnostics.Debug.WriteLine("ActionOn, Name: " & itm.Name & ", Enabled: " & itm.Enabled.ToString)
-                Next
             ElseIf (e.KeyCode = Windows.Forms.Keys.V) Then ''Paste
                 With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                     For Each actn As clsAction In CopyData.Actions
                         .Actions.Add(ObjectCopier.Clone(actn))
+                        ''Set the _available property appropriately. It is not retained in the copy because it is NonSerialized, and ObjectCopier.Clone uses serialization.
+                        Dim tmpAct As Feel.clsAction = System.Linq.Enumerable.Last(.Actions)
+                        tmpAct._available = main.CheckPluginAvailability(tmpAct.Type)
                     Next
                     For Each actn As clsAction In CopyData.ActionsOff
                         .ActionsOff.Add(ObjectCopier.Clone(actn))
+                        ''Set the _available property (see above).
+                        Dim tmpAct As Feel.clsAction = System.Linq.Enumerable.Last(.Actions)
+                        tmpAct._available = main.CheckPluginAvailability(tmpAct.Type)
                     Next
                     PopulateActions()
                 End With
@@ -353,38 +387,6 @@ Public Class frmEvents
         If Not (e.Shift Or e.Control) Then
             lvActions.MultiSelect = False
         End If
-    End Sub
-
-    Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
-        'TODO: clear the actions list of design-time items in the editor
-        lvActions.Items.Clear()
-
-        PopulateActionFunctions()
-        ChangeDescriptionHeight(pgAction, 128)
-        main.configMode = True
-
-        MyBase.OnLoad(e)
-    End Sub
-
-    Private Sub frmActions_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        'Form size: 765, 460
-        ' New size: 765, 486
-    End Sub
-
-    '''<summary>Changes the height of the Description pane in a PropertyGrid</summary>
-    Private Shared Sub ChangeDescriptionHeight(ByVal grid As Windows.Forms.PropertyGrid, ByVal height As Integer)
-        If grid Is Nothing Then
-            Throw New ArgumentNullException("grid")
-        End If
-
-        For Each control As Windows.Forms.Control In grid.Controls
-            If control.[GetType]().Name = "DocComment" Then
-                Dim fieldInfo As Reflection.FieldInfo = control.[GetType]().BaseType.GetField("userSized", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
-                fieldInfo.SetValue(control, True)
-                control.Height = height
-                Return
-            End If
-        Next
     End Sub
 
     Private Sub cboActionFunction_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cboActionFunction.SelectedIndexChanged
@@ -430,12 +432,11 @@ Public Class frmEvents
             cboActionFunction.SelectedIndex = -1
         End If
     End Sub
-    ''' <summary>
-    ''' Tests to see if an Action needs to be assigned to a clsAction
-    ''' </summary>
+    ''' <summary>Tests to see if an Action needs to be assigned to a clsAction</summary>
     ''' <param name="whichGroup">The index of the group the selected Action belongs to in Actions ListView control.</param>
     ''' <param name="curIndex">The selected Action's current index in the group.</param>
     ''' <returns>True if .Data Is Nothing, otherwise False.</returns>
+    <Diagnostics.DebuggerStepThrough()> _
     Private Function cboActionFunctionQualify(ByVal whichGroup As Integer, ByVal curIndex As Integer) As Boolean
         With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
             If (whichGroup = 1) Then
@@ -490,11 +491,14 @@ Public Class frmEvents
     'End Sub
 
     Private Sub lvActions_ItemCheck(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckEventArgs) Handles lvActions.ItemCheck
-        ''Workaround for FullRowSelect + MultiSelect errant un-/checking of lines
+        ''Workaround for FullRowSelect + MultiSelect errant [un-]checking of lines
         '' See: http://www.vbforums.com/showthread.php?379405-RESOLVED-Listview-with-checkboxes-and-multiselect
-        If (lvActions.MultiSelect) Then
-            e.NewValue = e.CurrentValue
-        End If
+        ''
+        '' This also causes any (copied then) pasted action to be set to Disabled.
+        '' At the moment, the original error seems to have ceased, so this is here only as reference.
+        'If (lvActions.MultiSelect) Then
+        '    e.NewValue = e.CurrentValue
+        'End If
     End Sub
 
     Private Sub lvActions_ItemChecked(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckedEventArgs) Handles lvActions.ItemChecked
@@ -727,11 +731,10 @@ Public Class frmEvents
         holdControl = grpInput.Checked
     End Sub
 
-    '''<summary>
-    '''Checks whether a Control exists on the currently active Page and Device, optionally creates it if not.
-    '''</summary>
-    '''<param name="createControl">Create the Control if it doesn't exist (default: False).</param>
-    '''<returns>True if the Control exists, or was created, otherwise False.</returns>
+    ''' <summary>Checks whether a Control exists on the currently active Page and Device, optionally creates it if not.</summary>
+    ''' <param name="createControl">Create the Control if it doesn't exist (default: False).</param>
+    ''' <returns>True if the Control exists, or was created, otherwise False.</returns>
+    <Diagnostics.DebuggerStepThrough()> _
     Private Function SetControl(Optional ByVal createControl As Boolean = False) As Boolean
         If Not _curCont Is Nothing Then
             If Not (FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control.ContainsKey(_curCont.ContStr)) Then
@@ -749,11 +752,10 @@ Public Class frmEvents
         End If
     End Function
 
-    '''<summary>
-    '''Checks whether a Page exists on the currently active Device, optionally creates it if not.
-    '''</summary>
-    '''<param name="createPage">Create the Pontrol if it doesn't exist (default: False).</param>
-    '''<returns>True if the Pontrol exists, or was created, otherwise False.</returns>
+    ''' <summary>Checks whether a Page exists on the currently active Device, optionally creates it if not.</summary>
+    ''' <param name="createPage">Create the Pontrol if it doesn't exist (default: False).</param>
+    ''' <returns>True if the Pontrol exists, or was created, otherwise False.</returns>
+    <Diagnostics.DebuggerStepThrough()> _
     Private Function SetPage(ByVal createPage As Boolean) As Boolean
         If Not _curCont Is Nothing Then
             If SetControl(createPage) Then
@@ -792,20 +794,18 @@ Public Class frmEvents
     End Sub
 
 #Region "Display Preference Conversions"
-    ''' <summary>
-    ''' Formats a MIDI Channel string, according to user preferences.
-    ''' </summary>
+    ''' <summary>Formats a MIDI Channel string, according to user preferences.</summary>
     ''' <param name="channel">The MIDI Channel number to format.</param>
     ''' <returns>Formatted Channel string.</returns>
+    <Diagnostics.DebuggerStepThrough()> _
     Friend Function DisplayChannel(ByVal channel As Byte) As String
         Return If(FeelConfig.MidiNumbering = 0, channel.ToString, (channel + 1).ToString)
     End Function
 
-    ''' <summary>
-    ''' Formats a MIDI Note string according to user preferences.
-    ''' </summary>
+    ''' <summary>Formats a MIDI Note string according to user preferences.</summary>
     ''' <param name="note">The MIDI Note to format.</param>
     ''' <returns>Formatted Note string.</returns>
+    <Diagnostics.DebuggerStepThrough()> _
     Friend Function DisplayNote(ByVal note As Byte) As String
         Select Case FeelConfig.MidiNotation
             Case 1, 2 ''Dec
@@ -817,11 +817,10 @@ Public Class frmEvents
         End Select
     End Function
 
-    ''' <summary>
-    ''' Converts a numeric MIDI Note into a friendly word string.
-    ''' </summary>
+    ''' <summary>Converts a numeric MIDI Note into a friendly word string.</summary>
     ''' <param name="note">The MIDI Note to format.</param>
     ''' <returns>Formatted Note string.</returns>
+    <Diagnostics.DebuggerStepThrough()> _
     Friend Function DisplayNoteAsString(ByVal note As Byte) As String
         If (FeelConfig.MidiTranspose = 1) Then
             Return [Enum].GetName(GetType(Midi.Pitch), note).Replace("Sharp", "#")
@@ -841,11 +840,10 @@ Public Class frmEvents
         End If
     End Function
 
-    ''' <summary>
-    ''' Formats a MIDI Velocity or MIDI Value according to user preferences.
-    ''' </summary>
+    ''' <summary>Formats a MIDI Velocity or MIDI Value according to user preferences.</summary>
     ''' <param name="velval">The MIDI Velocity or Value to format.</param>
     ''' <returns>Formatted Velocity or Value string.</returns>
+    <Diagnostics.DebuggerStepThrough()> _
     Friend Function DisplayVelVal(ByVal velval As Byte) As String
         If (FeelConfig.MidiNotation = 3 Or FeelConfig.MidiNotation = 4) Then
             ''Hex
