@@ -7,6 +7,11 @@ Public Class ConfigureConnections
     Implements IAction
 
     Private _host As IServices
+    'Public Class ActionData
+    '    'Public Function Clone() As ShowMessageBox.ActionData
+    '    '    Return DirectCast(Me.MemberwiseClone(), ShowMessageBox.ActionData)
+    '    'End Function
+    'End Class
 
     Public Property Data() As Object Implements IAction.Data
         Get
@@ -50,6 +55,16 @@ Public Class ConfigureConnections
             'Return "15ABCE5A-D91E-4d65-946A-58394B9FE472"
         End Get
     End Property
+
+    'Public Function ShallowClone() As ChangePageData
+    '    Return DirectCast(Me.MemberwiseClone(), ChangePageData)
+    'End Function
+
+    'Public Function DeepClone() As ChangePageData
+    '    Dim newClone As ChangePageData = DirectCast(Me.MemberwiseClone(), ChangePageData)
+    '    newClone._device = String.Copy(_device)
+    '    Return newClone
+    'End Function
 End Class
 
 <Guid("15ABCE5A-D91E-4d65-946A-58394B9FE473")> _
@@ -193,16 +208,6 @@ Public Class ChangePage
             _device = "ALL DEVICES"
             _page = 0
         End Sub
-
-        'Public Function ShallowClone() As ChangePageData
-        '    Return DirectCast(Me.MemberwiseClone(), ChangePageData)
-        'End Function
-
-        'Public Function DeepClone() As ChangePageData
-        '    Dim newClone As ChangePageData = DirectCast(Me.MemberwiseClone(), ChangePageData)
-        '    newClone._device = String.Copy(_device)
-        '    Return newClone
-        'End Function
     End Class
 End Class
 
@@ -236,10 +241,6 @@ Public Class ShowMessageBox
         Public Sub New()
             _message = "My message!"
         End Sub
-
-        Public Function Clone() As ShowMessageBox.ActionData
-            Return DirectCast(Me.MemberwiseClone(), ShowMessageBox.ActionData)
-        End Function
     End Class
 
     Public Property Data() As Object Implements ActionInterface.IAction.Data
@@ -282,6 +283,194 @@ Public Class ShowMessageBox
     Public ReadOnly Property UniqueID() As System.Guid Implements ActionInterface.IAction.UniqueID
         Get
             Return New Guid("15ABCE5A-D91E-4d65-946A-58394B9FE475")
+        End Get
+    End Property
+End Class
+
+<Guid("15ABCE5A-D91E-4d65-946A-58394B9FE476")> _
+Public Class ChangeControlState
+    Implements IAction
+
+    Private _actionData As ChangeControlState.ActionData
+    Private _host As ActionInterface.IServices
+
+    ''' <summary>
+    ''' ChangeControlState.ActionData
+    ''' </summary>
+    ''' <remarks>Stores the MIDI state string to send to the device.</remarks>
+    <Serializable()> _
+    Public Class ActionData
+        Friend _state As String
+
+        <DisplayName("State Change Command"), _
+            Description("A string representation of the MIDI signal to send this device in order to change this control's illumination state."), _
+            DefaultValue("")> _
+        Public Property State() As String
+            Get
+                Return _state
+            End Get
+            Set(ByVal value As String)
+                _state = value
+            End Set
+        End Property
+
+        Public Sub New()
+            _state = ""
+        End Sub
+    End Class
+
+    Public Property Data() As Object Implements ActionInterface.IAction.Data
+        Get
+            Return _actionData
+        End Get
+        Set(ByVal value As Object)
+            _actionData = CType(value, ChangeControlState.ActionData)
+        End Set
+    End Property
+
+    Public ReadOnly Property Description() As String Implements ActionInterface.IAction.Description
+        Get
+            Return "Sends MIDI to a device, with the intention of changing the status of a control, for example button illumination, and preserves this state until modified." & vbCrLf & vbCrLf & "• This action is identical to the 'Send MIDI' action, with the exception that 'Change Control State' preserves the control's state for repeated use, for example when changing pages."
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements ActionInterface.IAction.Execute
+        Dim _device As Integer = _host.FindDeviceIndexByInput(Device)
+        Dim ContStr As String = If(Type = 144 Or Type = 128, "9", "B") & Channel.ToString & NoteCon.ToString("X2")
+        If (_host.ControlExists(_device, ContStr)) Then
+            _host.CurrentState(_device, ContStr, _host.CurrentPage(_device)) = _actionData._state
+            _host.SendMIDI(_device, _actionData._state)
+            Return True
+        Else
+            Return False
+        End If
+        ''OLD WAY:
+        'If Not (_host.ConnectionExists(_device)) Then
+        '    Return False
+        'Else
+        '    Dim ContStr As String = If(Type = 144 Or Type = 128, "9", "B") & Channel.ToString & NoteCon.ToString("X2")
+        '    If Not (_host.ControlExists(_device, ContStr)) Then
+        '        Return False
+        '    Else
+        '        'TODO: Using ".CurrentPage" is a hacky shortcut, and could lead to trouble down the line
+        '        _host.CurrentState(_device, ContStr, _host.CurrentPage(_device)) = _state
+        '        _host.SendMIDI(_device, _state)
+        '        Return True
+        '    End If
+        'End If
+    End Function
+
+    Public ReadOnly Property Group() As String Implements ActionInterface.IAction.Group
+        Get
+            Return "Internal Functions"
+        End Get
+    End Property
+
+    Public Sub Initialize(ByRef Host As ActionInterface.IServices) Implements ActionInterface.IAction.Initialize
+        _host = Host
+        _actionData = New ChangeControlState.ActionData
+    End Sub
+
+    Public ReadOnly Property Name() As String Implements ActionInterface.IAction.Name
+        Get
+            Return "Change Control State"
+        End Get
+    End Property
+
+    Public ReadOnly Property UniqueID() As System.Guid Implements ActionInterface.IAction.UniqueID
+        Get
+            Return New Guid("15ABCE5A-D91E-4d65-946A-58394B9FE476")
+        End Get
+    End Property
+End Class
+
+<Guid("15ABCE5A-D91E-4d65-946A-58394B9FE477")> _
+Public Class ResetControlGroup
+    Implements ActionInterface.IAction
+
+    Private _actionData As ActionData
+    Private _host As ActionInterface.IServices
+
+    ''' <summary>
+    ''' ResetControlGroup.ActionData
+    ''' </summary>
+    ''' <remarks>Stores the properties for this action.</remarks>
+    <Serializable()> _
+    Public Class ActionData
+        Friend _group As Byte
+        Friend _redraw As Boolean
+
+        <DisplayName("Group"), _
+            Description("Which group to reset to 'inactive.'"), _
+            DefaultValue(0)> _
+        Public Property Group() As Byte
+            Get
+                Return _group
+            End Get
+            Set(ByVal value As Byte)
+                _group = value
+            End Set
+        End Property
+
+        <DisplayName("Redraw"), _
+            Description("True to redraw control states after reset."), _
+            DefaultValue(True)> _
+        Public Property Redraw() As Boolean
+            Get
+                Return _redraw
+            End Get
+            Set(ByVal value As Boolean)
+                _redraw = value
+            End Set
+        End Property
+
+        Public Sub New()
+            _group = 0
+            _redraw = True
+        End Sub
+    End Class
+
+    Public Property Data() As Object Implements ActionInterface.IAction.Data
+        Get
+            Return _actionData
+        End Get
+        Set(ByVal value As Object)
+            _actionData = DirectCast(value, ActionData)
+        End Set
+    End Property
+
+    Public ReadOnly Property Description() As String Implements ActionInterface.IAction.Description
+        Get
+            Return "Sets all controls in group to 'inactive' (momentary/latch button status), and resets control state."
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements ActionInterface.IAction.Execute
+        _host.ResetControlsByGroup(_actionData._group)
+        If (_actionData._redraw) Then _host.RedrawControls()
+        Return True
+    End Function
+
+    Public ReadOnly Property Group() As String Implements ActionInterface.IAction.Group
+        Get
+            Return "Internal Functions"
+        End Get
+    End Property
+
+    Public Sub Initialize(ByRef Host As ActionInterface.IServices) Implements ActionInterface.IAction.Initialize
+        _host = Host
+        _actionData = New ActionData
+    End Sub
+
+    Public ReadOnly Property Name() As String Implements ActionInterface.IAction.Name
+        Get
+            Return "Reset Controls by Group"
+        End Get
+    End Property
+
+    Public ReadOnly Property UniqueID() As System.Guid Implements ActionInterface.IAction.UniqueID
+        Get
+            Return New Guid("15ABCE5A-D91E-4d65-946A-58394B9FE477")
         End Get
     End Property
 End Class

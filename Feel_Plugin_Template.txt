@@ -1,0 +1,74 @@
+<Guid("15ABCE5A-D91E-4d65-946A-58394B9FE475")> _
+Public Class ShowMessageBox
+    Implements ActionInterface.IAction
+
+    Private _actionData As ActionData
+    Private _host As ActionInterface.IServices
+
+    ''' <summary>
+    ''' ShowMessageBox.ActionData
+    ''' </summary>
+    ''' <remarks>Stores the custom message to display in the messagebox.</remarks>
+    <Serializable()> _
+    Public Class ActionData
+        Private _message As String
+
+        <DisplayName("Message"), _
+            Description("The message to display in the message dialog box."), _
+            DefaultValue("My message!")> _
+        Public Property Message() As String
+            Get
+                Return _message
+            End Get
+            Set(ByVal value As String)
+                _message = value
+            End Set
+        End Property
+
+        Public Sub New()
+            _message = "My message!"
+        End Sub
+    End Class
+
+    Public Property Data() As Object Implements ActionInterface.IAction.Data
+        Get
+            Return _actionData
+        End Get
+        Set(ByVal value As Object)
+            _actionData = DirectCast(value, ActionData)
+        End Set
+    End Property
+
+    Public ReadOnly Property Description() As String Implements ActionInterface.IAction.Description
+        Get
+            Return "Plugin Description."
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements ActionInterface.IAction.Execute
+        Return True
+    End Function
+
+    Public ReadOnly Property Group() As String Implements ActionInterface.IAction.Group
+        Get
+            Return "Other"
+        End Get
+    End Property
+
+    Public Sub Initialize(ByRef Host As ActionInterface.IServices) Implements ActionInterface.IAction.Initialize
+        _host = Host
+        _actionData = New ActionData
+    End Sub
+
+    Public ReadOnly Property Name() As String Implements ActionInterface.IAction.Name
+        Get
+            Return "Plugin Name"
+        End Get
+    End Property
+
+    Public ReadOnly Property UniqueID() As System.Guid Implements ActionInterface.IAction.UniqueID
+        Get
+            Return New Guid("15ABCE5A-D91E-4d65-946A-58394B9FE475")
+        End Get
+    End Property
+End Class

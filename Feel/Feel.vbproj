@@ -68,7 +68,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="clsClone.vb" />
-    <Compile Include="clsActions.vb" />
     <Compile Include="clsConfig.vb" />
     <Compile Include="Feel.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -90,7 +89,7 @@
     <Compile Include="GroupedComboBox.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="interface.vb" />
+    <Compile Include="clsInterface.vb" />
     <Compile Include="main.vb">
     </Compile>
     <Compile Include="MessageHandler.vb" />

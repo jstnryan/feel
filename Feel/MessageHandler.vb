@@ -1,4 +1,6 @@
 ﻿Public Class MessageHandler
+    ''Notes on handling windows messages:
+
     'http://msdn.microsoft.com/en-us/library/windows/desktop/ms632599(v=vs.85).aspx#message_only
     'http://msdn.microsoft.com/en-us/library/windows/desktop/ms632679(v=vs.85).aspx
     'http://stackoverflow.com/questions/4081334/using-createwindowex-to-make-a-message-only-window

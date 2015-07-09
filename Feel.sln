@@ -9,6 +9,8 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Feel", "Feel\Feel.vbproj", 
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Actions.Internal", "Actions.Internal\Actions.Internal.vbproj", "{4E16AFD8-03CA-49C8-99EE-AA91A2834AE5}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Actions.MIDI", "Actions.MIDI\Actions.MIDI.vbproj", "{2F85B762-FA02-4721-9934-80C43E0D7708}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{4E16AFD8-03CA-49C8-99EE-AA91A2834AE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E16AFD8-03CA-49C8-99EE-AA91A2834AE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E16AFD8-03CA-49C8-99EE-AA91A2834AE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F85B762-FA02-4721-9934-80C43E0D7708}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F85B762-FA02-4721-9934-80C43E0D7708}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F85B762-FA02-4721-9934-80C43E0D7708}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F85B762-FA02-4721-9934-80C43E0D7708}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
