@@ -1,4 +1,4 @@
-﻿Public Class frmConfig
+﻿Public Class frmConnections
 
     Private Sub PopulateConnections()
         lvConnections.Clear()
@@ -25,7 +25,7 @@
     Private Sub frmConfig_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         main.configMode = True
 
-        ''TODO: Temporary clearing of fields (clear fields in designer for production, remove these lines)
+        ''TODO: Temporary clearing of fields (clear fields in designer; for production, remove these lines)
         btnRemoveConnection.Enabled = False
         txtConnectionName.Text = ""
         txtConnectionName.Enabled = False
@@ -43,19 +43,17 @@
         chkConnectionNoteOff.Enabled = False
 
         'Populate input and output dropdowns
+        Midi.InputDevice.UpdateInstalledDevices()
         For Each dev As Midi.InputDevice In Midi.InputDevice.InstalledDevices
             cboConnectionInput.Items.Add(dev.Name)
         Next
+        Midi.OutputDevice.UpdateInstalledDevices()
         For Each dev As Midi.OutputDevice In Midi.OutputDevice.InstalledDevices
             cboConnectionOutput.Items.Add(dev.Name)
         Next
 
         'Read Configuration and properly populate/set controls
         PopulateConnections()
-        chkWindowsMessages.Checked = FeelConfig.WmEnable
-        chkIgnoreWhileConnecting.Checked = FeelConfig.IgnoreEvents
-        chkDmxin.Checked = FeelConfig.DmxinEnable
-        chkDmxover.Checked = FeelConfig.DmxoverEnable
     End Sub
 
     Private Sub lvConnections_ItemChecked(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckedEventArgs) Handles lvConnections.ItemChecked
@@ -133,22 +131,6 @@
             End With
             'txtConnectionName.Focus()
         End If
-    End Sub
-
-    Private Sub chkWindowsMessages_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkWindowsMessages.CheckedChanged
-        FeelConfig.WmEnable = chkWindowsMessages.Checked
-    End Sub
-
-    Private Sub chkDmxin_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkDmxin.CheckedChanged
-        FeelConfig.DmxinEnable = chkDmxin.Checked
-    End Sub
-
-    Private Sub chkDmxover_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkDmxover.CheckedChanged
-        FeelConfig.DmxoverEnable = chkDmxover.Checked
-    End Sub
-
-    Private Sub chkIgnoreWhileConnecting_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkIgnoreWhileConnecting.CheckedChanged
-        FeelConfig.IgnoreEvents = chkIgnoreWhileConnecting.Checked
     End Sub
 
     Private Sub btnAddConnection_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnAddConnection.Click

@@ -32,12 +32,13 @@ PostWMessage                  4CDE2694-8BA6-415d-94EA-EDA045149BCE
 ResetLJWindowHandle           4CDE2694-8BA6-415d-94EA-EDA045149BCD
 
 #LJ Functions ("LJ Advanced Functions")
-Intensity Group Value         88F81E46-596B-4aa3-A5C4-8FB475DA21A0
-Cue Macro, Amplitude (rel)
-Cue Macro, Amplitude (abs)
-Cue Macro, Speed (rel)
-Cue Macro, Speed (abs)
-Load Cue
-Load CueList
-Load Background Cue
-Flash Sequence
+Intensity Group Value (abs)   88F81E46-596B-4aa3-A5C4-8FB475DA21A0
+Intensity Group Value (rel)   88F81E46-596B-4aa3-A5C4-8FB475DA21A1
+Cue Macro Amplitude (abs)     88F81E46-596B-4aa3-A5C4-8FB475DA21A2
+Cue Macro Amplitude (rel)     88F81E46-596B-4aa3-A5C4-8FB475DA21A3
+Cue Macro Speed (abs)         88F81E46-596B-4aa3-A5C4-8FB475DA21A4
+Cue Macro Speed (rel)         88F81E46-596B-4aa3-A5C4-8FB475DA21A5
+Load Cue                      88F81E46-596B-4aa3-A5C4-8FB475DA21A6
+Load CueList                  88F81E46-596B-4aa3-A5C4-8FB475DA21A7
+Load Background Cue           88F81E46-596B-4aa3-A5C4-8FB475DA21A8
+Flash Sequence                88F81E46-596B-4aa3-A5C4-8FB475DA21A9

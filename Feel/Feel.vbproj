@@ -80,10 +80,16 @@
     <Compile Include="frmActions.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmConfig.Designer.vb">
-      <DependentUpon>frmConfig.vb</DependentUpon>
+    <Compile Include="frmConfiguration.Designer.vb">
+      <DependentUpon>frmConfiguration.vb</DependentUpon>
     </Compile>
-    <Compile Include="frmConfig.vb">
+    <Compile Include="frmConfiguration.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmConnections.Designer.vb">
+      <DependentUpon>frmConnections.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmConnections.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GroupedComboBox.vb">
@@ -103,6 +109,11 @@
     </Compile>
     <Compile Include="frmAbout.vb">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -137,8 +148,12 @@
       <DependentUpon>frmActions.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmConfig.resx">
-      <DependentUpon>frmConfig.vb</DependentUpon>
+    <EmbeddedResource Include="frmConfiguration.resx">
+      <DependentUpon>frmConfiguration.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmConnections.resx">
+      <DependentUpon>frmConnections.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="frmAbout.resx">
@@ -179,11 +194,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="feel.ico" />
+    <None Include="app.config" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
     </None>
     <None Include="My Project\app.manifest" />
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
     <None Include="Resources\feel.png" />
   </ItemGroup>
   <ItemGroup>

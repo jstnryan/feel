@@ -71,7 +71,7 @@
         End Sub
 
         Public Overrides Sub ConfigureConnections()
-            main.OpenConfigWindow()
+            main.OpenConnectWindow()
         End Sub
 
         Public Overrides Sub SetPage(ByVal Device As String, ByVal Page As Byte)
@@ -384,13 +384,18 @@
         Public Overrides Function SendLJMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
             Return main.SendMessage(uMsg, wParam, lParam)
         End Function
-
+        'TODO:
         Public Overloads Overrides Function PostWMessage(ByVal Handle As Integer, ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
             Return 0
         End Function
-
+        'TODO:
         Public Overloads Overrides Function SendWMessage(ByVal Handle As Integer, ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
             Return 0
+        End Function
+
+        Public Overrides Function SendLJCopyData(ByVal lParam As ActionInterface.CopyData) As Integer
+            'wParam is supposed to be a pointer to the handle of this process, or an HWND
+            Return main.SendCopyData(lParam)
         End Function
 
         ''DEVICE HELPERS:

@@ -1,6 +1,16 @@
 ﻿Imports System.ComponentModel
 
 Public Class ActionInterface
+#Region "Constants & Structures"
+    Public Const WM_USER As Int32 = &H400 ''1024
+    Public Const WM_COPYDATA As Integer = &H4A ''74
+    Public Structure CopyData
+        Public dwData As Integer
+        Public cbData As Integer
+        Public lpData As IntPtr
+    End Structure
+#End Region
+
 #Region "Interfaces"
     ''' <summary>
     ''' Interface utilized by Action plugins
@@ -114,39 +124,8 @@ Public Class ActionInterface
         MustOverride Function PostLJMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
         MustOverride Function SendWMessage(ByVal Handle As Integer, ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
         MustOverride Function PostWMessage(ByVal Handle As Integer, ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-
-#Region "PropertyGrid Helpers"
-        'Public MustInherit Class DeviceList : End Class
-
-        'Public MustInherit Class OutDeviceList : End Class
-#End Region
+        MustOverride Function SendLJCopyData(ByVal lParam As ActionInterface.CopyData) As Integer
     End Class
-
-    'Public Interface IServices
-    '    ''Feel Information
-    '    'ReadOnly Property Version() As String
-    '    Sub ConfigureConnections()
-    '    Sub ConfigureActions()
-
-    '    ''LightJockey Information
-    '    Function GetLJHandle() As IntPtr
-    '    Function GetCurrentSequence() As Integer
-    '    Function GetCurrentCue() As Integer
-    '    Function GetCurrentCueList() As Integer
-
-    '    ''MIDI Information
-    '    Function GetMIDIDeviceOUTList() As String()
-    '    Function GetMIDIDeviceINList() As String()
-    '    ''MIDI Functions
-    '    Sub SendMIDI(ByVal Device As String, ByVal Message As String)
-
-    '    ''Windows Message Functions
-    '    Function SendMessage(ByVal Handle As Integer, ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-    '    Function SendMessage(ByVal Handle As Integer, ByVal uMsg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As Integer
-    '    Function PostMessage(ByVal Handle As Integer, ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-    '    Function PostMessage(ByVal Handle As Integer, ByVal uMsg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As Integer
-    '    Function SendLJMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-    'End Interface
 #End Region
 End Class
 

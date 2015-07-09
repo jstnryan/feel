@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class frmConfig
+Partial Class frmConnections
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -13,7 +13,7 @@ Partial Class frmConfig
             MyBase.Dispose(disposing)
 
             ''Singleon Pattern: http://www.codeproject.com/KB/vb/Simple_Singleton_Forms.aspx
-            main.configForm = Nothing
+            main.connectForm = Nothing
         End Try
     End Sub
 
@@ -32,7 +32,7 @@ Partial Class frmConfig
         Dim ListViewItem5 As System.Windows.Forms.ListViewItem = New System.Windows.Forms.ListViewItem("Justin's iPhone")
         Dim ListViewItem6 As System.Windows.Forms.ListViewItem = New System.Windows.Forms.ListViewItem("Chris' iPad")
         Dim ListViewItem7 As System.Windows.Forms.ListViewItem = New System.Windows.Forms.ListViewItem("Video APC20")
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmConfig))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmConnections))
         Me.btnAddConnection = New System.Windows.Forms.Button
         Me.btnRemoveConnection = New System.Windows.Forms.Button
         Me.lvConnections = New System.Windows.Forms.ListView
@@ -49,13 +49,7 @@ Partial Class frmConfig
         Me.lblConnectionInput = New System.Windows.Forms.Label
         Me.txtConnectionName = New System.Windows.Forms.TextBox
         Me.lblConnectionName = New System.Windows.Forms.Label
-        Me.grpProgramConfig = New System.Windows.Forms.GroupBox
-        Me.chkDmxover = New System.Windows.Forms.CheckBox
-        Me.chkDmxin = New System.Windows.Forms.CheckBox
-        Me.chkIgnoreWhileConnecting = New System.Windows.Forms.CheckBox
-        Me.chkWindowsMessages = New System.Windows.Forms.CheckBox
         Me.grpConnectionDetails.SuspendLayout()
-        Me.grpProgramConfig.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnAddConnection
@@ -229,79 +223,21 @@ Partial Class frmConfig
         Me.lblConnectionName.TabIndex = 0
         Me.lblConnectionName.Text = "Name:"
         '
-        'grpProgramConfig
-        '
-        Me.grpProgramConfig.Controls.Add(Me.chkDmxover)
-        Me.grpProgramConfig.Controls.Add(Me.chkDmxin)
-        Me.grpProgramConfig.Controls.Add(Me.chkIgnoreWhileConnecting)
-        Me.grpProgramConfig.Controls.Add(Me.chkWindowsMessages)
-        Me.grpProgramConfig.Location = New System.Drawing.Point(12, 281)
-        Me.grpProgramConfig.Name = "grpProgramConfig"
-        Me.grpProgramConfig.Size = New System.Drawing.Size(539, 69)
-        Me.grpProgramConfig.TabIndex = 5
-        Me.grpProgramConfig.TabStop = False
-        Me.grpProgramConfig.Text = "Program Configuration"
-        '
-        'chkDmxover
-        '
-        Me.chkDmxover.AutoSize = True
-        Me.chkDmxover.Enabled = False
-        Me.chkDmxover.Location = New System.Drawing.Point(262, 42)
-        Me.chkDmxover.Name = "chkDmxover"
-        Me.chkDmxover.Size = New System.Drawing.Size(129, 17)
-        Me.chkDmxover.TabIndex = 14
-        Me.chkDmxover.Text = "Enable DMX-Override"
-        Me.chkDmxover.UseVisualStyleBackColor = True
-        '
-        'chkDmxin
-        '
-        Me.chkDmxin.AutoSize = True
-        Me.chkDmxin.Enabled = False
-        Me.chkDmxin.Location = New System.Drawing.Point(15, 42)
-        Me.chkDmxin.Name = "chkDmxin"
-        Me.chkDmxin.Size = New System.Drawing.Size(176, 17)
-        Me.chkDmxin.TabIndex = 11
-        Me.chkDmxin.Text = "Enable DMX-In (to LightJockey)"
-        Me.chkDmxin.UseVisualStyleBackColor = True
-        '
-        'chkIgnoreWhileConnecting
-        '
-        Me.chkIgnoreWhileConnecting.AutoSize = True
-        Me.chkIgnoreWhileConnecting.Location = New System.Drawing.Point(262, 19)
-        Me.chkIgnoreWhileConnecting.Name = "chkIgnoreWhileConnecting"
-        Me.chkIgnoreWhileConnecting.Size = New System.Drawing.Size(243, 17)
-        Me.chkIgnoreWhileConnecting.TabIndex = 12
-        Me.chkIgnoreWhileConnecting.Text = "Ignore Events While Establishing Connections"
-        Me.chkIgnoreWhileConnecting.UseVisualStyleBackColor = True
-        '
-        'chkWindowsMessages
-        '
-        Me.chkWindowsMessages.AutoSize = True
-        Me.chkWindowsMessages.Location = New System.Drawing.Point(15, 19)
-        Me.chkWindowsMessages.Name = "chkWindowsMessages"
-        Me.chkWindowsMessages.Size = New System.Drawing.Size(229, 17)
-        Me.chkWindowsMessages.TabIndex = 10
-        Me.chkWindowsMessages.Text = "Enable Windows Messages to LightJockey"
-        Me.chkWindowsMessages.UseVisualStyleBackColor = True
-        '
-        'frmConfig
+        'frmConnections
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(563, 362)
-        Me.Controls.Add(Me.grpProgramConfig)
+        Me.ClientSize = New System.Drawing.Size(563, 287)
         Me.Controls.Add(Me.grpConnectionDetails)
         Me.Controls.Add(Me.lvConnections)
         Me.Controls.Add(Me.btnRemoveConnection)
         Me.Controls.Add(Me.btnAddConnection)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
-        Me.Name = "frmConfig"
+        Me.Name = "frmConnections"
         Me.Text = "Feel: Connections"
         Me.grpConnectionDetails.ResumeLayout(False)
         Me.grpConnectionDetails.PerformLayout()
-        Me.grpProgramConfig.ResumeLayout(False)
-        Me.grpProgramConfig.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -319,11 +255,6 @@ Partial Class frmConfig
     Friend WithEvents lblConnectionName As System.Windows.Forms.Label
     Friend WithEvents txtConnectionInitialization As System.Windows.Forms.TextBox
     Friend WithEvents lblConnectionInitialization As System.Windows.Forms.Label
-    Friend WithEvents grpProgramConfig As System.Windows.Forms.GroupBox
-    Friend WithEvents chkDmxover As System.Windows.Forms.CheckBox
-    Friend WithEvents chkDmxin As System.Windows.Forms.CheckBox
-    Friend WithEvents chkIgnoreWhileConnecting As System.Windows.Forms.CheckBox
-    Friend WithEvents chkWindowsMessages As System.Windows.Forms.CheckBox
     Friend WithEvents chkConnectionNoteOff As System.Windows.Forms.CheckBox
     Friend WithEvents lblConnectionBehavior As System.Windows.Forms.Label
 

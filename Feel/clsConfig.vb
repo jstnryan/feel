@@ -9,16 +9,26 @@ Public Class clsConfig
     'MIDI Connections (Virtual ports & MIDI devices)
     Public Connections As Collections.Generic.Dictionary(Of Integer, clsConnection)
 
-    Public WmEnable As Boolean          'Enable Windows Messages to LightJockey
     Public IgnoreEvents As Boolean      'Ignore events raised by devices/connections while still establishing other connections
+    Public FeedbackDetection As Boolean 'Enable MIDI feedback detection
+
+    Public WmEnable As Boolean          'Enable Windows Messages to LightJockey
     Public DmxinEnable As Boolean       'Enable DMX-In to LightJockey
     Public DmxoverEnable As Boolean     'Enable DMX-Override to LightJockey
 
+    Public MidiNotation As Byte         'MIDI note display style (0:letter, 1:dec, 2:dec w/suffix, 3:hex w/prefix, 4:hex w/suffix)
+    Public MidiNumbering As Byte        'MIDI channel display style (0:zero based, 1:one based)
+    Public MidiTranspose As Byte        'MIDI note ocatave base (0:C5, 1:C4, 2:C3)
+
     Public Sub New()
-        WmEnable = False
         IgnoreEvents = False
+        FeedbackDetection = False
+        WmEnable = False
         DmxinEnable = False
         DmxoverEnable = False
+        MidiNotation = 0
+        MidiNumbering = 1
+        MidiTranspose = 1
         Connections = New Collections.Generic.Dictionary(Of Integer, clsConnection)
     End Sub
 End Class
@@ -170,48 +180,3 @@ Public Class clsCopiedActions
         ActionsOff = New Collections.Generic.List(Of clsAction)
     End Sub
 End Class
-
-#Region "Previous Class Versions"
-''REMOVED:
-'' FingersEnable
-'' FingersPort
-''ADDED:
-'' IgnoreEvents
-<Serializable()> _
-Public Class clsConfig_01
-    'MIDI Connections (Virtual ports & MIDI devices)
-    Public Connections As Collections.Generic.Dictionary(Of Integer, clsConnection)
-
-    Public WmEnable As Boolean          'Enable Windows Messages to LightJockey
-    Public FingersEnable As Boolean     'Enable Serial to LightJockey
-    Public FingersPort As Integer       'Serial interface Port #
-    Public DmxinEnable As Boolean       'Enable DMX-In to LightJockey
-    Public DmxoverEnable As Boolean     'Enable DMX-Override to LightJockey
-
-    Public Sub New()
-        WmEnable = False
-        FingersEnable = False
-        FingersPort = -1
-        DmxinEnable = False
-        DmxoverEnable = False
-        Connections = New Collections.Generic.Dictionary(Of Integer, clsConnection)
-    End Sub
-End Class
-
-''ADDED:
-'' _available
-<Serializable()> _
-Public Class clsAction_01
-    Public Name As String
-    Public Enabled As Boolean
-    Public Type As Guid
-    Public Data As Object
-
-    Public Sub New()
-        Name = "New Action"
-        Enabled = False
-        Type = Guid.Empty
-        Data = Nothing
-    End Sub
-End Class
-#End Region

@@ -7,6 +7,7 @@ Module main
     Dim WithEvents trayIcon As New NotifyIcon
     Dim trayMenu As New ContextMenu
     Dim WithEvents menuExit As New MenuItem
+    Dim WithEvents menuConfigProgram As New MenuItem
     Dim WithEvents menuConfigConnections As New MenuItem
     Dim WithEvents menuConfigActions As New MenuItem
     Dim menuAdvancedTasks As New MenuItem
@@ -22,25 +23,32 @@ Module main
     Public midiIn As System.Collections.Generic.Dictionary(Of String, InputDevice) = New Collections.Generic.Dictionary(Of String, InputDevice)
     Public midiOut As System.Collections.Generic.Dictionary(Of String, OutputDevice) = New Collections.Generic.Dictionary(Of String, OutputDevice)
 
-    Private configM As Boolean = False    ''when configuring actions, override output to LJ
+    Private _configMode As Boolean = False    ''when configuring actions, override output to LJ
     Public Property configMode(Optional ByVal reConnect As Boolean = False) As Boolean
         Get
-            Return configM
+            Return _configMode
         End Get
         Set(ByVal value As Boolean)
             If Not (configForm Is Nothing) Then
                 If (configForm.Visible) Then
-                    configM = True
+                    _configMode = True
+                End If
+            ElseIf Not (connectForm Is Nothing) Then
+                If (connectForm.Visible) Then
+                    _configMode = True
                 End If
             ElseIf Not (actionForm Is Nothing) Then
                 If (actionForm.Visible) Then
-                    configM = True
+                    _configMode = True
                 End If
             End If
-            If configM <> value Then
-                configM = value
-                'RedrawControls()
-                If reConnect Then ConnectDevices()
+            'TODO: reevaluate the logic of this If
+            If _configMode <> value Then
+                _configMode = value
+                If reConnect Then
+                    DisconnectDevices() 'need this?
+                    ConnectDevices()
+                End If
             End If
         End Set
     End Property
@@ -57,7 +65,8 @@ Module main
         End Set
     End Property
 
-    Public configForm As frmConfig
+    Public configForm As frmConfiguration
+    Public connectForm As frmConnections
     Private actionForm As frmActions = New frmActions
     Public aboutForm As frmAbout
 
@@ -76,6 +85,7 @@ Module main
 
         ''create system tray icon and context menu items
         menuExit.Text = "E&xit"
+        menuConfigProgram.Text = "&Program Configuration"
         menuConfigConnections.Text = "Configure &Connections"
         menuConfigActions.Text = "Configure &Actions"
         ''NEW:
@@ -94,6 +104,7 @@ Module main
         menuAdvancedTasks.MenuItems.Add(menuUpdateAvailableDevices)
         trayMenu.MenuItems.Add(menuAdvancedTasks)
         'trayMenu.MenuItems.Add("-")
+        trayMenu.MenuItems.Add(menuConfigProgram)
         trayMenu.MenuItems.Add(menuConfigConnections)
         trayMenu.MenuItems.Add(menuConfigActions)
         trayIcon.ContextMenu = trayMenu
@@ -104,14 +115,14 @@ Module main
         LoadModules() ''Populate our list of currently available action plug-ins
 
         LoadConfiguration() ''Read serialzed config data from file
-        If Not configM Then ConnectDevices() ''Make MIDI connections
+        If Not _configMode Then ConnectDevices() ''Make MIDI connections
 
         Application.Run()
     End Sub
 
 #Region "Windows & Menus"
     Private Sub menuExit_Click(ByVal sender As Object, ByVal e As EventArgs) Handles menuExit.Click
-        If configM Then
+        If _configMode Then
             Dim quitNoSave As System.Windows.Forms.DialogResult = MessageBox.Show("One or more configuration windows are open; any changes made have not been saved. Do you want to exit without saving?", "Feel: Configuration Not Saved", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)
             If (quitNoSave = DialogResult.No) Then Exit Sub
         End If
@@ -122,18 +133,26 @@ Module main
         Application.Exit()
     End Sub
 
-    Friend Sub OpenConfigWindow() Handles menuConfigConnections.Click
-        ''The Connections Configuration form makes its own connections to
-        '' test devices, so we must disconnect existing connections first.
-        DisconnectDevices()
-
+    Friend Sub OpenProgramWindow() Handles menuConfigProgram.Click
         ''Singleton: See designer code.
         '' http://www.codeproject.com/Articles/5000/Simple-Singleton-Forms
         '' (dated link) http://www.codeproject.com/KB/vb/Simple_Singleton_Forms.aspx
         If configForm Is Nothing Then
-            configForm = New frmConfig
+            configForm = New frmConfiguration
         End If
         configForm.Show()
+        'configForm.Focus()
+    End Sub
+
+    Friend Sub OpenConnectWindow() Handles menuConfigConnections.Click
+        ''The Connections Configuration form makes its own connections to
+        '' test devices, so we must disconnect existing connections first.
+        DisconnectDevices()
+
+        If connectForm Is Nothing Then
+            connectForm = New frmConnections
+        End If
+        connectForm.Show()
         'configForm.Focus()
     End Sub
 
@@ -191,30 +210,35 @@ Module main
 #End Region
 
 #Region "File I/O"
-    Private Sub LoadConfiguration()
+    Friend Sub LoadConfiguration()
+        ''Check to make sure a configuration file has been set, if not make one
+        If (My.Settings.ConfigFile = "") Then
+            My.Settings.ConfigFile = Application.StartupPath & "\user\" & "config.feel"
+            My.Settings.Save()
+        End If
 LoadConfig:
         Dim fs As IO.FileStream
         Dim bf As New Runtime.Serialization.Formatters.Binary.BinaryFormatter()
         Try
-            fs = New IO.FileStream(Application.StartupPath & "\user\feel.config", IO.FileMode.Open, IO.FileAccess.Read)
+            fs = New IO.FileStream(My.Settings.ConfigFile, IO.FileMode.Open, IO.FileAccess.Read)
             bf.Binder = New DeserializationBinder() ''See DeserializationBinder
             FeelConfig = ConfigDeserialize(CType(bf.Deserialize(fs), clsConfig)) 'FeelConfig = CType(bf.Deserialize(fs), clsConfig)
             fs.Close()
         Catch fileEx As IO.FileNotFoundException
             'MessageBox.Show("No configuration file found. Operating with blank configuration.", "Feel: Configuration Not Found", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            trayIcon.ShowBalloonTip(5000, "Feel: Notice", "No configuration file was found. A blank configuration file was created.", ToolTipIcon.Info)
+            trayIcon.ShowBalloonTip(10000, "Feel: Notice", "No configuration file was found. A blank configuration file was created.", ToolTipIcon.Info)
             ''no configuration file was found, so create a new one
             CreateNewConfiguration()
             ''then open the configuration window
-            OpenConfigWindow()
+            OpenProgramWindow()
         Catch directoryEx As IO.DirectoryNotFoundException
             If CreateUserDirectory() Then
                 GoTo LoadConfig
             Else
                 'MessageBox.Show("Unable to create 'user' directory. Operating with blank configuration file.", "Feel: File System Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-                trayIcon.ShowBalloonTip(5000, "Feel: Warning", "Unable to create 'user' directory. Operation will continue with a blank configuration.", ToolTipIcon.Warning)
+                trayIcon.ShowBalloonTip(10000, "Feel: Warning", "Unable to create 'user' directory. Operation will continue with a blank configuration.", ToolTipIcon.Warning)
                 CreateNewConfiguration()
-                OpenConfigWindow()
+                OpenProgramWindow()
             End If
         Catch ex As Exception
             ''some unexpected error occured
@@ -227,7 +251,7 @@ LoadConfig:
     End Sub
 
     ''TODO: Does this really need to be broken out into its own subroutine?
-    Private Sub CreateNewConfiguration()
+    Friend Sub CreateNewConfiguration()
         FeelConfig = New clsConfig
     End Sub
 
@@ -236,7 +260,8 @@ LoadConfig:
             Dim dInfo As IO.DirectoryInfo = IO.Directory.CreateDirectory(Application.StartupPath & "\user")
             Return dInfo.Exists
         Catch ex As Exception
-            MessageBox.Show("Error creating '\user' directory!", "Feel: Unknown Exception", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("Error creating 'user' directory!", "Feel: I/O Exception", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return False
         End Try
     End Function
 
@@ -244,7 +269,7 @@ LoadConfig:
         Dim fs As IO.FileStream
         Dim bf As New Runtime.Serialization.Formatters.Binary.BinaryFormatter()
         Try
-            fs = New IO.FileStream(Windows.Forms.Application.StartupPath & "\user\feel.config", IO.FileMode.Create)
+            fs = New IO.FileStream(My.Settings.ConfigFile, IO.FileMode.Create)
             bf.Serialize(fs, FeelConfig) 'bf.Serialize(fs, ConfigSerialize(FeelConfig))
             fs.Close()
         Catch ex As Exception
@@ -400,6 +425,7 @@ LoadConfig:
                     '    .OutputName = ""
                     'End With
                     System.Windows.Forms.MessageBox.Show("Warning: One or both of the input/output ports for the device named " & device.Name & " no longer exists! Usually this is an indication that other devices have been removed from the system recently, or have not been powered on." & vbCrLf & vbCrLf & "The device has been disabled. Please update this device's connection info by opening the 'Configure Connections' window and adjusting this device's Input and Output settings, then re-enable the device.", "Feel: MIDI Configuration Has Changed", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    'trayIcon.ShowBalloonTip(10000, "Feel: MIDI Configuration has changed", "", ToolTipIcon.Warning)
                     Continue For
                     'Else
                     '    System.Diagnostics.Debug.WriteLine("ConnectDevices:: Device: " & device.Name & ", Index within range: " & device.Input & ":" & InputDevice.InstalledDevices.Count & "||" & device.Output & ":" & OutputDevice.InstalledDevices.Count)
@@ -883,7 +909,7 @@ LoadConfig:
     Private Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr
     End Function
     <Runtime.InteropServices.DllImport("user32.dll", CharSet:=Runtime.InteropServices.CharSet.Auto, SetLastError:=True)> _
-    Private Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByRef lParam As CopyData) As IntPtr
+    Private Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByRef lParam As ActionInterface.CopyData) As IntPtr
     End Function
 
     ''Asynchronous PostMessage alternative
@@ -892,13 +918,14 @@ LoadConfig:
     Private Function PostMessage(ByVal hwnd As IntPtr, ByVal wMsg As Int32, ByVal wParam As Int32, ByVal lParam As Int32) As Int32
     End Function
 
-    Public Const WM_USER As Int32 = &H400 ''1024
-    Public Const WM_COPYDATA As Integer = &H4A ''74
-    Public Structure CopyData
-        Public dwData As Integer
-        Public cbData As Integer
-        Public lpData As IntPtr
-    End Structure
+    ''These constants are defined in Feel.ActionInterface
+    'Public Const WM_USER As Int32 = &H400 ''1024
+    'Public Const WM_COPYDATA As Integer = &H4A ''74
+    'Public Structure CopyData
+    '    Public dwData As Integer
+    '    Public cbData As Integer
+    '    Public lpData As IntPtr
+    'End Structure
 
     Private _ljHandle As IntPtr = IntPtr.Zero
     Private ReadOnly Property LJHandle() As IntPtr
@@ -926,16 +953,16 @@ LoadConfig:
     '    Return CType(WindowsMessages.SendMessage(New IntPtr(handle), WM_USER + uMsg, New IntPtr(wParam), New IntPtr(lParam)), Integer)
     'End Function
     Public Function SendMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-        Return If(FeelConfig.WmEnable, CType(SendMessage(LJHandle, WM_USER + uMsg, New IntPtr(wParam), New IntPtr(lParam)), Integer), -1)
+        Return If(FeelConfig.WmEnable, CType(SendMessage(LJHandle, ActionInterface.WM_USER + uMsg, New IntPtr(wParam), New IntPtr(lParam)), Integer), -1)
     End Function
 
     Public Function PostMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-        Return If(FeelConfig.WmEnable, CType(PostMessage(LJHandle, WM_USER + uMsg, wParam, lParam), Integer), -1)
+        Return If(FeelConfig.WmEnable, CType(PostMessage(LJHandle, ActionInterface.WM_USER + uMsg, wParam, lParam), Integer), -1)
     End Function
 
-    Public Function SendCopyData(ByVal lParam As CopyData) As Integer
+    Public Function SendCopyData(ByVal lParam As ActionInterface.CopyData) As Integer
         'wParam is supposed to be a pointer to the handle of this process, or an HWND
-        Return If(FeelConfig.WmEnable, CType(SendMessage(LJHandle, WM_COPYDATA, New IntPtr(0), lParam), Integer), -1)
+        Return If(FeelConfig.WmEnable, CType(SendMessage(LJHandle, ActionInterface.WM_COPYDATA, New IntPtr(0), lParam), Integer), -1)
     End Function
 #End Region
 
@@ -943,32 +970,32 @@ LoadConfig:
     Public Function GetReadyState(ByVal handle As IntPtr) As IntPtr
         ''Find out if LightJockey is ready
         ''Returns 1 if LJ is ready to receive messages, else returns 0
-        Return SendMessage(handle, WM_USER + 1502, New IntPtr(0), New IntPtr(0))
+        Return SendMessage(handle, ActionInterface.WM_USER + 1502, New IntPtr(0), New IntPtr(0))
     End Function
 
     Public Function GetVersion(ByVal handle As IntPtr) As IntPtr
         ''Returns an integer value. To get actual version number in "standard, human readable" form
         '' convert to hex, split by byte, convert to integer
         '' example: "39780608" -> "25F0100" -> "02", "5F", "01", "00" -> 2.95.1.0
-        Return SendMessage(handle, WM_USER + 1502, New IntPtr(1), New IntPtr(0))
+        Return SendMessage(handle, ActionInterface.WM_USER + 1502, New IntPtr(1), New IntPtr(0))
     End Function
 #End Region
 
 #Region "Tertiary Functions"
     Public Function GetSequence() As Integer
-        Return CType(SendMessage(LJHandle, WM_USER + 1600, New IntPtr(256), New IntPtr(0)), Integer)
+        Return CType(SendMessage(LJHandle, ActionInterface.WM_USER + 1600, New IntPtr(256), New IntPtr(0)), Integer)
     End Function
 
     Public Function GetCue() As Integer
-        Return CType(SendMessage(LJHandle, WM_USER + 1600, New IntPtr(257), New IntPtr(0)), Integer)
+        Return CType(SendMessage(LJHandle, ActionInterface.WM_USER + 1600, New IntPtr(257), New IntPtr(0)), Integer)
     End Function
 
     Public Function GetCueList() As Integer
-        Return CType(SendMessage(LJHandle, WM_USER + 1600, New IntPtr(258), New IntPtr(0)), Integer)
+        Return CType(SendMessage(LJHandle, ActionInterface.WM_USER + 1600, New IntPtr(258), New IntPtr(0)), Integer)
     End Function
 
     Public Function GetBackgroundCue() As Integer
-        Return CType(SendMessage(LJHandle, WM_USER + 1600, New IntPtr(262), New IntPtr(0)), Integer)
+        Return CType(SendMessage(LJHandle, ActionInterface.WM_USER + 1600, New IntPtr(262), New IntPtr(0)), Integer)
     End Function
 #End Region
 #End Region
