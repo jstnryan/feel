@@ -13,7 +13,8 @@ Partial Class frmActions
             MyBase.Dispose(disposing)
 
             ''Singleon Pattern: http://www.codeproject.com/KB/vb/Simple_Singleton_Forms.aspx
-            main.actionForm = Nothing
+            'main.actionForm = Nothing
+            main.DisposeActionWindow()
         End Try
     End Sub
 
@@ -50,7 +51,6 @@ Partial Class frmActions
         Me.grpAction = New System.Windows.Forms.GroupBox
         Me.txtActionDescription = New System.Windows.Forms.TextBox
         Me.pgAction = New System.Windows.Forms.PropertyGrid
-        Me.cboActionFunction = New Feel.GroupedComboBox
         Me.lblActionFunction = New System.Windows.Forms.Label
         Me.txtActionName = New System.Windows.Forms.TextBox
         Me.lblActionName = New System.Windows.Forms.Label
@@ -64,6 +64,7 @@ Partial Class frmActions
         Me.grpActions = New System.Windows.Forms.GroupBox
         Me.lvActions = New System.Windows.Forms.ListView
         Me.colAction = New System.Windows.Forms.ColumnHeader
+        Me.cboActionFunction = New Feel.GroupedComboBox
         Me.grpInput = New Feel.CheckedGroupBox
         Me.chkPaged = New System.Windows.Forms.CheckBox
         Me.nudDevicePage = New System.Windows.Forms.NumericUpDown
@@ -206,19 +207,6 @@ Partial Class frmActions
         Me.pgAction.Size = New System.Drawing.Size(247, 228)
         Me.pgAction.TabIndex = 15
         Me.pgAction.ToolbarVisible = False
-        '
-        'cboActionFunction
-        '
-        Me.cboActionFunction.DropDownHeight = 212
-        Me.cboActionFunction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cboActionFunction.FormattingEnabled = True
-        Me.cboActionFunction.GroupMember = "Group"
-        Me.cboActionFunction.IntegralHeight = False
-        Me.cboActionFunction.Items.AddRange(New Object() {"(I) Go to Page", "(I) Skip Pages", "(I) Shift", "(I) Redraw Controls", "(M) Send MIDI", "(M) Send Sysex", "(W) Execute Command Line", "(W) Run Program", "(W) Send Keys to Program", "", "(L)ightJockey Functions", "(F)Fingers Emulation", "(D)MX-In", "DMX-(O)verride"})
-        Me.cboActionFunction.Location = New System.Drawing.Point(69, 44)
-        Me.cboActionFunction.Name = "cboActionFunction"
-        Me.cboActionFunction.Size = New System.Drawing.Size(193, 21)
-        Me.cboActionFunction.TabIndex = 14
         '
         'lblActionFunction
         '
@@ -387,6 +375,20 @@ Partial Class frmActions
         Me.colAction.Text = "Action"
         Me.colAction.Width = 174
         '
+        'cboActionFunction
+        '
+        Me.cboActionFunction.DropDownHeight = 212
+        Me.cboActionFunction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cboActionFunction.FormattingEnabled = True
+        Me.cboActionFunction.GroupMember = "Group"
+        Me.cboActionFunction.IntegralHeight = False
+        Me.cboActionFunction.Items.AddRange(New Object() {"(I) Go to Page", "(I) Skip Pages", "(I) Shift", "(I) Redraw Controls", "(M) Send MIDI", "(M) Send Sysex", "(W) Execute Command Line", "(W) Run Program", "(W) Send Keys to Program", "", "(L)ightJockey Functions", "(F)Fingers Emulation", "(D)MX-In", "DMX-(O)verride"})
+        Me.cboActionFunction.Location = New System.Drawing.Point(69, 44)
+        Me.cboActionFunction.MaxDropDownItems = 12
+        Me.cboActionFunction.Name = "cboActionFunction"
+        Me.cboActionFunction.Size = New System.Drawing.Size(193, 21)
+        Me.cboActionFunction.TabIndex = 14
+        '
         'grpInput
         '
         Me.grpInput.Checked = False
@@ -406,8 +408,6 @@ Partial Class frmActions
         Me.grpInput.TabIndex = 2
         Me.grpInput.TabStop = False
         Me.grpInput.Text = "Input"
-        ''ToolTip for custom CheckedGroupBox
-        Me.ttActions.SetToolTip(Me.grpInput.m_checkbox, "Lock last input.")
         '
         'chkPaged
         '

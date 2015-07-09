@@ -1,6 +1,10 @@
 ' A ComboBox Control With Grouping
 ' Bradley Smith - 2010/06/23
 
+' From: http://www.brad-smith.info/blog/projects/dropdown-controls
+' Blog: http://www.brad-smith.info/blog/archives/104
+' Blog: http://www.brad-smith.info/blog/archives/477
+
 Imports System.Collections
 Imports System.Drawing
 Imports System.Windows.Forms

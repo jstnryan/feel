@@ -3,7 +3,7 @@
     Private Sub PopulateConnections()
         lvConnections.Clear()
 
-        For Each thing As Collections.Generic.KeyValuePair(Of Integer, clsConnection) In Configuration.Connections
+        For Each thing As Collections.Generic.KeyValuePair(Of Integer, clsConnection) In FeelConfig.Connections
             Dim thingy As clsConnection = thing.Value
             Dim item As Windows.Forms.ListViewItem = New Windows.Forms.ListViewItem
             item.Text = thingy.Name
@@ -52,14 +52,14 @@
 
         'Read Configuration and properly populate/set controls
         PopulateConnections()
-        chkWindowsMessages.Checked = Configuration.WmEnable
-        chkIgnoreWhileConnecting.Checked = Configuration.IgnoreEvents
-        chkDmxin.Checked = Configuration.DmxinEnable
-        chkDmxover.Checked = Configuration.DmxoverEnable
+        chkWindowsMessages.Checked = FeelConfig.WmEnable
+        chkIgnoreWhileConnecting.Checked = FeelConfig.IgnoreEvents
+        chkDmxin.Checked = FeelConfig.DmxinEnable
+        chkDmxover.Checked = FeelConfig.DmxoverEnable
     End Sub
 
     Private Sub lvConnections_ItemChecked(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckedEventArgs) Handles lvConnections.ItemChecked
-        Configuration.Connections(CInt(e.Item.Tag)).Enabled = e.Item.Checked
+        FeelConfig.Connections(CInt(e.Item.Tag)).Enabled = e.Item.Checked
     End Sub
 
     Private Sub lvConnections_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lvConnections.SelectedIndexChanged
@@ -83,7 +83,7 @@
         Else
             btnRemoveConnection.Enabled = True
             'populate fields and enable
-            With Configuration.Connections(CInt(lvConnections.SelectedItems(0).Tag))
+            With FeelConfig.Connections(CInt(lvConnections.SelectedItems(0).Tag))
                 txtConnectionName.Text = .Name
                 txtConnectionName.Enabled = True
 
@@ -136,25 +136,25 @@
     End Sub
 
     Private Sub chkWindowsMessages_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkWindowsMessages.CheckedChanged
-        Configuration.WmEnable = chkWindowsMessages.Checked
+        FeelConfig.WmEnable = chkWindowsMessages.Checked
     End Sub
 
     Private Sub chkDmxin_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkDmxin.CheckedChanged
-        Configuration.DmxinEnable = chkDmxin.Checked
+        FeelConfig.DmxinEnable = chkDmxin.Checked
     End Sub
 
     Private Sub chkDmxover_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkDmxover.CheckedChanged
-        Configuration.DmxoverEnable = chkDmxover.Checked
+        FeelConfig.DmxoverEnable = chkDmxover.Checked
     End Sub
 
     Private Sub chkIgnoreWhileConnecting_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkIgnoreWhileConnecting.CheckedChanged
-        Configuration.IgnoreEvents = chkIgnoreWhileConnecting.Checked
+        FeelConfig.IgnoreEvents = chkIgnoreWhileConnecting.Checked
     End Sub
 
     Private Sub btnAddConnection_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnAddConnection.Click
         Dim x As Integer = 0
         Do
-            If Configuration.Connections.ContainsKey(x) Then
+            If FeelConfig.Connections.ContainsKey(x) Then
                 x += 1
             Else
                 Exit Do
@@ -170,32 +170,32 @@
         item.Text = conn.Name
         item.Tag = x
 
-        Configuration.Connections.Add(x, conn) 'This has to happen first, otherwise below will throw error
+        FeelConfig.Connections.Add(x, conn) 'This has to happen first, otherwise below will throw error
         lvConnections.Items.Add(item)
     End Sub
 
     Private Sub btnRemoveConnection_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnRemoveConnection.Click
-        Configuration.Connections.Remove(CInt(lvConnections.SelectedItems(0).Tag))
+        FeelConfig.Connections.Remove(CInt(lvConnections.SelectedItems(0).Tag))
         lvConnections.Items.RemoveAt(lvConnections.SelectedItems(0).Index)
     End Sub
 
     Private Sub txtConnectionName_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtConnectionName.TextChanged
         If lvConnections.SelectedItems.Count > 0 Then
             lvConnections.SelectedItems(0).Text = txtConnectionName.Text
-            Configuration.Connections.Item(CInt(lvConnections.SelectedItems(0).Tag)).Name = txtConnectionName.Text
+            FeelConfig.Connections.Item(CInt(lvConnections.SelectedItems(0).Tag)).Name = txtConnectionName.Text
         End If
     End Sub
 
     Private Sub chkConnectionInputEnabled_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkConnectionInputEnabled.CheckedChanged
         If lvConnections.SelectedItems.Count > 0 Then
-            Configuration.Connections(CInt(lvConnections.SelectedItems(0).Tag)).InputEnable = chkConnectionInputEnabled.Checked
+            FeelConfig.Connections(CInt(lvConnections.SelectedItems(0).Tag)).InputEnable = chkConnectionInputEnabled.Checked
             cboConnectionInput.Enabled = chkConnectionInputEnabled.Checked
         End If
     End Sub
 
     Private Sub cboConnectionInput_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cboConnectionInput.SelectedIndexChanged
         If lvConnections.SelectedItems.Count > 0 Then
-            With Configuration.Connections(CInt(lvConnections.SelectedItems(0).Tag))
+            With FeelConfig.Connections(CInt(lvConnections.SelectedItems(0).Tag))
                 .Input = cboConnectionInput.SelectedIndex
                 .InputName = cboConnectionInput.Items(cboConnectionInput.SelectedIndex).ToString
             End With
@@ -204,14 +204,14 @@
 
     Private Sub chkConnectionOutputEnabled_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkConnectionOutputEnabled.CheckedChanged
         If lvConnections.SelectedItems.Count > 0 Then
-            Configuration.Connections(CInt(lvConnections.SelectedItems(0).Tag)).OutputEnable = chkConnectionOutputEnabled.Checked
+            FeelConfig.Connections(CInt(lvConnections.SelectedItems(0).Tag)).OutputEnable = chkConnectionOutputEnabled.Checked
             cboConnectionOutput.Enabled = chkConnectionOutputEnabled.Checked
         End If
     End Sub
 
     Private Sub cboConnectionOutput_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cboConnectionOutput.SelectedIndexChanged
         If lvConnections.SelectedItems.Count > 0 Then
-            With Configuration.Connections(CInt(lvConnections.SelectedItems(0).Tag))
+            With FeelConfig.Connections(CInt(lvConnections.SelectedItems(0).Tag))
                 .Output = cboConnectionOutput.SelectedIndex
                 .OutputName = cboConnectionOutput.Items(cboConnectionOutput.SelectedIndex).ToString
             End With
@@ -220,13 +220,13 @@
 
     Private Sub txtConnectionInitialization_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtConnectionInitialization.TextChanged
         If lvConnections.SelectedItems.Count > 0 Then
-            Configuration.Connections(CInt(lvConnections.SelectedItems(0).Tag)).Init = txtConnectionInitialization.Text
+            FeelConfig.Connections(CInt(lvConnections.SelectedItems(0).Tag)).Init = txtConnectionInitialization.Text
         End If
     End Sub
 
     Private Sub chkConnectionNoteOff_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkConnectionNoteOff.CheckedChanged
         If lvConnections.SelectedItems.Count > 0 Then
-            Configuration.Connections(CInt(lvConnections.SelectedItems(0).Tag)).NoteOff = chkConnectionNoteOff.Checked
+            FeelConfig.Connections(CInt(lvConnections.SelectedItems(0).Tag)).NoteOff = chkConnectionNoteOff.Checked
         End If
     End Sub
 End Class

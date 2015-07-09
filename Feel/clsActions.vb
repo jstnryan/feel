@@ -124,15 +124,15 @@ Public Class clsActionIntChangeControlState
 
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
         Dim _device As Integer = main.FindDeviceByInput(Device)
-        If Not (Configuration.Connections.ContainsKey(_device)) Then
+        If Not (FeelConfig.Connections.ContainsKey(_device)) Then
             Return False
         Else
             Dim ContStr As String = If(Type = 144 Or Type = 128, "9", "B") & Channel.ToString & NoteCon.ToString("X2")
-            If Not (Configuration.Connections(_device).Control.ContainsKey(ContStr)) Then
+            If Not (FeelConfig.Connections(_device).Control.ContainsKey(ContStr)) Then
                 Return False
             Else
                 'TODO: Usint ".PageCurrent" is a hacky shortcut, and could lead to trouble down the line
-                Configuration.Connections(_device).Control(ContStr).Page(Configuration.Connections(_device).PageCurrent).CurrentState = _state
+                FeelConfig.Connections(_device).Control(ContStr).Page(FeelConfig.Connections(_device).PageCurrent).CurrentState = _state
                 main.SendMidi(_device, _state)
                 ''OR:
                 'main.SendMidi(Device, Configuration.Connections(Device).Control(ContStr).Page(Configuration.Connections(Device).PageCurrent).CurrentState)
@@ -182,16 +182,16 @@ Public Class clsActionIntToggleControlState
 
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
         Dim _device As Integer = main.FindDeviceByInput(Device)
-        If Not (Configuration.Connections.ContainsKey(_device)) Then
+        If Not (FeelConfig.Connections.ContainsKey(_device)) Then
             Return False
         Else
             Dim ContStr As String = If(Type = 144 Or Type = 128, "9", "B") & Channel.ToString & NoteCon.ToString("X2")
-            If Not (Configuration.Connections(_device).Control.ContainsKey(ContStr)) Then
+            If Not (FeelConfig.Connections(_device).Control.ContainsKey(ContStr)) Then
                 Return False
             Else
                 'TODO: Usint ".PageCurrent" is a hacky shortcut, and could lead to trouble down the line
-                Dim newState As String = _states(Array.IndexOf(_states, Configuration.Connections(_device).Control(ContStr).Page(Configuration.Connections(_device).PageCurrent).CurrentState) + 1)
-                Configuration.Connections(_device).Control(ContStr).Page(Configuration.Connections(_device).PageCurrent).CurrentState = newState
+                Dim newState As String = _states(Array.IndexOf(_states, FeelConfig.Connections(_device).Control(ContStr).Page(FeelConfig.Connections(_device).PageCurrent).CurrentState) + 1)
+                FeelConfig.Connections(_device).Control(ContStr).Page(FeelConfig.Connections(_device).PageCurrent).CurrentState = newState
                 main.SendMidi(_device, newState)
                 ''OR:
                 'UpdateControlState(Device, Configuration.Connections(Device).Control(ContStr).Page(Configuration.Connections(Device).PageCurrent).CurrentState)
@@ -317,12 +317,12 @@ Public Class clsActionIntGroupResetControl
     End Property
 
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
-        For Each dev As Integer In Configuration.Connections.Keys
-            For Each cont As String In Configuration.Connections(dev).Control.Keys
-                For Each pag As Byte In Configuration.Connections(dev).Control(cont).Page.Keys
-                    If (Configuration.Connections(dev).Control(cont).Page(pag).ControlGroup = _group) Then
-                        Configuration.Connections(dev).Control(cont).Page(pag).IsActive = False
-                        Configuration.Connections(dev).Control(cont).Page(pag).CurrentState = Configuration.Connections(dev).Control(cont).Page(pag).InitialState
+        For Each dev As Integer In FeelConfig.Connections.Keys
+            For Each cont As String In FeelConfig.Connections(dev).Control.Keys
+                For Each pag As Byte In FeelConfig.Connections(dev).Control(cont).Page.Keys
+                    If (FeelConfig.Connections(dev).Control(cont).Page(pag).ControlGroup = _group) Then
+                        FeelConfig.Connections(dev).Control(cont).Page(pag).IsActive = False
+                        FeelConfig.Connections(dev).Control(cont).Page(pag).CurrentState = FeelConfig.Connections(dev).Control(cont).Page(pag).InitialState
                     End If
                 Next
             Next
@@ -1395,8 +1395,8 @@ Public Class DeviceList
         Dim devArr As Collections.Generic.List(Of String) = New Collections.Generic.List(Of String)
         devArr.Add("ALL DEVICES")
 
-        For Each device As Integer In Configuration.Connections.Keys
-            devArr.Add(Configuration.Connections(device).Name)
+        For Each device As Integer In FeelConfig.Connections.Keys
+            devArr.Add(FeelConfig.Connections(device).Name)
         Next
 
         Return New StandardValuesCollection(devArr.ToArray)
@@ -1414,8 +1414,8 @@ Public Class OutDeviceList
     Public Overloads Overrides Function GetStandardValues(ByVal context As ComponentModel.ITypeDescriptorContext) As StandardValuesCollection
         Dim devArr As Collections.Generic.List(Of String) = New Collections.Generic.List(Of String)
         devArr.Add("ALL DEVICES")
-        For Each device As Integer In Configuration.Connections.Keys
-            If Configuration.Connections(device).OutputEnable Then devArr.Add(Configuration.Connections(device).Name)
+        For Each device As Integer In FeelConfig.Connections.Keys
+            If FeelConfig.Connections(device).OutputEnable Then devArr.Add(FeelConfig.Connections(device).Name)
         Next
         Return New StandardValuesCollection(devArr.ToArray)
     End Function

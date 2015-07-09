@@ -14,6 +14,7 @@ Partial Class frmAbout
 
             ''Singleon Pattern: http://www.codeproject.com/KB/vb/Simple_Singleton_Forms.aspx
             main.aboutForm = Nothing
+            'main.DisposeAboutWindow()
         End Try
     End Sub
 

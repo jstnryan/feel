@@ -141,20 +141,25 @@ End Class
 Public Class clsAction
     Public Name As String
     Public Enabled As Boolean
-    'TODO: This is going to have to be temporary, otherwise the list of different
-    ' types of actions is going to become HUGE
-    Public Type As Integer
-    Public Action As Object
+    Public Type As Guid
+    Public Data As Object
+
+    <NonSerialized()> _
+    Friend _available As Boolean 'A switch indicating whether the Object in .Data has been deserialized
 
     Public Sub New()
         Name = "New Action"
         Enabled = False
-        Type = 0
-        Action = Nothing
+        Type = Guid.Empty
+        Data = Nothing
+        _available = False
     End Sub
 End Class
 
-''A shell class for de-/serializing copy/pasted actions
+''' <summary>
+''' A shell class for de-/serializing copy/pasted actions
+''' </summary>
+''' <remarks></remarks>
 <Serializable()> _
 Public Class clsCopiedActions
     Public Actions As Collections.Generic.List(Of clsAction)
@@ -190,6 +195,23 @@ Public Class clsConfig_01
         DmxinEnable = False
         DmxoverEnable = False
         Connections = New Collections.Generic.Dictionary(Of Integer, clsConnection)
+    End Sub
+End Class
+
+''ADDED:
+'' _available
+<Serializable()> _
+Public Class clsAction_01
+    Public Name As String
+    Public Enabled As Boolean
+    Public Type As Guid
+    Public Data As Object
+
+    Public Sub New()
+        Name = "New Action"
+        Enabled = False
+        Type = Guid.Empty
+        Data = Nothing
     End Sub
 End Class
 #End Region

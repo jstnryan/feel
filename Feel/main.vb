@@ -9,10 +9,13 @@ Module main
     Dim WithEvents menuExit As New MenuItem
     Dim WithEvents menuConfigConnections As New MenuItem
     Dim WithEvents menuConfigActions As New MenuItem
+    Dim menuAdvancedTasks As New MenuItem
+    Dim WithEvents menuRefreshWindowHandle As New MenuItem
+    Dim WithEvents menuSaveConfiguration As New MenuItem
     Dim WithEvents menuAbout As New MenuItem
 
     ''Container for program configuration
-    Public Configuration As clsConfig
+    Public FeelConfig As clsConfig
 
     ''Collections of MIDI input and output devices
     Public midiIn As System.Collections.Generic.Dictionary(Of String, InputDevice) = New Collections.Generic.Dictionary(Of String, InputDevice)
@@ -46,7 +49,7 @@ Module main
     Private _connecting As Boolean = False
     Public Property Connecting() As Boolean
         Get
-            Return (_connecting And Configuration.IgnoreEvents)
+            Return (_connecting And FeelConfig.IgnoreEvents)
         End Get
         Set(ByVal value As Boolean)
             _connecting = value
@@ -54,8 +57,12 @@ Module main
     End Property
 
     Public configForm As frmConfig
-    Public actionForm As frmActions
+    Private actionForm As frmActions = New frmActions
     Public aboutForm As frmAbout
+
+    Friend actionModules As Collections.Generic.Dictionary(Of Guid, ActionInterface.IAction) = New Collections.Generic.Dictionary(Of Guid, ActionInterface.IAction)
+    'Private actionModules As Collections.Generic.Dictionary(Of String, ActionInterface.IAction)
+    Public serviceHost As ActionInterface.IServices = New Interfaces.ServiceHost
 
     Public Sub Main()
         For Each arg As String In My.Application.CommandLineArgs
@@ -69,20 +76,33 @@ Module main
         menuExit.Text = "E&xit"
         menuConfigConnections.Text = "Configure &Connections"
         menuConfigActions.Text = "Configure &Actions"
+        ''NEW:
+        menuAdvancedTasks.Text = "Advanced &Tasks"
+        menuRefreshWindowHandle.Text = "&Refresh LJ Handle"
+        menuSaveConfiguration.Text = "&Save Configuration"
+        '':NEW
         menuAbout.Text = "About"
         trayMenu.MenuItems.Add(menuExit)
         trayMenu.MenuItems.Add("-")
-        trayMenu.MenuItems.Add(menuConfigActions)
-        trayMenu.MenuItems.Add(menuConfigConnections)
-        trayMenu.MenuItems.Add("-")
         trayMenu.MenuItems.Add(menuAbout)
+        trayMenu.MenuItems.Add("-")
+        menuAdvancedTasks.MenuItems.Add(menuSaveConfiguration)
+        menuAdvancedTasks.MenuItems.Add(menuRefreshWindowHandle)
+        trayMenu.MenuItems.Add(menuAdvancedTasks)
+        'trayMenu.MenuItems.Add("-")
+        trayMenu.MenuItems.Add(menuConfigConnections)
+        trayMenu.MenuItems.Add(menuConfigActions)
         trayIcon.ContextMenu = trayMenu
         'trayIcon.Icon = New System.Drawing.Icon(System.Reflection.Assembly.GetExecutingAssembly.GetManifestResourceStream("Feel.feel.ico"))
         trayIcon.Icon = My.Resources.Feel.feel
         trayIcon.Visible = True
 
+        LoadModules() ''Populate our list of currently available action plug-ins
+
         LoadConfiguration() ''Read serialzed config data from file
         If Not configM Then ConnectDevices() ''Make MIDI connections
+
+
 
         Application.Run()
     End Sub
@@ -100,7 +120,7 @@ Module main
         Application.Exit()
     End Sub
 
-    Private Sub OpenConfigWindow() Handles menuConfigConnections.Click
+    Friend Sub OpenConfigWindow() Handles menuConfigConnections.Click
         ''The Connections Configuration form makes its own connections to
         '' test devices, so we must disconnect existing connections first.
         DisconnectDevices()
@@ -115,11 +135,31 @@ Module main
         'configForm.Focus()
     End Sub
 
+    Delegate Sub dlgOpenActionWindow()
     Friend Sub OpenActionWindow() Handles menuConfigActions.Click
+        'If actionForm Is Nothing Then
+        '    actionForm = New frmActions
+        '    actionForm.Show()
+        'Else
+        '    If actionForm.InvokeRequired Then
+        '        actionForm.Invoke(New dlgOpenActionWindow(AddressOf OpenActionWindow))
+        '    Else
+        '        actionForm.Show()
+        '    End If
+        'End If
         If actionForm Is Nothing Then
             actionForm = New frmActions
         End If
         actionForm.Show()
+    End Sub
+    'Delegate Sub dlgDisposeActionWindow()
+    Friend Sub DisposeActionWindow()
+        'If actionForm.InvokeRequired Then
+        '    actionForm.Invoke(New dlgDisposeActionWindow(AddressOf DisposeActionWindow))
+        'Else
+        '    actionForm = Nothing
+        'End If
+        actionForm = Nothing
     End Sub
 
     Private Sub OpenAbout() Handles menuAbout.Click
@@ -128,6 +168,18 @@ Module main
         End If
         aboutForm.Show()
     End Sub
+
+    ''' <summary>
+    ''' Sets the _ljHandle variable to a blank pointer.
+    ''' </summary>
+    ''' <remarks>'Resetting' _ljHandle triggers a new search for LightJockey's window handle
+    '''  upon the next use. Useful, for instance, if LightJockey was restarted.</remarks>
+    Friend Sub RefreshHandle() Handles menuRefreshWindowHandle.Click
+        _ljHandle = IntPtr.Zero
+    End Sub
+
+    ''See: #Region "File I/O", SaveConfiguration()
+    'Private Sub SaveConfiguration() Handles menuSaveConfiguration.Click
 #End Region
 
 #Region "File I/O"
@@ -137,7 +189,8 @@ LoadConfig:
         Dim bf As New Runtime.Serialization.Formatters.Binary.BinaryFormatter()
         Try
             fs = New IO.FileStream(Application.StartupPath & "\user\feel.config", IO.FileMode.Open, IO.FileAccess.Read)
-            Configuration = CType(bf.Deserialize(fs), clsConfig)
+            bf.Binder = New DeserializationBinder() ''See DeserializationBinder
+            FeelConfig = ConfigDeserialize(CType(bf.Deserialize(fs), clsConfig)) 'FeelConfig = CType(bf.Deserialize(fs), clsConfig)
             fs.Close()
         Catch fileEx As IO.FileNotFoundException
             MessageBox.Show("No configuration file found. Operating with blank configuration.", "Feel: Configuration Not Found", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -164,7 +217,7 @@ LoadConfig:
 
     ''TODO: Does this really need to be broken out into its own subroutine?
     Private Sub CreateNewConfiguration()
-        Configuration = New clsConfig
+        FeelConfig = New clsConfig
     End Sub
 
     Private Function CreateUserDirectory() As Boolean
@@ -176,12 +229,12 @@ LoadConfig:
         End Try
     End Function
 
-    Public Sub SaveConfiguration()
+    Public Sub SaveConfiguration() Handles menuSaveConfiguration.Click
         Dim fs As IO.FileStream
         Dim bf As New Runtime.Serialization.Formatters.Binary.BinaryFormatter()
         Try
             fs = New IO.FileStream(Windows.Forms.Application.StartupPath & "\user\feel.config", IO.FileMode.Create)
-            bf.Serialize(fs, Configuration)
+            bf.Serialize(fs, FeelConfig) 'bf.Serialize(fs, ConfigSerialize(FeelConfig))
             fs.Close()
         Catch ex As Exception
             MessageBox.Show("An unexpected error has occured in the 'SaveConnectionConfig' procedure." & vbCrLf & vbCrLf & ex.Message, "Feel: Unexpected Error")
@@ -190,6 +243,127 @@ LoadConfig:
             bf = Nothing
         End Try
     End Sub
+
+    ''' <summary>
+    ''' Serializes Action plug-in .Data Objects independently to prepare Configuration for storage.
+    ''' </summary>
+    ''' <remarks></remarks>
+    Private Function ConfigSerialize(ByRef Configuration As clsConfig) As clsConfig
+        Dim _newConfig As clsConfig = ObjectCopier.Clone(Configuration)
+        Dim st As New IO.MemoryStream
+        Dim bf As New Runtime.Serialization.Formatters.Binary.BinaryFormatter
+        For Each conx As clsConnection In _newConfig.Connections.Values
+            For Each cont As clsControl In conx.Control.Values
+                For Each page As clsControlPage In cont.Page.Values
+                    For Each act As clsAction In page.Actions
+                        If (act._available) Then
+                            'serialzize
+                            Try
+                                bf.Serialize(st, act.Data)
+                                act.Data = st 'act.Data = st.ToArray
+                                act._available = False
+                            Catch ex As Exception
+                                MessageBox.Show("There was an unexpected error trying to serialize (save) an Action. Details:" & vbCrLf & vbCrLf & ex.Message, "Feel: Serialziation Error")
+                            Finally
+                                st = New IO.MemoryStream
+                            End Try
+                        End If
+                    Next
+                    For Each act As clsAction In page.ActionsOff
+                        If (act._available) Then
+                            Try
+                                bf.Serialize(st, act.Data)
+                                act.Data = st 'act.Data = st.ToArray
+                                act._available = False
+                            Catch ex As Exception
+                                MessageBox.Show("There was an unexpected error trying to serialize (save) an Action. Details:" & vbCrLf & vbCrLf & ex.Message, "Feel: Serialziation Error")
+                            Finally
+                                st = New IO.MemoryStream
+                            End Try
+                        End If
+                    Next
+                Next
+            Next
+        Next
+        st.Close()
+        st = Nothing
+        bf = Nothing
+        Return _newConfig
+    End Function
+
+    ''' <summary>
+    ''' Deserializes Action plug-in .Data Objects and returns a usable Configuration.
+    ''' </summary>
+    ''' <remarks>Must be run after plug-ins are loaded. ConfigDeserialzie searches availability of plug-ins before deserialziing the .Data object for each plug-in; unavailable plug-ins' .Data are ignored.</remarks>
+    Private Function ConfigDeserialize(ByRef Configuration As clsConfig) As clsConfig
+        For Each conx As clsConnection In Configuration.Connections.Values
+            For Each cont As clsControl In conx.Control.Values
+                For Each page As clsControlPage In cont.Page.Values
+                    For Each act As clsAction In page.Actions
+                        If (actionModules.ContainsKey(act.Type)) Then
+                            act._available = True
+                        Else
+                            act._available = False
+                        End If
+                    Next
+                    For Each act As clsAction In page.ActionsOff
+                        If (actionModules.ContainsKey(act.Type)) Then
+                            act._available = True
+                        Else
+                            act._available = False
+                        End If
+                    Next
+                Next
+            Next
+        Next
+        Return Configuration
+    End Function
+    'Private Function ConfigDeserialize_OLD(ByRef Configuration As clsConfig) As clsConfig
+    '    Dim st As New IO.MemoryStream
+    '    Dim bf As New Runtime.Serialization.Formatters.Binary.BinaryFormatter
+    '    For Each conx As clsConnection In Configuration.Connections.Values
+    '        For Each cont As clsControl In conx.Control.Values
+    '            For Each page As clsControlPage In cont.Page.Values
+    '                For Each act As clsAction In page.Actions
+    '                    If (actionModules.ContainsKey(act.Type)) Then
+    '                        'deserialize
+    '                        st = CType(act.Data, IO.MemoryStream) 'st = New IO.MemoryStream(CType(act.Data, Byte())) 'TODO: not sure about this...
+    '                        Try
+    '                            bf.Binder = New DeserializationBinder() ''See DeserializationBinder
+    '                            act.Data = bf.Deserialize(st)
+    '                        Catch ex As Exception
+    '                            MessageBox.Show("There was an unexpected error trying to deserialize (load) an Action. Details:" & vbCrLf & vbCrLf & ex.Message, "Feel: Serialziation Error")
+    '                        End Try
+    '                        act._available = True
+    '                    Else
+    '                        'don't deserialize
+    '                        act._available = False
+    '                    End If
+    '                Next
+    '                For Each act As clsAction In page.ActionsOff
+    '                    If (actionModules.ContainsKey(act.Type)) Then
+    '                        'deserialize
+    '                        st = CType(act.Data, IO.MemoryStream) 'st = New IO.MemoryStream(CType(act.Data, Byte())) 'TODO: not sure about this...
+    '                        Try
+    '                            bf.Binder = New DeserializationBinder() ''See DeserializationBinder
+    '                            act.Data = bf.Deserialize(st)
+    '                        Catch ex As Exception
+    '                            MessageBox.Show("There was an unexpected error trying to deserialize (load) an Action. Details:" & vbCrLf & vbCrLf & ex.Message, "Feel: Serialziation Error")
+    '                        End Try
+    '                        act._available = True
+    '                    Else
+    '                        'don't deserialize
+    '                        act._available = False
+    '                    End If
+    '                Next
+    '            Next
+    '        Next
+    '    Next
+    '    st.Close()
+    '    st = Nothing
+    '    bf = Nothing
+    '    Return Configuration
+    'End Function
 #End Region
 
 #Region "Connections"
@@ -200,7 +374,7 @@ LoadConfig:
     Private Sub ConnectDevices()
         Connecting = True
 
-        For Each device As clsConnection In Configuration.Connections.Values
+        For Each device As clsConnection In FeelConfig.Connections.Values
             If (device.Enabled) Then
                 ''Check the stored connection index to make sure it is not greater than the number of currently connected devices
                 If (device.Input + 1 > InputDevice.InstalledDevices.Count) Or (device.Output + 1 > OutputDevice.InstalledDevices.Count) Then
@@ -335,7 +509,7 @@ LoadConfig:
         If configMode And Not (actionForm Is Nothing) Then
             ''override programmed action, redirect action to Configure Actions window
             If (actionForm.Visible) Then
-                Dim newCont As curControl = New curControl
+                Dim newCont As frmActions.curControl = New frmActions.curControl
                 newCont.Device = msg.Device.Name.ToString
                 newCont.Channel = CByte(msg.Channel)
                 newCont.Type = "Note"
@@ -348,25 +522,32 @@ LoadConfig:
             'Diagnostics.Debug.WriteLine("On : " & msg.Device.Name & " (" & Configuration.Connections(msg.Device.Name).Name & "), " & msg.Channel.ToString & ", " & msg.Pitch.ToString & ", " & msg.Velocity.ToString)
             Dim device As Integer = FindDevice(msg.Device.Name)
             'TODO: Previous line makes next line unneccessary:
-            If (Configuration.Connections.ContainsKey(device)) Then
+            If (FeelConfig.Connections.ContainsKey(device)) Then
                 Dim ContStr As String = "9" & CByte(msg.Channel).ToString("X") & CByte(msg.Pitch).ToString("X2")
-                If (Configuration.Connections(device).Control.ContainsKey(ContStr)) Then
-                    Dim _page As Byte = If(Configuration.Connections(device).Control(ContStr).Paged, Configuration.Connections(device).PageCurrent, CByte(0))
-                    If (Configuration.Connections(device).Control(ContStr).Page.ContainsKey(_page)) Then
+                If (FeelConfig.Connections(device).Control.ContainsKey(ContStr)) Then
+                    Dim _page As Byte = If(FeelConfig.Connections(device).Control(ContStr).Paged, FeelConfig.Connections(device).PageCurrent, CByte(0))
+                    If (FeelConfig.Connections(device).Control(ContStr).Page.ContainsKey(_page)) Then
                         ''End Checks
-                        With Configuration.Connections(device).Control(ContStr).Page(_page)
-                            If (Configuration.Connections(device).NoteOff) And (msg.Velocity = 0) Then
+                        With FeelConfig.Connections(device).Control(ContStr).Page(_page)
+                            If (FeelConfig.Connections(device).NoteOff) And (msg.Velocity = 0) Then
                                 ''This is actually a "NoteOff", or is to be treated as one according to configuration
                                 If ((.Behavior = 1) And Not (.IsActive)) Or (.Behavior = 0) Then
                                     ''This is a 'momentary' button [AND "IsActive" so is waiting to be turned off]
                                     '' OR
                                     ''This is a 'latch' button
                                     For Each actn As clsAction In .ActionsOff
-                                        If (actn.Enabled) Then
-                                            If Not (actn.Action Is Nothing) Then
-                                                If Not (DirectCast(actn.Action, iAction).Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
-                                                    Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
-                                                End If
+                                        If (actn.Enabled) And (actn._available) Then
+                                            'TODO: actn.Data should never be Nothing, if ._available is set to True
+                                            If Not (actn.Data Is Nothing) Then
+                                                'If Not (DirectCast(actn.Data, iAction).Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
+                                                '    Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                                                'End If
+                                                With actionModules.Item(actn.Type)
+                                                    .Data = actn.Data
+                                                    If Not (.Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
+                                                        Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                                                    End If
+                                                End With
                                             End If
                                         End If
                                     Next
@@ -378,11 +559,17 @@ LoadConfig:
                                     '' OR
                                     ''This is a 'momentary' button
                                     For Each actn As clsAction In .Actions
-                                        If (actn.Enabled) Then
-                                            If Not (actn.Action Is Nothing) Then
-                                                If Not (DirectCast(actn.Action, iAction).Execute(msg.Device.Name, 144, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
-                                                    Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
-                                                End If
+                                        If (actn.Enabled) And (actn._available) Then
+                                            If Not (actn.Data Is Nothing) Then
+                                                'If Not (DirectCast(actn.Data, iAction).Execute(msg.Device.Name, 144, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
+                                                '    Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                                                'End If
+                                                With actionModules.Item(actn.Type)
+                                                    .Data = actn.Data
+                                                    If Not (.Execute(msg.Device.Name, 144, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
+                                                        Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                                                    End If
+                                                End With
                                             End If
                                         End If
                                     Next
@@ -402,23 +589,29 @@ LoadConfig:
             'System.Diagnostics.Debug.WriteLine("Off: " & msg.Device.Name & " (" & Configuration.Connections(msg.Device.Name).Name & "), " & msg.Channel.ToString & ", " & msg.Pitch.ToString & ", " & msg.Velocity.ToString)
             Dim device As Integer = FindDevice(msg.Device.Name)
             'TODO: Previous line makes next line unneccessary:
-            If (Configuration.Connections.ContainsKey(device)) Then
+            If (FeelConfig.Connections.ContainsKey(device)) Then
                 Dim ContStr As String = "9" & CByte(msg.Channel).ToString("X") & CByte(msg.Pitch).ToString("X2")
-                If (Configuration.Connections(device).Control.ContainsKey(ContStr)) Then
-                    Dim _page As Byte = If(Configuration.Connections(device).Control(ContStr).Paged, Configuration.Connections(device).PageCurrent, CByte(0))
-                    If (Configuration.Connections(device).Control(ContStr).Page.ContainsKey(_page)) Then
+                If (FeelConfig.Connections(device).Control.ContainsKey(ContStr)) Then
+                    Dim _page As Byte = If(FeelConfig.Connections(device).Control(ContStr).Paged, FeelConfig.Connections(device).PageCurrent, CByte(0))
+                    If (FeelConfig.Connections(device).Control(ContStr).Page.ContainsKey(_page)) Then
                         ''End Checks
-                        With Configuration.Connections(device).Control(ContStr).Page(_page)
+                        With FeelConfig.Connections(device).Control(ContStr).Page(_page)
                             If ((.Behavior = 1) And (Not .IsActive)) Or (.Behavior = 0) Then
                                 ''This is a 'momentary' button [AND "IsActive" so is waiting to be turned off]
                                 '' OR
                                 ''This is a 'latch' button
                                 For Each actn As clsAction In .ActionsOff
-                                    If (actn.Enabled) Then
-                                        If Not (actn.Action Is Nothing) Then
-                                            If Not (DirectCast(actn.Action, iAction).Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
-                                                Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
-                                            End If
+                                    If (actn.Enabled) And (actn._available) Then
+                                        If Not (actn.Data Is Nothing) Then
+                                            'If Not (DirectCast(actn.Data, iAction).Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
+                                            '    Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                                            'End If
+                                            With actionModules.Item(actn.Type)
+                                                .Data = actn.Data
+                                                If Not (.Execute(msg.Device.Name, 128, CType(msg.Channel, Byte), CType(msg.Pitch, Byte), CType(msg.Velocity, Byte))) Then
+                                                    Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                                                End If
+                                            End With
                                         End If
                                     End If
                                 Next
@@ -435,7 +628,7 @@ LoadConfig:
         If configMode And Not (actionForm Is Nothing) Then
             ''override programmed action, redirect action to Configure Actions window
             If (actionForm.Visible) Then
-                Dim newCont As curControl = New curControl
+                Dim newCont As frmActions.curControl = New frmActions.curControl
                 newCont.Device = msg.Device.Name.ToString
                 newCont.Channel = CByte(msg.Channel)
                 newCont.Type = "Control"
@@ -447,17 +640,23 @@ LoadConfig:
         ElseIf Not configMode And Not Connecting Then
             Dim device As Integer = FindDevice(msg.Device.Name)
             'TODO: Previous line makes next line unneccessary:
-            If (Configuration.Connections.ContainsKey(device)) Then
+            If (FeelConfig.Connections.ContainsKey(device)) Then
                 Dim ContStr As String = "B" & CByte(msg.Channel).ToString("X") & CByte(msg.Control).ToString("X2")
-                If (Configuration.Connections(device).Control.ContainsKey(ContStr)) Then
-                    Dim _page As Byte = If(Configuration.Connections(device).Control(ContStr).Paged, Configuration.Connections(device).PageCurrent, CByte(0))
-                    If (Configuration.Connections(device).Control(ContStr).Page.ContainsKey(_page)) Then
-                        For Each actn As clsAction In Configuration.Connections(device).Control(ContStr).Page(_page).Actions
-                            If (actn.Enabled) Then
-                                If Not (actn.Action Is Nothing) Then
-                                    If Not (DirectCast(actn.Action, iAction).Execute(msg.Device.Name, 176, CType(msg.Channel, Byte), CType(msg.Control, Byte), CType(msg.Value, Byte))) Then
-                                        Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
-                                    End If
+                If (FeelConfig.Connections(device).Control.ContainsKey(ContStr)) Then
+                    Dim _page As Byte = If(FeelConfig.Connections(device).Control(ContStr).Paged, FeelConfig.Connections(device).PageCurrent, CByte(0))
+                    If (FeelConfig.Connections(device).Control(ContStr).Page.ContainsKey(_page)) Then
+                        For Each actn As clsAction In FeelConfig.Connections(device).Control(ContStr).Page(_page).Actions
+                            If (actn.Enabled) And (actn._available) Then
+                                If Not (actn.Data Is Nothing) Then
+                                    'If Not (DirectCast(actn.Data, iAction).Execute(msg.Device.Name, 176, CType(msg.Channel, Byte), CType(msg.Control, Byte), CType(msg.Value, Byte))) Then
+                                    '    Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                                    'End If
+                                    With actionModules.Item(actn.Type)
+                                        .Data = actn.Data
+                                        If Not (.Execute(msg.Device.Name, 176, CType(msg.Channel, Byte), CType(msg.Control, Byte), CType(msg.Value, Byte))) Then
+                                            Diagnostics.Debug.WriteLine("ACTION EXECUTE FAILED!")
+                                        End If
+                                    End With
                                 End If
                             End If
                         Next
@@ -486,31 +685,31 @@ LoadConfig:
         Return -1
     End Function
     Public Function FindDeviceByName(ByVal Name As String) As Integer
-        For Each device As Integer In Configuration.Connections.Keys
-            If (Configuration.Connections(device).Name = Name) Then Return device
+        For Each device As Integer In FeelConfig.Connections.Keys
+            If (FeelConfig.Connections(device).Name = Name) Then Return device
         Next
         Return -1
     End Function
     Public Function FindDeviceByInput(ByVal Input As String) As Integer
-        For Each device As Integer In Configuration.Connections.Keys
-            If (Configuration.Connections(device).InputName = Input) Then Return device
+        For Each device As Integer In FeelConfig.Connections.Keys
+            If (FeelConfig.Connections(device).InputName = Input) Then Return device
         Next
         Return -1
     End Function
     Public Function FindDeviceByOutput(ByVal Output As String) As Integer
-        For Each device As Integer In Configuration.Connections.Keys
-            If (Configuration.Connections(device).OutputName = Output) Then Return device
+        For Each device As Integer In FeelConfig.Connections.Keys
+            If (FeelConfig.Connections(device).OutputName = Output) Then Return device
         Next
         Return -1
     End Function
 
     Public Sub SendMidi(ByVal Device As Integer, ByVal Message As String)
         ''Make sure we're not wasting our time sending something to a device that doesn't exist
-        If (Device = -1) Or (Not Configuration.Connections.ContainsKey(Device)) Then
+        If (Device = -1) Or (Not FeelConfig.Connections.ContainsKey(Device)) Then
             Exit Sub
         Else
             ''Ensure the device is enabled to receive
-            If (Configuration.Connections(Device).Enabled And Configuration.Connections(Device).OutputEnable) Then
+            If (FeelConfig.Connections(Device).Enabled And FeelConfig.Connections(Device).OutputEnable) Then
                 'TODO: Currently checking this twice, because the regex doesn't like being served an empty string.
                 ' Need to do after because NullOrEmpty does not include spaces.
                 If (String.IsNullOrEmpty(Message)) Then Exit Sub
@@ -550,7 +749,7 @@ LoadConfig:
                 If (cmdArr(2) > 127) Then Exit Sub
 
                 ''Get the device's MIDI output name
-                Dim _device As String = Configuration.Connections(Device).OutputName
+                Dim _device As String = FeelConfig.Connections(Device).OutputName
 
                 ''Take appropriate action
                 Select Case cmdType
@@ -584,7 +783,7 @@ LoadConfig:
     End Sub
     Public Sub SendMidi(ByVal Device As String, ByVal Message As String)
         If (Device = "ALL DEVICES") Then
-            For Each dev As Integer In Configuration.Connections.Keys
+            For Each dev As Integer In FeelConfig.Connections.Keys
                 SendMidi(dev, Message)
             Next
         Else
@@ -607,34 +806,34 @@ LoadConfig:
     'End Sub
 
     Public Sub SetPage(ByVal Device As Integer, ByVal Page As Byte)
-        If (Device = -1) Or (Not Configuration.Connections.ContainsKey(Device)) Then
+        If (Device = -1) Or (Not FeelConfig.Connections.ContainsKey(Device)) Then
             Exit Sub
         Else
-            Configuration.Connections(Device).PageCurrent = Page
+            FeelConfig.Connections(Device).PageCurrent = Page
             RedrawControls(Device)
         End If
     End Sub
     Public Sub SetPage(ByVal Device As String, ByVal Page As Byte)
         If (Device = "ALL DEVICES") Then
-            For Each dev As clsConnection In Configuration.Connections.Values
+            For Each dev As clsConnection In FeelConfig.Connections.Values
                 If (dev.Enabled = True) Then
                     dev.PageCurrent = Page
                 End If
             Next
         Else
             Dim _device As Integer = FindDevice(Device)
-            If (Configuration.Connections.ContainsKey(_device)) Then
-                Configuration.Connections(_device).PageCurrent = Page
+            If (FeelConfig.Connections.ContainsKey(_device)) Then
+                FeelConfig.Connections(_device).PageCurrent = Page
             End If
         End If
         RedrawControls(Device)
     End Sub
 
     Public Sub RedrawControls(ByVal Device As Integer)
-        If (Device = -1) Or (Not Configuration.Connections.ContainsKey(Device)) Then
+        If (Device = -1) Or (Not FeelConfig.Connections.ContainsKey(Device)) Then
             Exit Sub
         Else
-            With Configuration.Connections(Device)
+            With FeelConfig.Connections(Device)
                 If (.Enabled And .OutputEnable) Then
                     For Each cont As clsControl In .Control.Values
                         If (cont.Page.ContainsKey(.PageCurrent)) Then
@@ -654,7 +853,7 @@ LoadConfig:
     End Sub
     Public Function RedrawControls(Optional ByVal Device As String = "ALL DEVICES") As Boolean
         If (Device = "ALL DEVICES") Then
-            For Each _device As Integer In Configuration.Connections.Keys
+            For Each _device As Integer In FeelConfig.Connections.Keys
                 RedrawControls(_device)
             Next
         Else
@@ -716,16 +915,16 @@ LoadConfig:
     '    Return CType(WindowsMessages.SendMessage(New IntPtr(handle), WM_USER + uMsg, New IntPtr(wParam), New IntPtr(lParam)), Integer)
     'End Function
     Public Function SendMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-        Return If(Configuration.WmEnable, CType(SendMessage(LJHandle, WM_USER + uMsg, New IntPtr(wParam), New IntPtr(lParam)), Integer), -1)
+        Return If(FeelConfig.WmEnable, CType(SendMessage(LJHandle, WM_USER + uMsg, New IntPtr(wParam), New IntPtr(lParam)), Integer), -1)
     End Function
 
     Public Function PostMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-        Return If(Configuration.WmEnable, CType(PostMessage(LJHandle, WM_USER + uMsg, wParam, lParam), Integer), -1)
+        Return If(FeelConfig.WmEnable, CType(PostMessage(LJHandle, WM_USER + uMsg, wParam, lParam), Integer), -1)
     End Function
 
     Public Function SendCopyData(ByVal lParam As CopyData) As Integer
         'wParam is supposed to be a pointer to the handle of this process, or an HWND
-        Return If(Configuration.WmEnable, CType(SendMessage(LJHandle, WM_COPYDATA, New IntPtr(0), lParam), Integer), -1)
+        Return If(FeelConfig.WmEnable, CType(SendMessage(LJHandle, WM_COPYDATA, New IntPtr(0), lParam), Integer), -1)
     End Function
 #End Region
 
@@ -745,21 +944,99 @@ LoadConfig:
 #End Region
 
 #Region "Tertiary Functions"
-    Public Function GetSequence(ByVal handle As IntPtr) As Integer
-        Return CType(SendMessage(handle, WM_USER + 1600, New IntPtr(256), New IntPtr(0)), Integer)
+    Public Function GetSequence() As Integer
+        Return CType(SendMessage(LJHandle, WM_USER + 1600, New IntPtr(256), New IntPtr(0)), Integer)
     End Function
 
-    Public Function GetCue(ByVal handle As IntPtr) As Integer
-        Return CType(SendMessage(handle, WM_USER + 1600, New IntPtr(257), New IntPtr(0)), Integer)
+    Public Function GetCue() As Integer
+        Return CType(SendMessage(LJHandle, WM_USER + 1600, New IntPtr(257), New IntPtr(0)), Integer)
     End Function
 
-    Public Function GetCueList(ByVal handle As IntPtr) As Integer
-        Return CType(SendMessage(handle, WM_USER + 1600, New IntPtr(258), New IntPtr(0)), Integer)
+    Public Function GetCueList() As Integer
+        Return CType(SendMessage(LJHandle, WM_USER + 1600, New IntPtr(258), New IntPtr(0)), Integer)
     End Function
 
-    Public Function GetBackgroundCue(ByVal handle As IntPtr) As Integer
-        Return CType(SendMessage(handle, WM_USER + 1600, New IntPtr(262), New IntPtr(0)), Integer)
+    Public Function GetBackgroundCue() As Integer
+        Return CType(SendMessage(LJHandle, WM_USER + 1600, New IntPtr(262), New IntPtr(0)), Integer)
     End Function
 #End Region
+#End Region
+
+#Region "Action Plugins"
+    'Private Sub LoadActions()
+    '    Dim serviceHost As ActionInterface.IServices = New Interfaces.ServiceHost
+    '    Dim actionsList As Interfaces = New Interfaces
+    '    actionsList.LoadModules()
+    '    For Each actn As ActionInterface.IAction In actionsList.m_addonInstances
+    '        actn.Initialize(serviceHost)
+    '        Diagnostics.Debug.WriteLine(vbCrLf)
+    '        actn.Execute("device", CByte("127"), CByte("0"), CByte("0"), CByte("0"))
+    '    Next
+    'End Sub
+
+    Friend Sub LoadModules()
+        Dim currentApplicationDirectory As String = My.Application.Info.DirectoryPath
+        Dim addonsRootDirectory As String = currentApplicationDirectory & "\actions\"
+        Dim addonsLoaded As New Collections.Generic.List(Of System.Type)
+
+        If My.Computer.FileSystem.DirectoryExists(addonsRootDirectory) Then
+            Dim dllFilesFound As System.Collections.ObjectModel.ReadOnlyCollection(Of String) = My.Computer.FileSystem.GetFiles(addonsRootDirectory, Microsoft.VisualBasic.FileIO.SearchOption.SearchAllSubDirectories, "*.dll")
+            For Each dllFile As String In dllFilesFound
+                Dim modulesFound As System.Collections.Generic.List(Of System.Type) = TryLoadAssemblyReference(dllFile)
+                addonsLoaded.AddRange(modulesFound)
+            Next
+        End If
+
+        If addonsLoaded.Count > 0 Then
+            For Each addonToInstantiate As System.Type In addonsLoaded
+                Dim thisInstance As ActionInterface.IAction = CType(Activator.CreateInstance(addonToInstantiate), ActionInterface.IAction)
+                ''TODO: need this??
+                'Dim thisTypedInstance As ActionInterface.IAction = CType(thisInstance, ActionInterface.IAction)
+                'thisTypedInstance.Initialise()
+                thisInstance.Initialize(serviceHost)
+                actionModules.Add(thisInstance.UniqueID, thisInstance)
+            Next
+        End If
+    End Sub
+
+    Private Function TryLoadAssemblyReference(ByVal dllFilePath As String) As Collections.Generic.List(Of System.Type)
+        Dim loadedAssembly As Reflection.Assembly = Nothing
+        Dim listOfModules As New Collections.Generic.List(Of System.Type)
+        Try
+            loadedAssembly = Reflection.Assembly.LoadFile(dllFilePath)
+        Catch ex As Exception
+            Diagnostics.Debug.WriteLine("Reflection.Assembly exception")
+        End Try
+        If loadedAssembly IsNot Nothing Then
+            For Each assemblyModule As System.Reflection.Module In loadedAssembly.GetModules
+                For Each moduleType As System.Type In assemblyModule.GetTypes()
+                    For Each interfaceImplemented As System.Type In moduleType.GetInterfaces()
+                        'Diagnostics.Debug.WriteLine("moduletype.Name: " & moduleType.Name & " | interfaceImplemented.Name: " & interfaceImplemented.Name & " | interfaceImplemented.FullName: " & interfaceImplemented.FullName)
+                        'If interfaceImplemented.FullName = "ActionInterface.IAction" Then
+                        If (interfaceImplemented.Name = "IAction") Then
+                            listOfModules.Add(moduleType)
+                        End If
+                    Next
+                Next
+            Next
+        End If
+        'Diagnostics.Debug.WriteLine("loadedmodules.count: " & listOfModules.Count.ToString)
+        Return listOfModules
+    End Function
+#End Region
+
+#Region "Random Code Helpers"
+    ''' <summary>
+    ''' Add an item (T) to end of array (of T).
+    ''' </summary>
+    ''' <typeparam name="T"></typeparam>
+    ''' <param name="arr"></param>
+    ''' <param name="item"></param>
+    ''' <remarks></remarks>
+    <System.Runtime.CompilerServices.Extension()> _
+    Public Sub Add(Of T)(ByRef arr As T(), ByVal item As T)
+        Array.Resize(arr, arr.Length + 1)
+        arr(arr.Length - 1) = item
+    End Sub
 #End Region
 End Module
