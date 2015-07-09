@@ -35,6 +35,7 @@
         ''Connection Behavior settings:
         chkIgnoreWhileConnecting.Checked = FeelConfig.IgnoreEvents
         chkFeedbackDetection.Checked = FeelConfig.FeedbackDetection
+        chkReconnectDevices.Checked = FeelConfig.RestoreConnections
         ''LightJockey Functions settings:
         chkWindowsMessages.Checked = FeelConfig.WmEnable
         chkDmxin.Checked = FeelConfig.DmxinEnable
@@ -83,6 +84,14 @@
 
     Private Sub chkIgnoreWhileConnecting_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkIgnoreWhileConnecting.CheckedChanged
         FeelConfig.IgnoreEvents = chkIgnoreWhileConnecting.Checked
+    End Sub
+
+    Private Sub chkFeedbackDetection_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkFeedbackDetection.CheckedChanged
+        FeelConfig.FeedbackDetection = chkFeedbackDetection.Checked
+    End Sub
+
+    Private Sub chkReconnectDevices_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkReconnectDevices.CheckedChanged
+        FeelConfig.RestoreConnections = chkReconnectDevices.Checked
     End Sub
 
     Private Sub rdoNotationNot_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles rdoNotationNot.CheckedChanged

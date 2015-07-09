@@ -68,7 +68,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="clsClone.vb" />
-    <Compile Include="clsConfig.vb" />
     <Compile Include="Feel.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -165,6 +164,10 @@
     <ProjectReference Include="..\ActionInterface\Action.Interface.vbproj">
       <Project>{C242BFED-C9F6-493A-8DC4-FB9571E3A8E0}</Project>
       <Name>Action.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FeelConfig\FeelConfig.vbproj">
+      <Project>{B4A03EF1-9D1C-4388-B9FE-2B46E4C23E88}</Project>
+      <Name>FeelConfig</Name>
     </ProjectReference>
     <ProjectReference Include="..\MIDI\MIDI.csproj">
       <Project>{F60D8B7B-2D2E-4B94-A736-3783FFE1A25C}</Project>

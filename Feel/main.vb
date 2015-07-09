@@ -380,52 +380,6 @@ LoadConfig:
         Next
         Return Configuration
     End Function
-    'Private Function ConfigDeserialize_OLD(ByRef Configuration As clsConfig) As clsConfig
-    '    Dim st As New IO.MemoryStream
-    '    Dim bf As New Runtime.Serialization.Formatters.Binary.BinaryFormatter
-    '    For Each conx As clsConnection In Configuration.Connections.Values
-    '        For Each cont As clsControl In conx.Control.Values
-    '            For Each page As clsControlPage In cont.Page.Values
-    '                For Each act As clsAction In page.Actions
-    '                    If (actionModules.ContainsKey(act.Type)) Then
-    '                        'deserialize
-    '                        st = CType(act.Data, IO.MemoryStream) 'st = New IO.MemoryStream(CType(act.Data, Byte())) 'TODO: not sure about this...
-    '                        Try
-    '                            bf.Binder = New DeserializationBinder() ''See DeserializationBinder
-    '                            act.Data = bf.Deserialize(st)
-    '                        Catch ex As Exception
-    '                            MessageBox.Show("There was an unexpected error trying to deserialize (load) an Action. Details:" & vbCrLf & vbCrLf & ex.Message, "Feel: Serialziation Error")
-    '                        End Try
-    '                        act._available = True
-    '                    Else
-    '                        'don't deserialize
-    '                        act._available = False
-    '                    End If
-    '                Next
-    '                For Each act As clsAction In page.ActionsOff
-    '                    If (actionModules.ContainsKey(act.Type)) Then
-    '                        'deserialize
-    '                        st = CType(act.Data, IO.MemoryStream) 'st = New IO.MemoryStream(CType(act.Data, Byte())) 'TODO: not sure about this...
-    '                        Try
-    '                            bf.Binder = New DeserializationBinder() ''See DeserializationBinder
-    '                            act.Data = bf.Deserialize(st)
-    '                        Catch ex As Exception
-    '                            MessageBox.Show("There was an unexpected error trying to deserialize (load) an Action. Details:" & vbCrLf & vbCrLf & ex.Message, "Feel: Serialziation Error")
-    '                        End Try
-    '                        act._available = True
-    '                    Else
-    '                        'don't deserialize
-    '                        act._available = False
-    '                    End If
-    '                Next
-    '            Next
-    '        Next
-    '    Next
-    '    st.Close()
-    '    st = Nothing
-    '    bf = Nothing
-    '    Return Configuration
-    'End Function
 #End Region
 
 #Region "Connections"

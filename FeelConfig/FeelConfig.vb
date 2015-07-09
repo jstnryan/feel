@@ -9,16 +9,18 @@ Public Class clsConfig
     'MIDI Connections (Virtual ports & MIDI devices)
     Public Connections As Collections.Generic.Dictionary(Of Integer, clsConnection)
 
-    Public IgnoreEvents As Boolean      'Ignore events raised by devices/connections while still establishing other connections
-    Public FeedbackDetection As Boolean 'Enable MIDI feedback detection
+    Public IgnoreEvents As Boolean          'Ignore events raised by devices/connections while still establishing other connections
+    Public FeedbackDetection As Boolean     'Enable MIDI feedback detection
+    '<Runtime.Serialization.OptionalField()> _
+    Public RestoreConnections As Boolean    'Attempt to reconnect devices who's connection configurations have changed
 
-    Public WmEnable As Boolean          'Enable Windows Messages to LightJockey
-    Public DmxinEnable As Boolean       'Enable DMX-In to LightJockey
-    Public DmxoverEnable As Boolean     'Enable DMX-Override to LightJockey
+    Public WmEnable As Boolean              'Enable Windows Messages to LightJockey
+    Public DmxinEnable As Boolean           'Enable DMX-In to LightJockey
+    Public DmxoverEnable As Boolean         'Enable DMX-Override to LightJockey
 
-    Public MidiNotation As Byte         'MIDI note display style (0:letter, 1:dec, 2:dec w/suffix, 3:hex w/prefix, 4:hex w/suffix)
-    Public MidiNumbering As Byte        'MIDI channel display style (0:zero based, 1:one based)
-    Public MidiTranspose As Byte        'MIDI note ocatave base (0:C5, 1:C4, 2:C3)
+    Public MidiNotation As Byte             'MIDI note display style (0:letter, 1:dec, 2:dec w/suffix, 3:hex w/prefix, 4:hex w/suffix)
+    Public MidiNumbering As Byte            'MIDI channel display style (0:zero based, 1:one based)
+    Public MidiTranspose As Byte            'MIDI note ocatave base (0:C5, 1:C4, 2:C3)
 
     Public Sub New()
         IgnoreEvents = False
@@ -155,7 +157,7 @@ Public Class clsAction
     Public Data As Object
 
     <NonSerialized()> _
-    Friend _available As Boolean 'A switch indicating whether the Object in .Data has been deserialized
+    Public _available As Boolean 'A switch indicating whether the Object in .Data has been deserialized
 
     Public Sub New()
         Name = "New Action"

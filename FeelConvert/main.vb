@@ -2,7 +2,7 @@
 Module main
     ''Version 1
     Private config1 As clsConfig_1
-    'Private config2 As clsConfig_2.clsConfig
+    Private config2 As Feel.clsConfig
 
     Public Sub main()
         Dim openDialog As New Windows.Forms.OpenFileDialog()
