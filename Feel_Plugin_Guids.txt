@@ -1,0 +1,43 @@
+##MIDI ("MIDI Functions")
+SendMidiString                15ABCE5A-D91E-4d65-946B-58394B9FE400
+SendMidiComponents            15ABCE5A-D91E-4d65-946B-58394B9FE401
+
+##INTERNAL ("Internal Functions")
+ConfigureConnections          15ABCE5A-D91E-4d65-946A-58394B9FE472
+ConfigureActions              15ABCE5A-D91E-4d65-946A-58394B9FE473
+ChangePage                    15ABCE5A-D91E-4d65-946A-58394B9FE474
+ShowMessageBox                15ABCE5A-D91E-4d65-946A-58394B9FE475  ##Depreciated
+ChangeControlState            15ABCE5A-D91E-4d65-946A-58394B9FE476
+ResetControlGroup             15ABCE5A-D91E-4d65-946A-58394B9FE477
+
+##EXTERNAL ("LJ External Hotkeys")
+ExternalSystem                D5644026-BD84-482b-AF02-BB844852BF00
+ExternalGlobalIntensity       D5644026-BD84-482b-AF02-BB844852BF01
+ExternalControls              D5644026-BD84-482b-AF02-BB844852BF02
+ExternalSequenceFunctions     D5644026-BD84-482b-AF02-BB844852BF03
+ExternalCue                   D5644026-BD84-482b-AF02-BB844852BF04
+ExternalCueBuilder            D5644026-BD84-482b-AF02-BB844852BF05
+ExternalGenericMacro          D5644026-BD84-482b-AF02-BB844852BF06
+ExternalCuelist               D5644026-BD84-482b-AF02-BB844852BF07
+ExternalBackgroundCues        D5644026-BD84-482b-AF02-BB844852BF08
+ExternalStaticsControl        D5644026-BD84-482b-AF02-BB844852BF09
+ExternalFixtureSelection      D5644026-BD84-482b-AF02-BB844852BF10
+ExternalOfflineVisualizer     D5644026-BD84-482b-AF02-BB844852BF11
+ExternalEmulate2532           D5644026-BD84-482b-AF02-BB844852BF12
+ExternalDMXIN                 D5644026-BD84-482b-AF02-BB844852BF13
+
+#WINDOWS MESSAGES ("Windows Messages")
+SendWMessage                  4CDE2694-8BA6-415d-94EA-EDA045149BCF
+PostWMessage                  4CDE2694-8BA6-415d-94EA-EDA045149BCE
+ResetLJWindowHandle           4CDE2694-8BA6-415d-94EA-EDA045149BCD
+
+#LJ Functions ("LJ Advanced Functions")
+Intensity Group Value         88F81E46-596B-4aa3-A5C4-8FB475DA21A0
+Cue Macro, Amplitude (rel)
+Cue Macro, Amplitude (abs)
+Cue Macro, Speed (rel)
+Cue Macro, Speed (abs)
+Load Cue
+Load CueList
+Load Background Cue
+Flash Sequence

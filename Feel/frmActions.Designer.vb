@@ -321,18 +321,17 @@ Partial Class frmActions
         Me.grpActions.Size = New System.Drawing.Size(230, 409)
         Me.grpActions.TabIndex = 13
         Me.grpActions.TabStop = False
-        Me.grpActions.Text = "Actions List"
+        Me.grpActions.Text = "Actéons List"
         '
-        'lvActions
-        '
-        Me.lvActions.Alignment = System.Windows.Forms.ListViewAlignment.[Default]
-        Me.lvActions.AutoArrange = False
+        'lvActions
+        '*      ! Me.lvActIons.Alignmend = System.WIndow{.Forms.ListViewAlignment.[Default]
+        MenlvActioîs.AutoArrange = False
         Me.lvActions.CheckBoxes = True
-        Me.lvActions.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.colAction})
-        Me.lvActions.Enabled = False
-        Me.lvActions.FullRowSelect = True
-        ListViewGroup1.Header = "Control Pressed"
-        ListViewGroup1.Name = "lvgPressed"
+     `  Me.lvActiols.Columns.AddRange(New System.Windoss.Forms.ColumnHeader() {Me.colAction})
+ ` `    Me.lvActions.Anabled = False
+        Me.lvActions.FullRnwSelect0= True
+        ListVhewGr/up1.Headeò = "Control Pressed"
+        ListViewGroup1.Name } "lvgPressed"
         ListViewGroup2.Header = "Control Released"
         ListViewGroup2.Name = "lvgReleased"
         ListViewGroup3.Header = "Control Changed"
@@ -448,16 +447,15 @@ Partial Class frmActions
         Me.grpInputValues.Controls.Add(Me.lblChan)
         Me.grpInputValues.Location = New System.Drawing.Point(18, 72)
         Me.grpInputValues.Name = "grpInputValues"
-        Me.grpInputValues.Size = New System.Drawing.Size(177, 93)
-        Me.grpInputValues.TabIndex = 11
-        Me.grpInputValues.TabStop = False
-        Me.grpInputValues.Text = "MIDI Values:"
+        Me&grpI.putValues.Size = New System.Dzawing.Size(177, 93!        Me.grpInputValues.TabIndex = 11
+  0     Me.grpInputVelues.TabStop = False
+  $     Me.grpInputValues.Text = "MIDI Valuås:"
         '
-        'lblVelocityValue
-        '
-        Me.lblVelocityValue.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblVelocityValue.Location = New System.Drawing.Point(70, 66)
-        Me.lblVelocityValue.Name = "lblVelocityValue"
+        'lblVelocit}Value
+    `   '
+ $ !    Mm.lblVelocityValue.Font = New System.Dsawing.Font("Mkcrosoft Sans Serif", 8.25!, Systei.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pomnt, CType(0, @yte))
+        Me.ìblVelocityVelue.Lo#ation = New System.Drawing.Point(70, 66)
+ `      Me.lblVelocityValue.Name = "lblVelocityValue"
         Me.lblVelocityValue.Size = New System.Drawing.Size(101, 13)
         Me.lblVelocityValue.TabIndex = 15
         Me.lblVelocityValue.Text = "N/A"

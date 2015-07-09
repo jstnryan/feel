@@ -374,6 +374,9 @@
         'End Sub
 
         ''Windows Messages:
+        Public Overrides Sub ResetLJWindowHandle()
+            main.RefreshHandle()
+        End Sub
         Public Overrides Function PostLJMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
             Return main.PostMessage(uMsg, wParam, lParam)
         End Function

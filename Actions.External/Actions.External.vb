@@ -22,7 +22,7 @@ Public Class ExternalSystem
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 
@@ -129,7 +129,7 @@ Public Class ExternalGlobalIntensity
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 
@@ -302,7 +302,7 @@ Public Class ExternalControls
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 
@@ -457,7 +457,7 @@ Public Class ExternalSequenceFunctions
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 
@@ -568,7 +568,7 @@ Public Class ExternalCue
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 
@@ -865,7 +865,7 @@ Public Class ExternalCueBuilder
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 
@@ -968,7 +968,7 @@ Public Class ExternalGenericMacro
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 
@@ -1071,7 +1071,7 @@ Public Class ExternalCuelist
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 
@@ -1188,7 +1188,7 @@ Public Class ExternalBackgroundCues
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 
@@ -1294,7 +1294,7 @@ Public Class ExternalStaticsControl
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 
@@ -1411,7 +1411,7 @@ Public Class ExternalFixtureSelection
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 
@@ -1534,7 +1534,7 @@ Public Class ExternalOfflineVisualizer
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 
@@ -1638,7 +1638,7 @@ Public Class ExternalEmulate2532
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 
@@ -1740,7 +1740,7 @@ Public Class ExternalDMXIN
 
     Public ReadOnly Property Group() As String Implements IAction.Group
         Get
-            Return "External Hotkeys"
+            Return "LJ External Hotkeys"
         End Get
     End Property
 

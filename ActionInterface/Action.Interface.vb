@@ -2,6 +2,10 @@
 
 Public Class ActionInterface
 #Region "Interfaces"
+    ''' <summary>
+    ''' Interface utilized by Action plugins
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Interface IAction
         ReadOnly Property UniqueID() As Guid
         ReadOnly Property Group() As String
@@ -105,6 +109,7 @@ Public Class ActionInterface
         End Sub
 
         ''Windows Message Functions
+        MustOverride Sub ResetLJWindowHandle()
         MustOverride Function SendLJMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
         MustOverride Function PostLJMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
         MustOverride Function SendWMessage(ByVal Handle As Integer, ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer

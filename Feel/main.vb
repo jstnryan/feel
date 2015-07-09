@@ -12,7 +12,7 @@ Module main
     Dim menuAdvancedTasks As New MenuItem
     Dim WithEvents menuRefreshWindowHandle As New MenuItem
     Dim WithEvents menuSaveConfiguration As New MenuItem
-    'Dim WithEvents menuUpdateAvailableDevices As New MenuItem
+    Dim WithEvents menuUpdateAvailableDevices As New MenuItem
     Dim WithEvents menuAbout As New MenuItem
 
     ''Container for program configuration
@@ -67,6 +67,7 @@ Module main
 
     Public Sub Main()
         For Each arg As String In My.Application.CommandLineArgs
+            'TODO:
             System.Diagnostics.Debug.WriteLine("Command Line Arg: " & arg)
         Next
 
@@ -81,7 +82,7 @@ Module main
         menuAdvancedTasks.Text = "Advanced &Tasks"
         menuRefreshWindowHandle.Text = "&Refresh LJ Handle"
         menuSaveConfiguration.Text = "&Save Configuration"
-        'menuUpdateAvailableDevices.Text = "&Update Available Devices"
+        menuUpdateAvailableDevices.Text = "&Update Available Devices"
         '':NEW
         menuAbout.Text = "About"
         trayMenu.MenuItems.Add(menuExit)
@@ -90,7 +91,7 @@ Module main
         trayMenu.MenuItems.Add("-")
         menuAdvancedTasks.MenuItems.Add(menuSaveConfiguration)
         menuAdvancedTasks.MenuItems.Add(menuRefreshWindowHandle)
-        'menuAdvancedTasks.MenuItems.Add(menuUpdateAvailableDevices)
+        menuAdvancedTasks.MenuItems.Add(menuUpdateAvailableDevices)
         trayMenu.MenuItems.Add(menuAdvancedTasks)
         'trayMenu.MenuItems.Add("-")
         trayMenu.MenuItems.Add(menuConfigConnections)
@@ -182,9 +183,11 @@ Module main
     ''See: #Region "File I/O", SaveConfiguration()
     'Private Sub SaveConfiguration() Handles menuSaveConfiguration.Click
 
-    'Friend Sub UpdateAvailableDevices() Handles menuUpdateAvailableDevices.Click
-    '    ''There doesn't seem to be a way to do this right now..
-    'End Sub
+    Friend Sub UpdateAvailableDevices() Handles menuUpdateAvailableDevices.Click
+        Midi.InputDevice.UpdateInstalledDevices()
+        Midi.OutputDevice.UpdateInstalledDevices()
+        'TODO: update lists in Connection Config, if in ConfigMode
+    End Sub
 #End Region
 
 #Region "File I/O"
@@ -198,7 +201,8 @@ LoadConfig:
             FeelConfig = ConfigDeserialize(CType(bf.Deserialize(fs), clsConfig)) 'FeelConfig = CType(bf.Deserialize(fs), clsConfig)
             fs.Close()
         Catch fileEx As IO.FileNotFoundException
-            MessageBox.Show("No configuration file found. Operating with blank configuration.", "Feel: Configuration Not Found", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            'MessageBox.Show("No configuration file found. Operating with blank configuration.", "Feel: Configuration Not Found", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            trayIcon.ShowBalloonTip(5000, "Feel: Notice", "No configuration file was found. A blank configuration file was created.", ToolTipIcon.Info)
             ''no configuration file was found, so create a new one
             CreateNewConfiguration()
             ''then open the configuration window
@@ -207,13 +211,15 @@ LoadConfig:
             If CreateUserDirectory() Then
                 GoTo LoadConfig
             Else
-                MessageBox.Show("Unable to create 'user' directory. Operating with blank configuration file.", "Feel: File System Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                'MessageBox.Show("Unable to create 'user' directory. Operating with blank configuration file.", "Feel: File System Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                trayIcon.ShowBalloonTip(5000, "Feel: Warning", "Unable to create 'user' directory. Operation will continue with a blank configuration.", ToolTipIcon.Warning)
                 CreateNewConfiguration()
                 OpenConfigWindow()
             End If
         Catch ex As Exception
             ''some unexpected error occured
             MessageBox.Show("Unexpected error trying to read Feel configuration file." & vbCrLf & vbCrLf & ex.Message, "Feel: Unknown Exception", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            'trayIcon.ShowBalloonTip(5000, "Feel: Warning", "Unexpected error trying to read configuration file.", ToolTipIcon.Error)
         Finally
             fs = Nothing
             bf = Nothing

@@ -44,7 +44,7 @@ Partial Class frmAbout
         'PictureBox1
         '
         PictureBox1.Image = Global.Feel.My.Resources.Feel.feel_large
-        PictureBox1.Location = New System.Drawing.Point(-11, 12)
+        PictureBox1.Location = New System.Drawing.Point(-13, 12)
         PictureBox1.Name = "PictureBox1"
         PictureBox1.Size = New System.Drawing.Size(128, 128)
         PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize
@@ -53,12 +53,12 @@ Partial Class frmAbout
         '
         'txtAcknowledgements
         '
-        txtAcknowledgements.Location = New System.Drawing.Point(101, 89)
+        txtAcknowledgements.Location = New System.Drawing.Point(103, 89)
         txtAcknowledgements.Multiline = True
         txtAcknowledgements.Name = "txtAcknowledgements"
         txtAcknowledgements.ReadOnly = True
         txtAcknowledgements.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        txtAcknowledgements.Size = New System.Drawing.Size(279, 172)
+        txtAcknowledgements.Size = New System.Drawing.Size(277, 172)
         txtAcknowledgements.TabIndex = 1
         txtAcknowledgements.TabStop = False
         txtAcknowledgements.Text = resources.GetString("txtAcknowledgements.Text")
@@ -67,7 +67,7 @@ Partial Class frmAbout
         '
         Label1.AutoSize = True
         Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Label1.Location = New System.Drawing.Point(98, 12)
+        Label1.Location = New System.Drawing.Point(100, 12)
         Label1.Name = "Label1"
         Label1.Size = New System.Drawing.Size(63, 16)
         Label1.TabIndex = 2
@@ -76,7 +76,7 @@ Partial Class frmAbout
         'Label2
         '
         Label2.AutoSize = True
-        Label2.Location = New System.Drawing.Point(98, 37)
+        Label2.Location = New System.Drawing.Point(100, 37)
         Label2.Name = "Label2"
         Label2.Size = New System.Drawing.Size(62, 13)
         Label2.TabIndex = 3
@@ -85,7 +85,7 @@ Partial Class frmAbout
         'LinkLabel1
         '
         LinkLabel1.AutoSize = True
-        LinkLabel1.Location = New System.Drawing.Point(166, 37)
+        LinkLabel1.Location = New System.Drawing.Point(168, 37)
         LinkLabel1.Name = "LinkLabel1"
         LinkLabel1.Size = New System.Drawing.Size(134, 13)
         LinkLabel1.TabIndex = 4
@@ -95,7 +95,7 @@ Partial Class frmAbout
         'lblVersion
         '
         Me.lblVersion.AutoSize = True
-        Me.lblVersion.Location = New System.Drawing.Point(98, 59)
+        Me.lblVersion.Location = New System.Drawing.Point(100, 59)
         Me.lblVersion.Name = "lblVersion"
         Me.lblVersion.Size = New System.Drawing.Size(129, 13)
         Me.lblVersion.TabIndex = 5
