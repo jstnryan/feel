@@ -1,15 +1,14 @@
 ﻿Imports System.ComponentModel
 
 'Imports Feel.My.Resources
-Public Class frmActions
-    'Dim activeProperty As New Object 'Currently highlighted action
+Public Class frmEvents
     Dim DeviceList As Collections.Generic.Dictionary(Of String, Integer)
 
     ''' <summary>
     ''' Currently active contrrol
     ''' </summary>
-    ''' <remarks>Used by frmActions, this class holds details of the last control
-    ''' which was manipulated on the controller.</remarks>
+    ''' <remarks>Used by <see cref="frmEvents">frmEvents</see>, this class holds details of the last control
+    ''' which was manipulated on the connected devices.</remarks>
     Public Class curControl
         Public Device As String
         Public Type As String
@@ -42,15 +41,19 @@ Public Class frmActions
                 ''Update last control's state, if available
                 updateLastControl()
 
-                'Update the current control marker
+                ''Update the current control marker
                 _curCont = value
-                updateCurrentControl(value)
+
+                'TODO: Invoke in updateCurrentControl throws IndexOutOfRange exception if multiple items are selected in lvActions
+                updateCurrentControl()
             End If
         End Set
     End Property
 
     '"Lock" last active control
     Dim holdControl As Boolean = False
+    ''Container for Copy/Paste
+    Dim CopyData As New clsCopiedActions
 
     Private Sub updateLastControl()
         If Not (_curCont Is Nothing) Then
@@ -71,17 +74,17 @@ Public Class frmActions
         End If
     End Sub
 
-    Delegate Sub updateCurrentControlCallback(ByVal value As curControl)
-    Public Sub updateCurrentControl(ByVal value As curControl)
+    Delegate Sub updateCurrentControlCallback()
+    Public Sub updateCurrentControl()
         If Me.InvokeRequired Then
             Dim d As New updateCurrentControlCallback(AddressOf updateCurrentControl)
-            Invoke(d, New Object() {value})
+            Invoke(d)
         Else
-            Dim _device As Integer = serviceHost.FindDeviceIndexByInput(value.Device)
+            Dim _device As Integer = serviceHost.FindDeviceIndexByInput(_curCont.Device)
 
             'Update UI
             'setLabels(FeelConfig.Connections(_device).Name, value.Type, "Channel " & value.Channel.ToString, If(value.Type = "Note", CType(value.NotCon, Midi.Pitch).ToString, value.NotCon.ToString), value.VelVal.ToString)
-            setLabels(FeelConfig.Connections(_device).Name, value.Type, "Channel " & DisplayChannel(value.Channel), If(value.Type = "Note", DisplayNote(value.NotCon), value.NotCon.ToString), DisplayVelVal(value.VelVal))
+            setLabels(FeelConfig.Connections(_device).Name, _curCont.Type, "Channel " & DisplayChannel(_curCont.Channel), If(_curCont.Type = "Note", DisplayNote(_curCont.NotCon), _curCont.NotCon.ToString), DisplayVelVal(_curCont.VelVal))
             ''If this is the first device control recieved, enable the form controls.
             If (chkPaged.Enabled = False) Then
                 chkPaged.Enabled = True
@@ -94,9 +97,15 @@ Public Class frmActions
                 cmdActionClear.Enabled = True
             End If
 
-            'clear the actions list, and disable appropriate buttons
+            'TODO: stupid bugfix
+            ' Background: when updating currentControl (touching a control), if multiple actions are selected,
+            ' lvActions_ItemSelectionChanged loses track of indexes, and inevitably throws ArgumentOutOfRangeException
+            ' which confusingly break at the Invoke above.
+            RemoveHandler lvActions.ItemSelectionChanged, AddressOf lvActions_ItemSelectionChanged
             lvActions.Items.Clear()
-            DeselectAction()
+            AddHandler lvActions.ItemSelectionChanged, AddressOf lvActions_ItemSelectionChanged
+
+            DeselectActionPane()
 
             'TODO: Check to see if active control contains a page change action, if so, update page
             If False Then
@@ -137,7 +146,7 @@ Public Class frmActions
         End If
     End Sub
 
-    Public Sub DeselectAction()
+    Public Sub DeselectActionPane()
         txtActionName.Text = ""
         cboActionFunction.SelectedIndex = -1
         pgAction.SelectedObject = Nothing
@@ -244,7 +253,6 @@ Public Class frmActions
         cboActionFunction.DisplayMember = "Display"
         cboActionFunction.GroupMember = "Group"
 
-        'TODO: Figure out why there are empty lines in cboActionFunction
         Dim actionlist As New Collections.ArrayList()
         For Each actnMod As Collections.Generic.KeyValuePair(Of Guid, ActionInterface.IAction) In main.actionModules
             actionlist.Add(New With {Key .Value = actnMod.Value.UniqueID, Key .Group = actnMod.Value.Group, Key .Display = actnMod.Value.Name})
@@ -262,11 +270,69 @@ Public Class frmActions
         'main.SaveConfiguration()
     End Sub
 
+    Private Sub frmEvents_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
+        ''If Shift or Control keys are pressed, enable MultiSelect[ion]
+        If (e.Shift Or e.Control) Then
+            lvActions.MultiSelect = True
+        End If
+
+        ''If the X, C, V keys are pressed (along with Control), handle Cut, Copy, Paste operations
+        If (e.Control) Then
+            If (e.KeyCode = Windows.Forms.Keys.X) Then ''Cut
+            ElseIf (e.KeyCode = Windows.Forms.Keys.C) Then ''Copy
+                With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
+                    CopyData = New clsCopiedActions
+                    For Each itm As Windows.Forms.ListViewItem In lvActions.SelectedItems
+                        'If (itm.Group Is lvActions.Groups(0)) Then
+                        If (lvActions.Groups.IndexOf(itm.Group) = 0) Then
+                            'Control Pressed / Control Changed (ActionOn)
+                            CopyData.Actions.Add(.Actions(lvActions.Groups(lvActions.Groups.IndexOf(itm.Group)).Items.IndexOf(itm)))
+                        Else
+                            'Control Released (ActionOff)
+                            CopyData.ActionsOff.Add(.ActionsOff(lvActions.Groups(lvActions.Groups.IndexOf(itm.Group)).Items.IndexOf(itm)))
+                        End If
+                    Next
+                End With
+
+                'TODO: Diagnostic tests
+                Diagnostics.Debug.WriteLine("CopyData Actions Count, On: " & CopyData.Actions.Count.ToString & ", Off: " & CopyData.ActionsOff.Count.ToString)
+                For Each itm As clsAction In CopyData.Actions
+                    Diagnostics.Debug.WriteLine("ActionOn, Name: " & itm.Name & ", Enabled: " & itm.Enabled.ToString)
+                Next
+                For Each itm As clsAction In CopyData.ActionsOff
+                    Diagnostics.Debug.WriteLine("ActionOn, Name: " & itm.Name & ", Enabled: " & itm.Enabled.ToString)
+                Next
+            ElseIf (e.KeyCode = Windows.Forms.Keys.V) Then ''Paste
+                With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
+                    For Each actn As clsAction In CopyData.Actions
+                        .Actions.Add(ObjectCopier.Clone(actn))
+                    Next
+                    For Each actn As clsAction In CopyData.ActionsOff
+                        .ActionsOff.Add(ObjectCopier.Clone(actn))
+                    Next
+                    PopulateActions()
+                End With
+            ElseIf (e.KeyCode = Windows.Forms.Keys.D) Then ''Select None
+                lvActions.SelectedItems.Clear()
+                'NativeMethods.DeselectAllItems(lvActions)
+            ElseIf (e.KeyCode = Windows.Forms.Keys.A) Then ''Select All
+                NativeMethods.SelectAllItems(lvActions)
+            End If
+        End If
+    End Sub
+
+    Private Sub frmEvents_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyUp
+        ''If Shift or Control keys are release, disable MultiSelect[ion]
+        If Not (e.Shift Or e.Control) Then
+            lvActions.MultiSelect = False
+        End If
+    End Sub
+
     Private Sub frmActions_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         main.configMode = True
         'Form size: 765, 460
 
-        'clear the actions list
+        'TODO: clear the actions list of design-time items
         lvActions.Items.Clear()
 
         PopulateActionFunctions()
@@ -298,6 +364,7 @@ Public Class frmActions
                 With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                     Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
                     Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
+                    ''If this is a new action, assign .Data
                     If (cboActionFunctionQualify(whichGroup, curIndex)) Then
                         If (whichGroup = 1) Then
                             .ActionsOff(curIndex).Type = targetGuid
@@ -305,18 +372,14 @@ Public Class frmActions
                             .ActionsOff(curIndex)._available = True
                         Else
                             .Actions(curIndex).Type = targetGuid
-                            'Diagnostics.Debug.WriteLine(main.actionModules.Item(targetGuid).Data.GetType.ToString)
                             .Actions(curIndex).Data = ObjectCopier.Clone(main.actionModules.Item(.Actions(curIndex).Type).Data)
                             .Actions(curIndex)._available = True
                         End If
-                    Else
-                        'no need to do anything to Action
                     End If
                     pgAction.SelectedObject = If(whichGroup = 1, .ActionsOff(curIndex).Data, .Actions(curIndex).Data)
                 End With
             End If
         Else
-            'activeProperty = Nothing
             txtActionDescription.Text = ""
             cboActionFunction.SelectedIndex = -1
         End If
@@ -346,64 +409,57 @@ Public Class frmActions
         End With
     End Function
 
-    Private Sub lvActions_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles lvActions.Click
-        'If (My.Computer.Keyboard.ShiftKeyDown) Then
-        '    'make multiselect possible
-        'End If
-    End Sub
-
     ''The ItemSelectionChanged event occurs whether the item state changes from selected to deselected or deselected to selected.
     ''The SelectedIndexChanged event occurs in single selection ListView controls, whenever there is a change to the index position of the selected item. In a multiple selection ListView control, this event occurs whenever an item is removed or added to the list of selected items.
-    Private Sub lvActions_ItemSelectionChanged() Handles lvActions.ItemSelectionChanged
-        'Private Sub lvActions_ItemSelectionChanged(ByVal sender As Object, ByVal e As System.Windows.Forms.ListViewItemSelectionChangedEventArgs) Handles lvActions.ItemSelectionChanged
-
+    Private Sub lvActions_ItemSelectionChanged(ByVal sender As Object, ByVal e As System.Windows.Forms.ListViewItemSelectionChangedEventArgs) Handles lvActions.ItemSelectionChanged
         If (lvActions.SelectedItems.Count = 1) Then
-            ''Actions List pane:
+            ''actions list pane:
             cmdActionRemove.Enabled = True
             cmdActionUp.Enabled = True
             cmdActionDown.Enabled = True
-            If (_curCont.Type = "Note") Then cmdActionSwap.Enabled = True
+            If (_curCont.Type = "note") Then cmdActionSwap.Enabled = True
             cmdActionClear.Enabled = True
             grpAction.Enabled = True
 
-            ''Action pane:
-            Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
-            Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
+            ''action pane:
+            Dim whichgroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
+            'TODO: This is a fix for some nasty bug that is seemingly impossible to track
+            'If (whichgroup < 0) Then Exit Sub
+            Dim curindex As Integer = lvActions.Groups(whichgroup).Items.IndexOf(lvActions.SelectedItems(0))
             With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
-                If (whichGroup = 1) Then
-                    txtActionName.Text = .ActionsOff(curIndex).Name
-
+                If (whichgroup = 1) Then
+                    txtActionName.Text = .ActionsOff(curindex).Name
                     Try
-                        cboActionFunction.SelectedValue = .ActionsOff(curIndex).Type
+                        cboActionFunction.SelectedValue = .ActionsOff(curindex).Type
                     Catch ex As Exception
-                        Windows.MessageBox.Show("This action is not currently loaded.")
+                        Windows.MessageBox.Show("this action module is not currently loaded.")
                     End Try
-
-                    'pgAction.SelectedObject = .ActionsOff(curIndex).Data
+                    'pgaction.selectedobject = .actionsoff(curindex).data
                 Else
-                    txtActionName.Text = .Actions(curIndex).Name
-
-                    'cboActionFunction.SelectedItem = -1
-                    'cboActionFunction.Select()
+                    txtActionName.Text = .Actions(curindex).Name
                     Try
-                        cboActionFunction.SelectedValue = .Actions(curIndex).Type
+                        cboActionFunction.SelectedValue = .Actions(curindex).Type
                     Catch ex As Exception
-                        Windows.MessageBox.Show("This action is not currently loaded.")
+                        Windows.MessageBox.Show("this action module is not currently loaded.")
                     End Try
-
-                    'pgAction.SelectedObject = .Actions(curIndex).Data
+                    'pgaction.selectedobject = .actions(curindex).data
                 End If
             End With
         Else
-            ''Copy/Paste mode or nothing selected
-            DeselectAction()
+            ''copy/paste mode or nothing selected
+            DeselectActionPane()
         End If
     End Sub
     'Private Sub lvActions_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lvActions.SelectedIndexChanged
-    '    ''Update grpAction fields
-    '    'lvActions_ItemSelectionChanged()
-    '    'cboActionFunction.SelectedIndex = -1
     'End Sub
+
+    Private Sub lvActions_ItemCheck(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckEventArgs) Handles lvActions.ItemCheck
+        ''Workaround for FullRowSelect + MultiSelect errant un-/checking of lines
+        '' See: http://www.vbforums.com/showthread.php?379405-RESOLVED-Listview-with-checkboxes-and-multiselect
+        If (lvActions.MultiSelect) Then
+            e.NewValue = e.CurrentValue
+        End If
+    End Sub
 
     Private Sub lvActions_ItemChecked(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckedEventArgs) Handles lvActions.ItemChecked
         If (SetPage(False)) Then
@@ -425,7 +481,8 @@ Public Class frmActions
         If Windows.Forms.MessageBox.Show("Are you sure you want to clear all actions associated with this control?", "Feel: Confirm Clear Actions", Windows.Forms.MessageBoxButtons.YesNo, Windows.Forms.MessageBoxIcon.Exclamation, Windows.Forms.MessageBoxDefaultButton.Button2) = Windows.Forms.DialogResult.Yes Then
             lvActions.Items.Clear()
             'grpAction.Enabled = False
-            lvActions_ItemSelectionChanged()
+            'TODO: this should happen automatically
+            'lvActions_ItemSelectionChanged()
             If SetPage(True) Then
                 'TODO: (not sure if this is the best way to do this)
                 With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
@@ -443,6 +500,7 @@ Public Class frmActions
                 groupReleased = True
             End If
         End If
+        lvActions.SelectedItems.Clear()
         If (SetPage(True)) Then
             With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                 Dim tmpAction As clsAction = New clsAction

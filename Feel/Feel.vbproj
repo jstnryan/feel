@@ -73,10 +73,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Feel.resx</DependentUpon>
     </Compile>
-    <Compile Include="frmActions.Designer.vb">
-      <DependentUpon>frmActions.vb</DependentUpon>
+    <Compile Include="frmEvents.Designer.vb">
+      <DependentUpon>frmEvents.vb</DependentUpon>
     </Compile>
-    <Compile Include="frmActions.vb">
+    <Compile Include="frmEvents.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmConfiguration.Designer.vb">
@@ -114,6 +114,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="NativeMethods.vb" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore">
@@ -143,8 +144,8 @@
       <LastGenOutput>Feel.Designer.vb</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmActions.resx">
-      <DependentUpon>frmActions.vb</DependentUpon>
+    <EmbeddedResource Include="frmEvents.resx">
+      <DependentUpon>frmEvents.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="frmConfiguration.resx">

@@ -135,7 +135,7 @@ Public Class ConfigureActions
 
     Public ReadOnly Property Description() As String Implements IAction.Description
         Get
-            Return "Opens the 'Configure Actions' window." & vbCrLf & vbCrLf & "This action has no editable properties."
+            Return "Opens the 'Configure Events' window." & vbCrLf & vbCrLf & "This action has no editable properties."
         End Get
     End Property
 
@@ -156,7 +156,7 @@ Public Class ConfigureActions
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
-            Return "Configure Actions"
+            Return "Configure Events"
         End Get
     End Property
 

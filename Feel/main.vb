@@ -3,7 +3,7 @@ Imports Midi
 Imports System.Runtime.InteropServices
 
 Module main
-    'TODO:
+    ''Stores a 'reference' to the UI thread for opening forms from an event
     Friend _threadcontext As New System.Threading.SynchronizationContext
 
     ''Components for System Tray icon
@@ -12,7 +12,7 @@ Module main
     Dim WithEvents menuExit As New MenuItem
     Dim WithEvents menuConfigProgram As New MenuItem
     Dim WithEvents menuConfigConnections As New MenuItem
-    Dim WithEvents menuConfigActions As New MenuItem
+    Dim WithEvents menuConfigEvents As New MenuItem
     Dim menuAdvancedTasks As New MenuItem
     Dim WithEvents menuRefreshWindowHandle As New MenuItem
     Dim WithEvents menuSaveConfiguration As New MenuItem
@@ -32,7 +32,7 @@ Module main
 
     Friend configForm As frmConfiguration
     Friend connectForm As frmConnections
-    Friend actionForm As frmActions
+    Friend eventForm As frmEvents
     Friend aboutForm As frmAbout '= New frmAbout ''Have to do this in order to get a valid SynchronizationContext
     Dim _dummyControl As System.Windows.Forms.Control = New Windows.Forms.Control
 
@@ -50,8 +50,8 @@ Module main
                 If (connectForm.Visible) Then
                     _configMode = True
                 End If
-            ElseIf Not (actionForm Is Nothing) Then
-                If (actionForm.Visible) Then
+            ElseIf Not (eventForm Is Nothing) Then
+                If (eventForm.Visible) Then
                     _configMode = True
                 End If
             End If
@@ -91,7 +91,7 @@ Module main
         menuExit.Text = "E&xit"
         menuConfigProgram.Text = "&Program Configuration"
         menuConfigConnections.Text = "Configure &Connections"
-        menuConfigActions.Text = "Configure &Actions"
+        menuConfigEvents.Text = "Configure &Events"
         ''NEW:
         menuAdvancedTasks.Text = "Advanced &Tasks"
         menuSaveConfiguration.Text = "&Save Configuration"
@@ -110,7 +110,7 @@ Module main
         'trayMenu.MenuItems.Add("-")
         trayMenu.MenuItems.Add(menuConfigProgram)
         trayMenu.MenuItems.Add(menuConfigConnections)
-        trayMenu.MenuItems.Add(menuConfigActions)
+        trayMenu.MenuItems.Add(menuConfigEvents)
         trayIcon.ContextMenu = trayMenu
         'trayIcon.Icon = New System.Drawing.Icon(System.Reflection.Assembly.GetExecutingAssembly.GetManifestResourceStream("Feel.feel.ico"))
         trayIcon.Icon = My.Resources.Feel.feel
@@ -175,8 +175,8 @@ Module main
         OpenConnectWindow()
     End Sub
 
-    Delegate Sub dlgOpenActionWindow()
-    Friend Sub OpenActionWindow() Handles menuConfigActions.Click
+    'Delegate Sub dlgOpenEventWindow()
+    Friend Sub OpenEventWindow() Handles menuConfigEvents.Click
         'If actionForm Is Nothing Then
         '    actionForm = New frmActions
         '    actionForm.Show()
@@ -187,10 +187,10 @@ Module main
         '        actionForm.Show()
         '    End If
         'End If
-        If actionForm Is Nothing Then
-            actionForm = New frmActions
+        If eventForm Is Nothing Then
+            eventForm = New frmEvents
         End If
-        actionForm.Show()
+        eventForm.Show()
     End Sub
     ''Delegate Sub dlgDisposeActionWindow()
     'Friend Sub DisposeActionWindow()
@@ -205,8 +205,8 @@ Module main
     'Friend Sub OpenActionWindow_Ext()
     '    _threadcontext.Post(AddressOf OpenActionWindow_Del, _threadcontext)
     'End Sub
-    Friend Sub OpenActionWindow_Ext(ByVal state As Object)
-        OpenActionWindow()
+    Friend Sub OpenEventWindow_Ext(ByVal state As Object)
+        OpenEventWindow()
     End Sub
 
     Private Sub OpenAbout() Handles menuAbout.Click
@@ -523,16 +523,16 @@ LoadConfig:
 
 #Region "Event Handlers"
     Private Sub NoteOn(ByVal msg As NoteOnMessage)
-        If configMode And Not (actionForm Is Nothing) Then
+        If configMode And Not (eventForm Is Nothing) Then
             ''override programmed action, redirect action to Configure Actions window
-            If (actionForm.Visible) Then
-                Dim newCont As frmActions.curControl = New frmActions.curControl
+            If (eventForm.Visible) Then
+                Dim newCont As frmEvents.curControl = New frmEvents.curControl
                 newCont.Device = msg.Device.Name.ToString
                 newCont.Channel = CByte(msg.Channel)
                 newCont.Type = "Note"
                 newCont.NotCon = CByte(msg.Pitch)
                 newCont.VelVal = CByte(msg.Velocity)
-                actionForm.CurrentControl = newCont
+                eventForm.CurrentControl = newCont
                 newCont = Nothing
             End If
         ElseIf Not configMode And Not Connecting Then
@@ -642,16 +642,16 @@ LoadConfig:
     End Sub
 
     Private Sub ControlChange(ByVal msg As ControlChangeMessage)
-        If configMode And Not (actionForm Is Nothing) Then
+        If configMode And Not (eventForm Is Nothing) Then
             ''override programmed action, redirect action to Configure Actions window
-            If (actionForm.Visible) Then
-                Dim newCont As frmActions.curControl = New frmActions.curControl
+            If (eventForm.Visible) Then
+                Dim newCont As frmEvents.curControl = New frmEvents.curControl
                 newCont.Device = msg.Device.Name.ToString
                 newCont.Channel = CByte(msg.Channel)
                 newCont.Type = "Control"
                 newCont.NotCon = CByte(msg.Control)
                 newCont.VelVal = CByte(msg.Value)
-                actionForm.CurrentControl = newCont
+                eventForm.CurrentControl = newCont
                 newCont = Nothing
             End If
         ElseIf Not configMode And Not Connecting Then

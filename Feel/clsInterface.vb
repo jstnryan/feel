@@ -6,7 +6,7 @@
         Public Overrides Sub OpenWindowActions()
             'Source: http://www.codeproject.com/Articles/31971/Understanding-SynchronizationContext-Part-I
             'main._threadcontext.Post(AddressOf main.OpenActionWindow_Ext, main._threadcontext)
-            main._threadcontext.Post(AddressOf main.OpenActionWindow_Ext, Nothing)
+            main._threadcontext.Post(AddressOf main.OpenEventWindow_Ext, Nothing)
         End Sub
 
         Public Overrides Sub OpenWindowConnections()
