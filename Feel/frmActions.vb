@@ -7,14 +7,19 @@ Public Class frmActions
     Private curCont As curControl
     Public WriteOnly Property CurrentControl() As curControl
         Set(ByVal value As curControl)
-            ''Update last control's state, if available
-            updateLastControl()
+            If Not (holdControl) Then
+                ''Update last control's state, if available
+                updateLastControl()
 
-            'Update the current control marker
-            curCont = value
-            updateCurrentControl(value)
+                'Update the current control marker
+                curCont = value
+                updateCurrentControl(value)
+            End If
         End Set
     End Property
+
+    '"Lock" last active control
+    Dim holdControl As Boolean = False
 
     Private Sub updateLastControl()
         If Not (curCont Is Nothing) Then
@@ -50,6 +55,8 @@ Public Class frmActions
                 chkPaged.Enabled = True
                 nudDevicePage.Enabled = True
                 grpConfiguration.Enabled = True
+                grpActions.Enabled = True
+                'TODO: Previous makes the following unneccessary?
                 lvActions.Enabled = True
                 cmdActionAdd.Enabled = True
                 cmdActionClear.Enabled = True
@@ -64,7 +71,6 @@ Public Class frmActions
                 'change page
             Else
                 nudDevicePage.Value = curCont.ContPage
-                nudActionPage.Value = curCont.ContPage
             End If
 
             ''Check to see if this control has been programmed, update UI with configuration data
@@ -103,7 +109,6 @@ Public Class frmActions
         txtActionName.Text = ""
         cboActionFunction.SelectedIndex = -1
         pgAction.SelectedObject = Nothing
-        nudActionPage.Value = 0
 
         cmdActionRemove.Enabled = False
         cmdActionUp.Enabled = False
@@ -248,7 +253,7 @@ Public Class frmActions
         'New With {Key .Value = 601, Key .Group = "6. DMX-In", Key .Display = String.Empty}, _
         'New With {Key .Value = 701, Key .Group = "7. DMX-Override", Key .Display = String.Empty} _
 
-        ChangeDescriptionHeight(pgAction, 100)
+        ChangeDescriptionHeight(pgAction, 128)
     End Sub
 
     ''Allows modification of the "Description" window height in a PropertyGrid control
@@ -268,7 +273,7 @@ Public Class frmActions
     End Sub
 
     Private Sub cboActionFunction_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cboActionFunction.SelectedIndexChanged
-        If (lvActions.SelectedItems.Count > 0) Then
+        If (lvActions.SelectedItems.Count = 1) Then
             With Configuration.Connections(main.FindDeviceByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage)
                 Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
                 Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
@@ -438,16 +443,20 @@ Public Class frmActions
         End With
     End Function
 
+    Private Sub lvActions_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles lvActions.Click
+        If (False) Then
+
+        End If
+    End Sub
+
     ''The ItemSelectionChanged event occurs whether the item state changes from selected to deselected or deselected to selected.
     ''The SelectedIndexChanged event occurs in single selection ListView controls, whenever there is a change to the index position of the selected item. In a multiple selection ListView control, this event occurs whenever an item is removed or added to the list of selected items.
     Private Sub lvActions_ItemSelectionChanged() Handles lvActions.ItemSelectionChanged
         'Private Sub lvActions_ItemSelectionChanged(ByVal sender As Object, ByVal e As System.Windows.Forms.ListViewItemSelectionChangedEventArgs) Handles lvActions.ItemSelectionChanged
-        ''TODO: ?? Save the previous action's settings, before updating
-        'Configuration.Connections(curCont.Device).Control(curCont.ContStr).Page(curCont.ContPage).Actions(0).Action = pgAction.SelectedObject
 
         If (lvActions.SelectedItems.Count < 1) Then
             DeselectAction()
-        Else
+        ElseIf (lvActions.SelectedItems.Count = 1) Then
             ''Actions List pane:
             cmdActionRemove.Enabled = True
             cmdActionUp.Enabled = True
@@ -471,6 +480,8 @@ Public Class frmActions
                     pgAction.SelectedObject = .Actions(curIndex).Action
                 End If
             End With
+        Else
+            ''Copy/Paste mode
         End If
     End Sub
     Private Sub lvActions_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lvActions.SelectedIndexChanged
@@ -512,7 +523,7 @@ Public Class frmActions
 
     Private Sub cmdActionAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdActionAdd.Click
         Dim groupReleased As Boolean = False
-        If (lvActions.SelectedItems.Count > 0) Then
+        If (lvActions.SelectedItems.Count = 1) Then
             If (lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group) = 1) Then
                 groupReleased = True
             End If
@@ -532,7 +543,7 @@ Public Class frmActions
     End Sub
 
     Private Sub cmdActionRemove_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdActionRemove.Click
-        If (lvActions.SelectedItems.Count > 0) Then
+        If (lvActions.SelectedItems.Count = 1) Then
             'TODO: need to update this to PopulateActions()?
             ''First, delete from Configuration
             Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
@@ -548,7 +559,7 @@ Public Class frmActions
     End Sub
 
     Private Sub cmdActionUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdActionUp.Click
-        If (lvActions.SelectedItems.Count > 0) Then
+        If (lvActions.SelectedItems.Count = 1) Then
             ''Only have to do anything if the item isn't already at index 0 within the group
             Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
             Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
@@ -566,12 +577,12 @@ Public Class frmActions
                     End If
                     PopulateActions(tmpAction)
                 End With
-        End If
+            End If
         End If
     End Sub
 
     Private Sub cmdActionDown_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdActionDown.Click
-        If (lvActions.SelectedItems.Count > 0) Then
+        If (lvActions.SelectedItems.Count = 1) Then
             ''Only have to do anything if the item isn't already at last index within the group
             Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
             Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
@@ -595,7 +606,7 @@ Public Class frmActions
     End Sub
 
     Private Sub cmdActionSwap_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdActionSwap.Click
-        If (lvActions.SelectedItems.Count > 0) Then
+        If (lvActions.SelectedItems.Count = 1) Then
             Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
             Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
             Dim tmpAction As New clsAction
@@ -618,7 +629,7 @@ Public Class frmActions
     End Sub
 
     Private Sub txtActionName_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtActionName.TextChanged
-        If (lvActions.SelectedItems.Count > 0) Then
+        If (lvActions.SelectedItems.Count = 1) Then
             lvActions.SelectedItems(0).Text = txtActionName.Text
 
             Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
@@ -632,46 +643,6 @@ Public Class frmActions
             End With
         End If
     End Sub
-
-    ''Generates a new Control in the Device Configuration, if not exist
-    Private Function SetControl(ByVal createControl As Boolean) As Boolean
-        If Not curCont Is Nothing Then
-            If Not (Configuration.Connections(main.FindDeviceByInput(curCont.Device)).Control.ContainsKey(curCont.ContStr)) Then
-                If createControl Then
-                    Dim newControl As clsControl = New clsControl
-                    Configuration.Connections(main.FindDeviceByInput(curCont.Device)).Control.Add(curCont.ContStr, newControl)
-                    Return True
-                Else
-                    Return False
-                End If
-            Else
-                Return True
-            End If
-        Else : Return False
-        End If
-    End Function
-
-    ''Generates a new Page in the Control, if not exist
-    Private Function SetPage(ByVal createPage As Boolean) As Boolean
-        If Not curCont Is Nothing Then
-            If SetControl(createPage) Then
-                If Not (Configuration.Connections(main.FindDeviceByInput(curCont.Device)).Control(curCont.ContStr).Page.ContainsKey(curCont.ContPage)) Then
-                    If createPage Then
-                        Dim newPage As clsControlPage = New clsControlPage
-                        Configuration.Connections(main.FindDeviceByInput(curCont.Device)).Control(curCont.ContStr).Page.Add(curCont.ContPage, newPage)
-                        Return True
-                    Else
-                        Return False
-                    End If
-                Else
-                    Return True
-                End If
-            Else
-                Return False
-            End If
-        Else : Return False
-        End If
-    End Function
 
     Private Sub chkPaged_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkPaged.CheckedChanged
         If SetControl(True) Then
@@ -740,6 +711,50 @@ Public Class frmActions
         End With
         PopulateActions()
     End Sub
+
+    Private Sub grpInput_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles grpInput.CheckedChanged
+        holdControl = grpInput.Checked
+    End Sub
+
+    ''Generates a new Control in the Device Configuration, if not exist
+    Private Function SetControl(ByVal createControl As Boolean) As Boolean
+        If Not curCont Is Nothing Then
+            If Not (Configuration.Connections(main.FindDeviceByInput(curCont.Device)).Control.ContainsKey(curCont.ContStr)) Then
+                If createControl Then
+                    Dim newControl As clsControl = New clsControl
+                    Configuration.Connections(main.FindDeviceByInput(curCont.Device)).Control.Add(curCont.ContStr, newControl)
+                    Return True
+                Else
+                    Return False
+                End If
+            Else
+                Return True
+            End If
+        Else : Return False
+        End If
+    End Function
+
+    ''Generates a new Page in the Control, if not exist
+    Private Function SetPage(ByVal createPage As Boolean) As Boolean
+        If Not curCont Is Nothing Then
+            If SetControl(createPage) Then
+                If Not (Configuration.Connections(main.FindDeviceByInput(curCont.Device)).Control(curCont.ContStr).Page.ContainsKey(curCont.ContPage)) Then
+                    If createPage Then
+                        Dim newPage As clsControlPage = New clsControlPage
+                        Configuration.Connections(main.FindDeviceByInput(curCont.Device)).Control(curCont.ContStr).Page.Add(curCont.ContPage, newPage)
+                        Return True
+                    Else
+                        Return False
+                    End If
+                Else
+                    Return True
+                End If
+            Else
+                Return False
+            End If
+        Else : Return False
+        End If
+    End Function
 End Class
 
 ''' <summary>

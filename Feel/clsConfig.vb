@@ -163,3 +163,15 @@ Public Class clsAction
         Action = Nothing
     End Sub
 End Class
+
+''A shell class for de-/serializing copy/pasted actions
+<Serializable()> _
+Public Class clsCopiedActions
+    Public Actions As Collections.Generic.List(Of clsAction)
+    Public ActionsOff As Collections.Generic.List(Of clsAction)
+
+    Sub New()
+        Actions = New Collections.Generic.List(Of clsAction)
+        ActionsOff = New Collections.Generic.List(Of clsAction)
+    End Sub
+End Class

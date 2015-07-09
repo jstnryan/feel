@@ -45,8 +45,8 @@ Module main
     Public aboutForm As frmAbout
 
     Public Sub Main()
-        For Each arg As String In My.Application.CommandLineArgs
-        Next
+        'For Each arg As String In My.Application.CommandLineArgs
+        'Next
 
         ''Aparently this is required to show Groups in ListView controls
         System.Windows.Forms.Application.EnableVisualStyles()
@@ -697,13 +697,13 @@ LoadConfig:
         Return If(Configuration.WmEnable, CType(SendMessage(LJHandle, WM_USER + uMsg, New IntPtr(wParam), New IntPtr(lParam)), Integer), -1)
     End Function
 
+    Public Function PostMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
+        Return If(Configuration.WmEnable, CType(PostMessage(LJHandle, WM_USER + uMsg, wParam, lParam), Integer), -1)
+    End Function
+
     Public Function SendCopyData(ByVal lParam As CopyData) As Integer
         'wParam is supposed to be a pointer to the handle of this process, or an HWND
         Return If(Configuration.WmEnable, CType(SendMessage(LJHandle, WM_COPYDATA, New IntPtr(0), lParam), Integer), -1)
-    End Function
-
-    Public Function PostMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-        Return If(Configuration.WmEnable, CType(PostMessage(LJHandle, WM_USER + uMsg, wParam, lParam), Integer), -1)
     End Function
 #End Region
 
