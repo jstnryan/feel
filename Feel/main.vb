@@ -45,6 +45,9 @@ Module main
     Public aboutForm As frmAbout
 
     Public Sub Main()
+        For Each arg As String In My.Application.CommandLineArgs
+        Next
+
         ''Aparently this is required to show Groups in ListView controls
         System.Windows.Forms.Application.EnableVisualStyles()
 
@@ -254,17 +257,14 @@ LoadConfig:
                         System.Windows.Forms.MessageBox.Show("There has been an unexpected error when trying to connect the output for the device named " & device.Name & "." & vbCrLf & vbCrLf & "The device has been disabled. Please check this device's connection information in the 'Configure Connections' window.", "Feel: Unknown MIDI Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                         Continue For
                     End Try
-                End If
 
-                ''Device should be connected, so now we take any "initialization" steps listed in the config
-                If device.OutputEnable Then
+                    ''Device should be connected, so now we take any "initialization" steps listed in the config
+                    Dim _device As Integer = FindDeviceByName(device.Name)
                     If Not (String.IsNullOrEmpty(device.Init)) Then
                         Dim initCmds() As String = device.Init.Split(Environment.NewLine.ToCharArray, StringSplitOptions.RemoveEmptyEntries)
-                        UpdateControlState(device.OutputName, initCmds)
+                        SendMidi(_device, initCmds)
                     End If
-
-                    'RedrawControls(device.OutputName)
-                    RedrawControls(device.Name)
+                    RedrawControls(_device)
                 End If
             End If
         Next
@@ -324,13 +324,16 @@ LoadConfig:
             End If
         ElseIf Not configMode Then
             'Diagnostics.Debug.WriteLine("On : " & msg.Device.Name & " (" & Configuration.Connections(msg.Device.Name).Name & "), " & msg.Channel.ToString & ", " & msg.Pitch.ToString & ", " & msg.Velocity.ToString)
-            If (Configuration.Connections.ContainsKey(msg.Device.Name)) Then
+            Dim device As Integer = FindDevice(msg.Device.Name)
+            'TODO: Previous line makes next line unneccessary:
+            If (Configuration.Connections.ContainsKey(device)) Then
                 Dim ContStr As String = "9" & CByte(msg.Channel).ToString("X") & CByte(msg.Pitch).ToString("X2")
-                If (Configuration.Connections(msg.Device.Name).Control.ContainsKey(ContStr)) Then
-                    If (Configuration.Connections(msg.Device.Name).Control(ContStr).Page.ContainsKey(Configuration.Connections(msg.Device.Name).PageCurrent)) Then
+                If (Configuration.Connections(device).Control.ContainsKey(ContStr)) Then
+                    Dim _page As Byte = If(Configuration.Connections(device).Control(ContStr).Paged, Configuration.Connections(device).PageCurrent, CByte(0))
+                    If (Configuration.Connections(device).Control(ContStr).Page.ContainsKey(_page)) Then
                         ''End Checks
-                        With Configuration.Connections(msg.Device.Name).Control(ContStr).Page(Configuration.Connections(msg.Device.Name).PageCurrent)
-                            If (Configuration.Connections(msg.Device.Name).NoteOff) And (msg.Velocity = 0) Then
+                        With Configuration.Connections(device).Control(ContStr).Page(_page)
+                            If (Configuration.Connections(device).NoteOff) And (msg.Velocity = 0) Then
                                 ''This is actually a "NoteOff", or is to be treated as one according to configuration
                                 If ((.Behavior = 1) And Not (.IsActive)) Or (.Behavior = 0) Then
                                     ''This is a 'momentary' button [AND "IsActive" so is waiting to be turned off]
@@ -375,12 +378,15 @@ LoadConfig:
         ''Really no need to send this to actionForm in configMode, because we'd probably end up associating actions to button up actions by mistake.
         If Not configMode Then
             'System.Diagnostics.Debug.WriteLine("Off: " & msg.Device.Name & " (" & Configuration.Connections(msg.Device.Name).Name & "), " & msg.Channel.ToString & ", " & msg.Pitch.ToString & ", " & msg.Velocity.ToString)
-            If (Configuration.Connections.ContainsKey(msg.Device.Name)) Then
+            Dim device As Integer = FindDevice(msg.Device.Name)
+            'TODO: Previous line makes next line unneccessary:
+            If (Configuration.Connections.ContainsKey(device)) Then
                 Dim ContStr As String = "9" & CByte(msg.Channel).ToString("X") & CByte(msg.Pitch).ToString("X2")
-                If (Configuration.Connections(msg.Device.Name).Control.ContainsKey(ContStr)) Then
-                    If (Configuration.Connections(msg.Device.Name).Control(ContStr).Page.ContainsKey(Configuration.Connections(msg.Device.Name).PageCurrent)) Then
+                If (Configuration.Connections(device).Control.ContainsKey(ContStr)) Then
+                    Dim _page As Byte = If(Configuration.Connections(device).Control(ContStr).Paged, Configuration.Connections(device).PageCurrent, CByte(0))
+                    If (Configuration.Connections(device).Control(ContStr).Page.ContainsKey(_page)) Then
                         ''End Checks
-                        With Configuration.Connections(msg.Device.Name).Control(ContStr).Page(Configuration.Connections(msg.Device.Name).PageCurrent)
+                        With Configuration.Connections(device).Control(ContStr).Page(_page)
                             If ((.Behavior = 1) And (Not .IsActive)) Or (.Behavior = 0) Then
                                 ''This is a 'momentary' button [AND "IsActive" so is waiting to be turned off]
                                 '' OR
@@ -417,12 +423,14 @@ LoadConfig:
                 newCont = Nothing
             End If
         ElseIf Not configMode Then
-            If (Configuration.Connections.ContainsKey(msg.Device.Name)) Then
+            Dim device As Integer = FindDevice(msg.Device.Name)
+            'TODO: Previous line makes next line unneccessary:
+            If (Configuration.Connections.ContainsKey(device)) Then
                 Dim ContStr As String = "B" & CByte(msg.Channel).ToString("X") & CByte(msg.Control).ToString("X2")
-                If (Configuration.Connections(msg.Device.Name).Control.ContainsKey(ContStr)) Then
-                    If (Configuration.Connections(msg.Device.Name).Control(ContStr).Page.ContainsKey(Configuration.Connections(msg.Device.Name).PageCurrent)) Then
-                        ''End Checks
-                        For Each actn As clsAction In Configuration.Connections(msg.Device.Name).Control(ContStr).Page(Configuration.Connections(msg.Device.Name).PageCurrent).Actions
+                If (Configuration.Connections(device).Control.ContainsKey(ContStr)) Then
+                    Dim _page As Byte = If(Configuration.Connections(device).Control(ContStr).Paged, Configuration.Connections(device).PageCurrent, CByte(0))
+                    If (Configuration.Connections(device).Control(ContStr).Page.ContainsKey(_page)) Then
+                        For Each actn As clsAction In Configuration.Connections(device).Control(ContStr).Page(_page).Actions
                             If (actn.Enabled) Then
                                 If Not (actn.Action Is Nothing) Then
                                     If Not (DirectCast(actn.Action, iAction).Execute(msg.Device.Name, 176, CType(msg.Channel, Byte), CType(msg.Control, Byte), CType(msg.Value, Byte))) Then
@@ -439,171 +447,198 @@ LoadConfig:
 #End Region
 
 #Region "Device Helpers"
-    '''Temporary hard-coded stuff for APC units
-    ''If (device.Model = "APC40") Or (device.Model = "APC20") Then
-    ''    midiOut.Item(device.midiOutName).SendSysEx(New Byte() {&HF0, &H47, &H0, CByte(If(device.Model = "APC40", &H73, &H7B)), &H60, &H0, &H4, CByte(If(device.Mode = 0, &H40, If(device.Mode = 1, &H41, &H42))), &H8, &H2, &H6, &HF7})
-    ''    ''TODO: I'm just playing here, but these are examples of how to turn the various LEDs on and off
-    ''    If (device.Model = "APC40") Then
-    ''        '' The first controls buttons (SendNoteOn)
-    ''        'midiOut.Item(device.midiOutName).SendNoteOn(Channel.Channel1, Pitch.F3, colorAPC.Off) '90 53 00
-    ''        '' The second controls LED rings (SendControlChange)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(31, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(30, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(29, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(28, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(27, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(26, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(25, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(24, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(63, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(62, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(61, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(60, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(59, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(58, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(57, Midi.Control), 0)
-    ''        midiOut.Item(device.midiOutName).SendControlChange(Channel.Channel1, CType(56, Midi.Control), 0)
-    ''    End If
-    ''End If
-    Public Sub UpdateControlState(ByVal Device As String, ByVal State As String)
-        'TODO: Currently checking this twice, because the regex doesn't like being served an empty string.
-        ' Need to do after because NullOrEmpty does not include spaces.
-        If (String.IsNullOrEmpty(State)) Then Exit Sub
+    '''Map MIDI input and output names to device keys
+    Public Function FindDevice(ByVal Device As String) As Integer
+        'TODO: There's got to be a more efficient way of doing this...
+        Dim nam As Integer = FindDeviceByName(Device)
+        Dim ipt As Integer = FindDeviceByInput(Device)
+        Dim opt As Integer = FindDeviceByOutput(Device)
 
-        ''Remove whitespace from commands, and convert to uppercase
-        Dim regex As New Text.RegularExpressions.Regex("\s")
-        State = regex.Replace(State, String.Empty)
-        State = UCase(State)
-
-        ''Just a failsafe, don't need to do anything with empty States
-        If (String.IsNullOrEmpty(State)) Then Exit Sub
-
-        ''Get first character to determine command type (See Select statement below)
-        Dim cmdType As String = State.Substring(0, 1)
-        If (cmdType = "#") Then Exit Sub 'Comment
-
-        ''Check to make sure we have all information needed
-        If (State.Length < 6) Then Exit Sub
-
-        ''Convert to byte array
-        Dim len As Integer = State.Length
-        Dim upperBound As Integer = len \ 2
-        If ((len Mod 2) = 0) Then
-            upperBound -= 1
-        Else
-            State = "0" & State
+        If Not (nam = -1) Then
+            Return nam
+        ElseIf Not (ipt = -1) Then
+            Return ipt
+        ElseIf Not (opt = -1) Then
+            Return opt
         End If
-        Dim cmdArr(upperBound) As Byte
-        For i As Integer = 0 To upperBound
-            cmdArr(i) = Convert.ToByte(State.Substring(i * 2, 2), 16)
+        Return -1
+    End Function
+    Public Function FindDeviceByName(ByVal Name As String) As Integer
+        For Each device As Integer In Configuration.Connections.Keys
+            If (Configuration.Connections(device).Name = Name) Then Return device
         Next
-
-        ''Take appropriate action
-        Select Case cmdType
-            ''Unsupported:
-            'Case "A" 'Polyphonic Aftertouch
-            'Case "D" 'Channel Pressure (Aftertouch)
-
-            Case "8" 'MIDI Note Off
-                'midiOut.Item(device.OutputName).SendNoteOff(CType(cmd.Substring(1, 1), Midi.Channel), CType(Convert.ToInt16(cmd.Substring(2, 2)), Midi.Pitch), Convert.ToInt16(cmd.Substring(4, 2)))
-                midiOut.Item(Device).SendNoteOff(CType(Convert.ToByte(State.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Pitch), cmdArr(2))
-            Case "9" 'MIDI Note On
-                midiOut.Item(Device).SendNoteOn(CType(Convert.ToByte(State.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Pitch), cmdArr(2))
-            Case "B" 'Control Change
-                midiOut.Item(Device).SendControlChange(CType(Convert.ToByte(State.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Control), cmdArr(2))
-            Case "C" 'Program Change
-                midiOut.Item(Device).SendProgramChange(CType(Convert.ToByte(State.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Instrument))
-            Case "E" 'Pitch Wheel Change (Pitch Bend)
-                midiOut.Item(Device).SendPitchBend(CType(Convert.ToByte(State.Substring(1, 1), 16), Midi.Channel), cmdArr(1))
-            Case "F" 'MIDI System-Common Message
-                If (State.Substring(1, 1) = "0") Then 'MIDI Sysex Message
-                    midiOut.Item(Device).SendSysEx(cmdArr)
-                End If
-        End Select
-    End Sub
-    'TODO: Update for "ALL DEVICES"!!
-    Public Sub UpdateControlState(ByVal Device As String, ByVal State As String())
-        For Each _state As String In State
-            UpdateControlState(Device, _state)
+        Return -1
+    End Function
+    Public Function FindDeviceByInput(ByVal Input As String) As Integer
+        For Each device As Integer In Configuration.Connections.Keys
+            If (Configuration.Connections(device).InputName = Input) Then Return device
         Next
-    End Sub
-    Public Sub UpdateControlState(ByVal Device As String, ByVal ControlType As Byte, ByVal Channel As Byte, ByVal NotCon As Byte)
-        Dim ContStr As String = If(ControlType = 144 Or ControlType = 128, "9", "B") & Channel.ToString & NotCon.ToString("X2")
-        'Dim CurState As String = Configuration.Connections(Device).Control(ContStr).Page(0).CurrentState
-        If (Configuration.Connections.ContainsKey(Device)) Then
-            If (Configuration.Connections(Device).Control.ContainsKey(ContStr)) Then
-                UpdateControlState(Device, Configuration.Connections(Device).Control(ContStr).Page(0).CurrentState)
-            End If
-        End If
-    End Sub
-
-    Public Function SetPage(ByVal Device As String, ByVal Page As Byte) As Boolean
-        If (Device = "ALL DEVICES") Then
-            For Each dev As clsConnection In Configuration.Connections.Values
-                dev.PageCurrent = Page
-            Next
-        Else
-            If Not (Configuration.Connections.ContainsKey(Device)) Then
-                Return False
-            Else
-                Configuration.Connections(Device).PageCurrent = Page
-            End If
-        End If
-        Return RedrawControls(Device)
+        Return -1
+    End Function
+    Public Function FindDeviceByOutput(ByVal Output As String) As Integer
+        For Each device As Integer In Configuration.Connections.Keys
+            If (Configuration.Connections(device).OutputName = Output) Then Return device
+        Next
+        Return -1
     End Function
 
+    Public Sub SendMidi(ByVal Device As Integer, ByVal Message As String)
+        ''Make sure we're not wasting our time sending something to a device that doesn't exist
+        If (Device = -1) Or (Not Configuration.Connections.ContainsKey(Device)) Then
+            Exit Sub
+        Else
+            ''Ensure the device is enabled to receive
+            If (Configuration.Connections(Device).Enabled And Configuration.Connections(Device).OutputEnable) Then
+                'TODO: Currently checking this twice, because the regex doesn't like being served an empty string.
+                ' Need to do after because NullOrEmpty does not include spaces.
+                If (String.IsNullOrEmpty(Message)) Then Exit Sub
+
+                ''Remove whitespace from commands, and convert to uppercase
+                Dim regex As New Text.RegularExpressions.Regex("\s")
+                Message = regex.Replace(Message, String.Empty)
+                Message = UCase(Message)
+
+                ''Just a failsafe, don't need to do anything with empty States
+                If (String.IsNullOrEmpty(Message)) Then Exit Sub
+
+                ''Get first character to determine command type (See Select statement below)
+                Dim cmdType As String = Message.Substring(0, 1)
+                If (cmdType = "#") Then Exit Sub 'Comment
+
+                ''Check to make sure we have all information needed
+                If (Message.Length < 6) Then Exit Sub
+
+                ''Convert to byte array
+                Dim len As Integer = Message.Length
+                Dim upperBound As Integer = len \ 2
+                If ((len Mod 2) = 0) Then
+                    upperBound -= 1
+                Else
+                    Message = "0" & Message
+                End If
+                Dim cmdArr(upperBound) As Byte
+                For i As Integer = 0 To upperBound
+                    cmdArr(i) = Convert.ToByte(Message.Substring(i * 2, 2), 16)
+                Next
+
+                'TODO: Checks to make sure values (in Byte, 0-255) do not exceed valid MIDI values (half-Byte, 0-127)
+                ' There's surely a better way to do this...
+                If (Convert.ToByte(Message.Substring(1, 1), 16) > 15) Then Exit Sub
+                If (cmdArr(1) > 127) Then Exit Sub
+                If (cmdArr(2) > 127) Then Exit Sub
+
+                ''Get the device's MIDI output name
+                Dim _device As String = Configuration.Connections(Device).OutputName
+
+                ''Take appropriate action
+                Select Case cmdType
+                    ''Unsupported:
+                    'Case "A" 'Polyphonic Aftertouch
+                    'Case "D" 'Channel Pressure (Aftertouch)
+
+                    Case "8" 'MIDI Note Off
+                        'midiOut.Item(device.OutputName).SendNoteOff(CType(cmd.Substring(1, 1), Midi.Channel), CType(Convert.ToInt16(cmd.Substring(2, 2)), Midi.Pitch), Convert.ToInt16(cmd.Substring(4, 2)))
+                        midiOut.Item(_device).SendNoteOff(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Pitch), cmdArr(2))
+                    Case "9" 'MIDI Note On
+                        midiOut.Item(_device).SendNoteOn(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Pitch), cmdArr(2))
+                    Case "B" 'Control Change
+                        midiOut.Item(_device).SendControlChange(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Control), cmdArr(2))
+                    Case "C" 'Program Change
+                        midiOut.Item(_device).SendProgramChange(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Instrument))
+                    Case "E" 'Pitch Wheel Change (Pitch Bend)
+                        midiOut.Item(_device).SendPitchBend(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), cmdArr(1))
+                    Case "F" 'MIDI System-Common Message
+                        If (Message.Substring(1, 1) = "0") Then 'MIDI Sysex Message
+                            midiOut.Item(_device).SendSysEx(cmdArr)
+                        End If
+                End Select
+            End If
+        End If
+    End Sub
+    Public Sub SendMidi(ByVal Device As Integer, ByVal Message As String())
+        For Each _msg As String In Message
+            SendMidi(Device, _msg)
+        Next
+    End Sub
+    Public Sub SendMidi(ByVal Device As String, ByVal Message As String)
+        If (Device = "ALL DEVICES") Then
+            For Each dev As Integer In Configuration.Connections.Keys
+                SendMidi(dev, Message)
+            Next
+        Else
+            SendMidi(FindDevice(Device), Message)
+        End If
+    End Sub
+    Public Sub SendMidi(ByVal Device As String, ByVal Message As String())
+        For Each _msg As String In Message
+            SendMidi(Device, _msg)
+        Next
+    End Sub
+    'Public Sub SendMidi(ByVal Device As String, ByVal ControlType As Byte, ByVal Channel As Byte, ByVal NotCon As Byte)
+    '    Dim ContStr As String = If(ControlType = 144 Or ControlType = 128, "9", "B") & Channel.ToString & NotCon.ToString("X2")
+    '    Dim _device As Integer = FindDevice(Device)
+    '    SendMidi(Device, ContStr)
+    'End Sub
+    'Public Sub SendMidi(ByVal Device As Integer, ByVal ControlType As Byte, ByVal channel As Byte, ByVal notcon As Byte)
+    '    Dim ContStr As String = If(ControlType = 144 Or ControlType = 128, "9", "B") & channel.ToString & notcon.ToString("X2")
+    '    SendMidi(Device, ContStr)
+    'End Sub
+
+    Public Sub SetPage(ByVal Device As Integer, ByVal Page As Byte)
+        If (Device = -1) Or (Not Configuration.Connections.ContainsKey(Device)) Then
+            Exit Sub
+        Else
+            Configuration.Connections(Device).PageCurrent = Page
+            RedrawControls(Device)
+        End If
+    End Sub
+    Public Sub SetPage(ByVal Device As String, ByVal Page As Byte)
+        If (Device = "ALL DEVICES") Then
+            For Each dev As clsConnection In Configuration.Connections.Values
+                If (dev.Enabled = True) Then
+                    dev.PageCurrent = Page
+                End If
+            Next
+        Else
+            Dim _device As Integer = FindDevice(Device)
+            If (Configuration.Connections.ContainsKey(_device)) Then
+                Configuration.Connections(_device).PageCurrent = Page
+            End If
+        End If
+        RedrawControls(Device)
+    End Sub
+
+    Public Sub RedrawControls(ByVal Device As Integer)
+        If (Device = -1) Or (Not Configuration.Connections.ContainsKey(Device)) Then
+            Exit Sub
+        Else
+            With Configuration.Connections(Device)
+                If (.Enabled And .OutputEnable) Then
+                    For Each cont As clsControl In .Control.Values
+                        If (cont.Page.ContainsKey(.PageCurrent)) Then
+                            ''If this is the first time setting state, also set current state
+                            '' otherwise use only CurrentState
+                            If (cont.Page(.PageCurrent).CurrentState = "") Then
+                                SendMidi(Device, cont.Page(.PageCurrent).InitialState)
+                                cont.Page(.PageCurrent).CurrentState = cont.Page(.PageCurrent).InitialState
+                            Else
+                                SendMidi(Device, cont.Page(.PageCurrent).CurrentState)
+                            End If
+                        End If
+                    Next
+                End If
+            End With
+        End If
+    End Sub
     Public Function RedrawControls(Optional ByVal Device As String = "ALL DEVICES") As Boolean
         If (Device = "ALL DEVICES") Then
-            For Each dev As clsConnection In Configuration.Connections.Values
-                RedrawControls(dev.Name)
+            For Each _device As Integer In Configuration.Connections.Keys
+                RedrawControls(_device)
             Next
         Else
-            For Each key As String In Configuration.Connections.Keys
-                If (Configuration.Connections(key).Name) = Device Then
-                    If (Configuration.Connections(key).Control.Count > 0) Then
-                        For Each cont As clsControl In Configuration.Connections(key).Control.Values
-                            If (cont.Page.ContainsKey(Configuration.Connections(key).PageCurrent)) Then
-                                ''If this is the first time setting state, also set current state
-                                '' otherwise use only CurrentState
-                                If (cont.Page(Configuration.Connections(key).PageCurrent).CurrentState = "") Then
-                                    UpdateControlState(Configuration.Connections(key).OutputName, cont.Page(Configuration.Connections(key).PageCurrent).InitialState)
-                                    cont.Page(Configuration.Connections(key).PageCurrent).CurrentState = cont.Page(Configuration.Connections(key).PageCurrent).InitialState
-                                Else
-                                    UpdateControlState(Configuration.Connections(key).OutputName, cont.Page(Configuration.Connections(key).PageCurrent).CurrentState)
-                                End If
-                            End If
-                        Next
-                    End If
-                    Exit For
-                End If
-            Next
+            RedrawControls(FindDevice(Device))
         End If
     End Function
-
-    Public Function SendMidiNoteOn(ByVal Device As String, ByVal Channel As Byte, ByVal Note As Byte, ByVal Velocity As Byte) As Boolean
-        Diagnostics.Debug.WriteLine("Device.SendMidiNoteOn handled: " & Device)
-        Return True
-    End Function
-
-    Public Function SendMidiNoteOff(ByVal Device As String, ByVal Channel As Byte, ByVal Note As Byte, ByVal Velocity As Byte) As Boolean
-        Diagnostics.Debug.WriteLine("Device.SendMidiNoteOff handled: " & Device)
-        Return True
-    End Function
-
-    Public Function SendSysex(ByVal Device As String, ByVal Message As Byte()) As Boolean
-        Diagnostics.Debug.WriteLine("Device.SendSysex handled: " & Message(0).ToString)
-        Return True
-    End Function
-
-    'TODO: Restructure all these 'helper functions' that are supurflous
-    Public Sub SendMidi(ByVal dev As String, ByVal mid As String)
-        UpdateControlState(dev, mid)
-        'For Each device As String In Configuration.Connections.Keys
-        '    If Configuration.Connections(device).Name = dev Then
-        '        UpdateControlState(Configuration.Connections(device).OutputName, mid)
-        '    End If
-        'Next
-    End Sub
 #End Region
 
 #Region "Windows Message Functions"
@@ -659,16 +694,16 @@ LoadConfig:
     '    Return CType(WindowsMessages.SendMessage(New IntPtr(handle), WM_USER + uMsg, New IntPtr(wParam), New IntPtr(lParam)), Integer)
     'End Function
     Public Function SendMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-        Return CType(SendMessage(LJHandle, WM_USER + uMsg, New IntPtr(wParam), New IntPtr(lParam)), Integer)
+        Return If(Configuration.WmEnable, CType(SendMessage(LJHandle, WM_USER + uMsg, New IntPtr(wParam), New IntPtr(lParam)), Integer), -1)
     End Function
 
     Public Function SendCopyData(ByVal lParam As CopyData) As Integer
         'wParam is supposed to be a pointer to the handle of this process, or an HWND
-        Return CType(SendMessage(LJHandle, WM_COPYDATA, New IntPtr(0), lParam), Integer)
+        Return If(Configuration.WmEnable, CType(SendMessage(LJHandle, WM_COPYDATA, New IntPtr(0), lParam), Integer), -1)
     End Function
 
     Public Function PostMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-        Return CType(PostMessage(LJHandle, WM_USER + uMsg, wParam, lParam), Integer)
+        Return If(Configuration.WmEnable, CType(PostMessage(LJHandle, WM_USER + uMsg, wParam, lParam), Integer), -1)
     End Function
 #End Region
 

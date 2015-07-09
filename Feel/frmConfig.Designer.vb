@@ -257,6 +257,7 @@ Partial Class frmConfig
         'chkDmxover
         '
         Me.chkDmxover.AutoSize = True
+        Me.chkDmxover.Enabled = False
         Me.chkDmxover.Location = New System.Drawing.Point(262, 42)
         Me.chkDmxover.Name = "chkDmxover"
         Me.chkDmxover.Size = New System.Drawing.Size(129, 17)
@@ -267,6 +268,7 @@ Partial Class frmConfig
         'chkDmxin
         '
         Me.chkDmxin.AutoSize = True
+        Me.chkDmxin.Enabled = False
         Me.chkDmxin.Location = New System.Drawing.Point(15, 42)
         Me.chkDmxin.Name = "chkDmxin"
         Me.chkDmxin.Size = New System.Drawing.Size(176, 17)
@@ -277,6 +279,7 @@ Partial Class frmConfig
         'chkFingers
         '
         Me.chkFingers.AutoSize = True
+        Me.chkFingers.Enabled = False
         Me.chkFingers.Location = New System.Drawing.Point(262, 19)
         Me.chkFingers.Name = "chkFingers"
         Me.chkFingers.Size = New System.Drawing.Size(145, 17)

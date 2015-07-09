@@ -58,8 +58,6 @@ Public Class clsActionIntPage
 
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
         SetPage(_device, _page)
-        'RedrawControls(Device)
-        RedrawControls(_device)
         Return True
     End Function
 
@@ -73,7 +71,7 @@ Public Class clsActionIntPage
     <TypeConverter(GetType(DeviceList)), _
         DisplayName("Target Device"), _
         Description("Which device(s) to change."), _
-        DefaultValue("")> _
+        DefaultValue("ALL DEVICES")> _
     Public Property Device() As String
         Get
             Return _device
@@ -85,19 +83,24 @@ Public Class clsActionIntPage
 
     <DisplayName("Page Number"), _
         Description("The page to change to."), _
-        DefaultValue(1)> _
+        DefaultValue(0)> _
     Public Property Page() As Byte
         Get
             Return _page
         End Get
         Set(ByVal value As Byte)
-            If (value >= 255 And value <= 1) Then
+            If (value <= 255 And value >= 1) Then
                 _page = value
             Else
-                _page = 1
+                _page = 0
             End If
         End Set
     End Property
+
+    Sub New()
+        _device = "ALL DEVICES"
+        _page = 0
+    End Sub
 End Class
 
 'TODO: update with "Device" field?
@@ -120,18 +123,19 @@ Public Class clsActionIntChangeControlState
     End Property
 
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
-        If Not (Configuration.Connections.ContainsKey(Device)) Then
+        Dim _device As Integer = main.FindDeviceByInput(Device)
+        If Not (Configuration.Connections.ContainsKey(_device)) Then
             Return False
         Else
             Dim ContStr As String = If(Type = 144 Or Type = 128, "9", "B") & Channel.ToString & NoteCon.ToString("X2")
-            If Not (Configuration.Connections(Device).Control.ContainsKey(ContStr)) Then
+            If Not (Configuration.Connections(_device).Control.ContainsKey(ContStr)) Then
                 Return False
             Else
                 'TODO: Usint ".PageCurrent" is a hacky shortcut, and could lead to trouble down the line
-                Configuration.Connections(Device).Control(ContStr).Page(Configuration.Connections(Device).PageCurrent).CurrentState = _state
-                UpdateControlState(Device, _state)
+                Configuration.Connections(_device).Control(ContStr).Page(Configuration.Connections(_device).PageCurrent).CurrentState = _state
+                main.SendMidi(_device, _state)
                 ''OR:
-                'UpdateControlState(Device, Configuration.Connections(Device).Control(ContStr).Page(Configuration.Connections(Device).PageCurrent).CurrentState)
+                'main.SendMidi(Device, Configuration.Connections(Device).Control(ContStr).Page(Configuration.Connections(Device).PageCurrent).CurrentState)
                 Return True
             End If
         End If
@@ -177,17 +181,18 @@ Public Class clsActionIntToggleControlState
     End Property
 
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
-        If Not (Configuration.Connections.ContainsKey(Device)) Then
+        Dim _device As Integer = main.FindDeviceByInput(Device)
+        If Not (Configuration.Connections.ContainsKey(_device)) Then
             Return False
         Else
             Dim ContStr As String = If(Type = 144 Or Type = 128, "9", "B") & Channel.ToString & NoteCon.ToString("X2")
-            If Not (Configuration.Connections(Device).Control.ContainsKey(ContStr)) Then
+            If Not (Configuration.Connections(_device).Control.ContainsKey(ContStr)) Then
                 Return False
             Else
                 'TODO: Usint ".PageCurrent" is a hacky shortcut, and could lead to trouble down the line
-                Dim newState As String = _states(Array.IndexOf(_states, Configuration.Connections(Device).Control(ContStr).Page(Configuration.Connections(Device).PageCurrent).CurrentState) + 1)
-                Configuration.Connections(Device).Control(ContStr).Page(Configuration.Connections(Device).PageCurrent).CurrentState = newState
-                UpdateControlState(Device, newState)
+                Dim newState As String = _states(Array.IndexOf(_states, Configuration.Connections(_device).Control(ContStr).Page(Configuration.Connections(_device).PageCurrent).CurrentState) + 1)
+                Configuration.Connections(_device).Control(ContStr).Page(Configuration.Connections(_device).PageCurrent).CurrentState = newState
+                main.SendMidi(_device, newState)
                 ''OR:
                 'UpdateControlState(Device, Configuration.Connections(Device).Control(ContStr).Page(Configuration.Connections(Device).PageCurrent).CurrentState)
                 Return True
@@ -215,83 +220,83 @@ Public Class clsActionIntToggleControlState
     End Property
 End Class
 
-<Serializable()> _
-Public Class clsActionIntGroupResetState
-    Implements iAction
+''DEPRECIATED by clsActionIntGroupResetControl
+'<Serializable()> _
+'Public Class clsActionIntGroupResetState
+'    Implements iAction
 
-    <NonSerialized()> _
-    Public Const _Name As String = "Reset Group State"
-    <NonSerialized()> _
-    Public Const _Description As String = "Sets all controls in group to 'Initial State.'"
+'    <NonSerialized()> _
+'    Public Const _Name As String = "Reset Group State"
+'    <NonSerialized()> _
+'    Public Const _Description As String = "Sets all controls in group to 'Initial State.'"
 
-    Private _group As Byte
-    Private _device As String
+'    Private _group As Byte
+'    Private _device As String
 
-    <Browsable(False)> _
-    Public ReadOnly Property Description() As String Implements iAction.Description
-        Get
-            Return _Description
-        End Get
-    End Property
+'    <Browsable(False)> _
+'    Public ReadOnly Property Description() As String Implements iAction.Description
+'        Get
+'            Return _Description
+'        End Get
+'    End Property
 
-    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
-        'TODO:
-        'If (_device = "ALL DEVICES") Then
-        'Else
-        'End If
+'    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
+'        'TODO:
+'        'If (_device = "ALL DEVICES") Then
+'        'Else
+'        'End If
 
 
-        For Each dev As String In Configuration.Connections.Keys
-            For Each cont As String In Configuration.Connections(dev).Control.Keys
-                For Each pag As Byte In Configuration.Connections(dev).Control(cont).Page.Keys
-                    If (Configuration.Connections(dev).Control(cont).Page(pag).ControlGroup = _group) Then
-                        Configuration.Connections(dev).Control(cont).Page(pag).CurrentState = Configuration.Connections(dev).Control(cont).Page(pag).InitialState
-                    End If
-                Next
-            Next
-        Next
-        RedrawControls(_device)
-        Return True
-    End Function
+'        For Each dev As Integer In Configuration.Connections.Keys
+'            For Each cont As String In Configuration.Connections(dev).Control.Keys
+'                For Each pag As Byte In Configuration.Connections(dev).Control(cont).Page.Keys
+'                    If (Configuration.Connections(dev).Control(cont).Page(pag).ControlGroup = _group) Then
+'                        Configuration.Connections(dev).Control(cont).Page(pag).CurrentState = Configuration.Connections(dev).Control(cont).Page(pag).InitialState
+'                    End If
+'                Next
+'            Next
+'        Next
+'        RedrawControls(_device)
+'        Return True
+'    End Function
 
-    <Browsable(False)> _
-    Public ReadOnly Property Name() As String Implements iAction.Name
-        Get
-            Return _Name
-        End Get
-    End Property
+'    <Browsable(False)> _
+'    Public ReadOnly Property Name() As String Implements iAction.Name
+'        Get
+'            Return _Name
+'        End Get
+'    End Property
 
-    <DisplayName("Group"), _
-        Description("Which group to reset to 'Initial State.'"), _
-        DefaultValue(0)> _
-    Public Property Group() As Byte
-        Get
-            Return _group
-        End Get
-        Set(ByVal value As Byte)
-            _group = value
-        End Set
-    End Property
+'    <DisplayName("Group"), _
+'        Description("Which group to reset to 'Initial State.'"), _
+'        DefaultValue(0)> _
+'    Public Property Group() As Byte
+'        Get
+'            Return _group
+'        End Get
+'        Set(ByVal value As Byte)
+'            _group = value
+'        End Set
+'    End Property
 
-    <TypeConverter(GetType(DeviceList)), _
-        DisplayName("Target Device"), _
-        Description("Which device(s) to change."), _
-        DefaultValue("ALL DEVICES")> _
-    Public Property Device() As String
-        Get
-            Return _device
-        End Get
-        Set(ByVal value As String)
-            _device = value
-        End Set
-    End Property
+'    <TypeConverter(GetType(DeviceList)), _
+'        DisplayName("Target Device"), _
+'        Description("Which device(s) to change."), _
+'        DefaultValue("ALL DEVICES")> _
+'    Public Property Device() As String
+'        Get
+'            Return _device
+'        End Get
+'        Set(ByVal value As String)
+'            _device = value
+'        End Set
+'    End Property
 
-    Friend Sub New()
-        _group = 0
-        _device = "ALL DEVICES"
-    End Sub
-End Class
-
+'    Friend Sub New()
+'        _group = 0
+'        _device = "ALL DEVICES"
+'    End Sub
+'End Class
 <Serializable()> _
 Public Class clsActionIntGroupResetControl
     Implements iAction
@@ -299,7 +304,7 @@ Public Class clsActionIntGroupResetControl
     <NonSerialized()> _
     Public Const _Name As String = "Reset Controls by Group"
     <NonSerialized()> _
-    Public Const _Description As String = "Sets all controls in group to 'inactive' (momentary/latch button status)."
+    Public Const _Description As String = "Sets all controls in group to 'inactive' (momentary/latch button status), and resets control state."
 
     Private _group As Byte
     Private _redraw As Boolean
@@ -312,11 +317,12 @@ Public Class clsActionIntGroupResetControl
     End Property
 
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
-        For Each dev As String In Configuration.Connections.Keys
+        For Each dev As Integer In Configuration.Connections.Keys
             For Each cont As String In Configuration.Connections(dev).Control.Keys
                 For Each pag As Byte In Configuration.Connections(dev).Control(cont).Page.Keys
                     If (Configuration.Connections(dev).Control(cont).Page(pag).ControlGroup = _group) Then
                         Configuration.Connections(dev).Control(cont).Page(pag).IsActive = False
+                        Configuration.Connections(dev).Control(cont).Page(pag).CurrentState = Configuration.Connections(dev).Control(cont).Page(pag).InitialState
                     End If
                 Next
             Next
@@ -1256,25 +1262,8 @@ Public Class clsActionMidiSendString
     End Property
 
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
-        'TODO: This is ugly shit! Fix this problem.
-        Dim dev As String = ""
-        For Each d As String In Configuration.Connections.Keys
-            If (Configuration.Connections(d).Name = Device) Then
-                dev = d
-                Exit For
-            End If
-        Next
-        If (dev = "") Then
-            For Each d As String In Configuration.Connections.Keys
-                If (Configuration.Connections(d).InputName = Device) Then
-                    dev = d
-                    Exit For
-                End If
-            Next
-        End If
-
-        If Not (dev = "") Then
-            'TODO: Uhhh, this is sorta hacky, but should work...
+        Dim _device As Integer = main.FindDeviceByName(_dev)
+        If Not (_device = -1) Then
             SendMidi(_dev, _str)
             Return True
         Else
@@ -1336,24 +1325,8 @@ Public Class clsActionMidiControlChange
     End Property
 
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements iAction.Execute
-        'TODO: This is ugly shit! Fix this problem.
-        Dim dev As String = ""
-        For Each d As String In Configuration.Connections.Keys
-            If (Configuration.Connections(d).Name = Device) Then
-                dev = d
-                Exit For
-            End If
-        Next
-        If (dev = "") Then
-            For Each d As String In Configuration.Connections.Keys
-                If (Configuration.Connections(d).InputName = Device) Then
-                    dev = d
-                    Exit For
-                End If
-            Next
-        End If
-
-        If Not (dev = "") Then
+        Dim _device As Integer = main.FindDeviceByName(_dev)
+        If Not (_device = -1) Then
             'TODO: checks to make sure _chan is <= 15, _cont <= 127
             Dim cntstr As String = "B" & _chan.ToString("X") & _cont.ToString("X2") & VelVal.ToString("X2")
             'Diagnostics.Debug.WriteLine("Control Change: " & cntstr)
@@ -1410,7 +1383,6 @@ Public Class clsActionMidiControlChange
 End Class
 #End Region
 
-
 #Region "PropertyGrid Helpers"
 Public Class DeviceList
     Inherits ComponentModel.StringConverter
@@ -1423,7 +1395,7 @@ Public Class DeviceList
         Dim devArr As Collections.Generic.List(Of String) = New Collections.Generic.List(Of String)
         devArr.Add("ALL DEVICES")
 
-        For Each device As String In Configuration.Connections.Keys
+        For Each device As Integer In Configuration.Connections.Keys
             devArr.Add(Configuration.Connections(device).Name)
         Next
 
@@ -1442,7 +1414,7 @@ Public Class OutDeviceList
     Public Overloads Overrides Function GetStandardValues(ByVal context As ComponentModel.ITypeDescriptorContext) As StandardValuesCollection
         Dim devArr As Collections.Generic.List(Of String) = New Collections.Generic.List(Of String)
         devArr.Add("ALL DEVICES")
-        For Each device As String In Configuration.Connections.Keys
+        For Each device As Integer In Configuration.Connections.Keys
             If Configuration.Connections(device).OutputEnable Then devArr.Add(Configuration.Connections(device).Name)
         Next
         Return New StandardValuesCollection(devArr.ToArray)
@@ -1451,211 +1423,49 @@ End Class
 #End Region
 
 
+
+
+
+
+
+
 ''DEPRECIATED CLASSES
-#Region "Internal Actions"
-<Serializable()> _
-Public Class clsIntPage
-    Public Const Name As String = "Go to Page"
-    Public Const Description As String = "Triggers a page change on one, or all, control surface(s) to a specific page." & vbCrLf & vbCrLf & "• To change multiple controllers to different pages, use multiple actions." & vbCrLf & vbCrLf & "• To change page by an increment, use 'Skip Pages' instead." & vbCrLf & vbCrLf & "It is HIGHLY RECOMMENDED to disable the 'Paged Control' option when defining page change actions."
-    Private _page As Byte
-    Private _device As String
+'<Serializable()> _
+'Public Class clsIntShift
+'    Public Const Name As String = "Shift"
+'    Public Const Description As String = "Sets or removes a 'Shift' condition. Controls and actions may have additional or alternate behaviors when a Shift state is active."
+'    Public Toggle As Boolean
+'    Private _device As String
 
-    <DisplayName("Page Number"), _
-        Description("The page to change to."), _
-        DefaultValue(1)> _
-    Public Property Page() As Byte
-        Get
-            Return _page
-        End Get
-        Set(ByVal value As Byte)
-            If (value >= 255 And value <= 1) Then
-                _page = value
-            Else
-                _page = 1
-            End If
-        End Set
-    End Property
-
-    <TypeConverter(GetType(DeviceList)), _
-        DisplayName("Target Device"), _
-        Description("Which device(s) to change."), _
-        DefaultValue("")> _
-    Public Property Device() As String
-        Get
-            Return _device
-        End Get
-        Set(ByVal value As String)
-            _device = value
-        End Set
-    End Property
-End Class
-
-<Serializable()> _
-Public Class clsIntPageJump
-    Public Const Name As String = "Skip Pages"
-    Public Const Description As String = "Triggers a page change on one, or all, control surface(s) to based on an increment or decrement to the current page." & vbCrLf & vbCrLf & "• To change to a specific page, use 'Go to Page' instead." & vbCrLf & vbCrLf & "It is HIGHLY RECOMMENDED to disable the 'Paged Control' option when defining page change actions."
-    Private _increment As SByte
-    Private _device As String
-
-    <DisplayName("Page Increment"), _
-        Description("How many pages to advance at a time. Positive to increase page, negative to decrease."), _
-        DefaultValue(1)> _
-    Public Property Increment() As SByte
-        Get
-            Return _increment
-        End Get
-        Set(ByVal value As SByte)
-            _increment = value
-        End Set
-    End Property
-
-    <TypeConverter(GetType(DeviceList)), _
-        DisplayName("Target Device"), _
-        Description("Which device(s) to change."), _
-        DefaultValue("")> _
-    Public Property Device() As String
-        Get
-            Return _device
-        End Get
-        Set(ByVal value As String)
-            _device = value
-        End Set
-    End Property
-End Class
-
-<Serializable()> _
-Public Class clsIntShift
-    Public Const Name As String = "Shift"
-    Public Const Description As String = "Sets or removes a 'Shift' condition. Controls and actions may have additional or alternate behaviors when a Shift state is active."
-    Public Toggle As Boolean
-    Private _device As String
-
-    <TypeConverter(GetType(DeviceList)), _
-        DisplayName("Target Device"), _
-        Description("Which device to enable Shift functionality."), _
-        DefaultValue("")> _
-    Public Property Device() As String
-        Get
-            Return _device
-        End Get
-        Set(ByVal value As String)
-            _device = value
-        End Set
-    End Property
-End Class
-
-<Serializable()> _
-Public Class clsIntRedrawControls
-    Public Const Name As String = "Redraw Controls"
-    Public Const Description As String = "Forces one or more devices to be updated to the proper control states, usually button illumination." & vbCrLf & vbCrLf & "• In theory, executing this action should never be necessary, however due to possible inconsistencies in configuration, a state refresh may be desireable."
-    Private _device As String
-
-    <TypeConverter(GetType(DeviceList)), _
-        DisplayName("Target Device"), _
-        Description("Which device to redraw."), _
-        DefaultValue("")> _
-    Public Property Device() As String
-        Get
-            Return _device
-        End Get
-        Set(ByVal value As String)
-            _device = value
-        End Set
-    End Property
-End Class
-#End Region
-
-#Region "MIDI Actions"
-<Serializable()> _
-Public Class clsMidiSend
-    Public Const Name As String = "Send MIDI"
-    Public Const Description As String = "Sends a MIDI Note or Control Change to a device, or all devices." & vbCrLf & vbCrLf & "• To send a MIDI System Exclusive (Sysex) message, use 'Send Sysex' instead."
-    Private _output As String
-    Private _isnote As Boolean  'Note or CC
-    Private _chan As Byte       'MIDI Channel [0-15]
-    Private _not As Byte        '"Note" (Note) or "Control" (CC) [0-127]
-    Private _val As Byte        '"Velocity" (Note) or "Value" (CC) [0-127]
-
-    <TypeConverter(GetType(OutDeviceList)), _
-        DisplayName("Target Device"), _
-        Description("Which device to redraw."), _
-        DefaultValue("")> _
-    Public Property Device() As String
-        Get
-            Return _output
-        End Get
-        Set(ByVal value As String)
-            _output = value
-        End Set
-    End Property
-End Class
-
-<Serializable()> _
-Public Class clsMidiSysex
-    Public Const Name As String = "Send Sysex"
-    Public Const Description As String = "Sends a MIDI System Exclusive (Sysex) message to a device, or all devices." & vbCrLf & vbCrLf & "• To send a MIDI Note or Control Change, use 'Send MIDI' instead."
-    Private _output As String
-    Private _message As String  'Stored as 'hex in plaintext' with or without spaces ("F0 47 00 7B 60 00 04 42 08 02 06 F7")
-
-    <TypeConverter(GetType(OutDeviceList)), _
-        DisplayName("Target Device"), _
-        Description("Which device to redraw."), _
-        DefaultValue("")> _
-    Public Property Device() As String
-        Get
-            Return _output
-        End Get
-        Set(ByVal value As String)
-            _output = value
-        End Set
-    End Property
-
-    <DisplayName("SysEx Message"), _
-        Description("The string of hexadecimal values to send (with/without spaces). Ex: F0 47 00 F7"), _
-        DefaultValue("")> _
-    Public Property Message() As String
-        Get
-            Return _message
-        End Get
-        Set(ByVal value As String)
-            _message = value
-        End Set
-    End Property
-End Class
-#End Region
-
+'    <TypeConverter(GetType(DeviceList)), _
+'        DisplayName("Target Device"), _
+'        Description("Which device to enable Shift functionality."), _
+'        DefaultValue("")> _
+'    Public Property Device() As String
+'        Get
+'            Return _device
+'        End Get
+'        Set(ByVal value As String)
+'            _device = value
+'        End Set
+'    End Property
+'End Class
 #Region "Windows Actions"
-<Serializable()> _
-Public Class clsWinCommand
-    Private _command As String
-End Class
+'<Serializable()> _
+'Public Class clsWinCommand
+'    Private _command As String
+'End Class
 
-<Serializable()> _
-Public Class clsWinRun
-    Private _path As String
-    Private _switches As String
-End Class
+'<Serializable()> _
+'Public Class clsWinRun
+'    Private _path As String
+'    Private _switches As String
+'End Class
 
-<Serializable()> _
-Public Class clsWinSendkeys
-    Private _handle As Integer
-    Private _window As String
-    Private _keys As String
-End Class
-#End Region
-
-#Region "LightJockey Actions"
-
-#End Region
-
-#Region "Fingers Actions"
-
-#End Region
-
-#Region "DMX-In Actions"
-
-#End Region
-
-#Region "DMX-Override Actions"
-
+'<Serializable()> _
+'Public Class clsWinSendkeys
+'    Private _handle As Integer
+'    Private _window As String
+'    Private _keys As String
+'End Class
 #End Region
