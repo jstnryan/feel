@@ -143,7 +143,8 @@
             main.LoadConfiguration()
             ConfigFileUpdated = True
         End If
-        openDialog = Nothing
+        openDialog.Dispose()
+        'openDialog = Nothing
     End Sub
 
     Private Sub cmdFileNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdFileNew.Click
@@ -159,7 +160,8 @@
             main.LoadConfiguration()
             ConfigFileUpdated = True
         End If
-        saveDialog = Nothing
+        saveDialog.Dispose()
+        'saveDialog = Nothing
     End Sub
 
     Private Sub cmdFileSaveAs_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdFileSaveAs.Click
@@ -174,6 +176,7 @@
             'main.LoadConfiguration() ''Not neccessary, because it's an exact copy of old config
             ConfigFileUpdated = True
         End If
-        saveDialog = Nothing
+        saveDialog.Dispose()
+        'saveDialog = Nothing
     End Sub
 End Class
