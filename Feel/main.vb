@@ -736,7 +736,7 @@ LoadConfig:
 
     Private _ljHandle As IntPtr = IntPtr.Zero
     Private ReadOnly Property LJHandle() As IntPtr
-        <Diagnostics.DebuggerStepThrough()> _
+        <Diagnostics.DebuggerStepThrough()>
         Get
             If (_ljHandle = IntPtr.Zero) Or (_ljHandle = Nothing) Then
                 _ljHandle = GetHandle()
@@ -766,7 +766,7 @@ LoadConfig:
         Return If(FeelConfig.WmEnable, CType(SendMessage(LJHandle, ActionInterface.WM_USER + uMsg, New IntPtr(wParam), New IntPtr(lParam)), Integer), -1)
     End Function
 
-    <Diagnostics.DebuggerStepThrough()> _
+    '<Diagnostics.DebuggerStepThrough()> _
     Public Function PostMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
         Return If(FeelConfig.WmEnable, CType(PostMessage(LJHandle, ActionInterface.WM_USER + uMsg, wParam, lParam), Integer), -1)
     End Function
