@@ -49,14 +49,13 @@ Partial Class frmConfig
         Me.lblConnectionInput = New System.Windows.Forms.Label
         Me.txtConnectionName = New System.Windows.Forms.TextBox
         Me.lblConnectionName = New System.Windows.Forms.Label
-        Me.grpNonMIDI = New System.Windows.Forms.GroupBox
-        Me.cboFingersPort = New System.Windows.Forms.ComboBox
+        Me.grpProgramConfig = New System.Windows.Forms.GroupBox
         Me.chkDmxover = New System.Windows.Forms.CheckBox
         Me.chkDmxin = New System.Windows.Forms.CheckBox
-        Me.chkFingers = New System.Windows.Forms.CheckBox
+        Me.chkIgnoreWhileConnecting = New System.Windows.Forms.CheckBox
         Me.chkWindowsMessages = New System.Windows.Forms.CheckBox
         Me.grpConnectionDetails.SuspendLayout()
-        Me.grpNonMIDI.SuspendLayout()
+        Me.grpProgramConfig.SuspendLayout()
         Me.SuspendLayout()
         '
         'btnAddConnection
@@ -230,29 +229,18 @@ Partial Class frmConfig
         Me.lblConnectionName.TabIndex = 0
         Me.lblConnectionName.Text = "Name:"
         '
-        'grpNonMIDI
+        'grpProgramConfig
         '
-        Me.grpNonMIDI.Controls.Add(Me.cboFingersPort)
-        Me.grpNonMIDI.Controls.Add(Me.chkDmxover)
-        Me.grpNonMIDI.Controls.Add(Me.chkDmxin)
-        Me.grpNonMIDI.Controls.Add(Me.chkFingers)
-        Me.grpNonMIDI.Controls.Add(Me.chkWindowsMessages)
-        Me.grpNonMIDI.Location = New System.Drawing.Point(12, 281)
-        Me.grpNonMIDI.Name = "grpNonMIDI"
-        Me.grpNonMIDI.Size = New System.Drawing.Size(539, 69)
-        Me.grpNonMIDI.TabIndex = 5
-        Me.grpNonMIDI.TabStop = False
-        Me.grpNonMIDI.Text = "Non-MIDI Connections"
-        '
-        'cboFingersPort
-        '
-        Me.cboFingersPort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cboFingersPort.FormattingEnabled = True
-        Me.cboFingersPort.Items.AddRange(New Object() {"None", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9"})
-        Me.cboFingersPort.Location = New System.Drawing.Point(450, 17)
-        Me.cboFingersPort.Name = "cboFingersPort"
-        Me.cboFingersPort.Size = New System.Drawing.Size(72, 21)
-        Me.cboFingersPort.TabIndex = 13
+        Me.grpProgramConfig.Controls.Add(Me.chkDmxover)
+        Me.grpProgramConfig.Controls.Add(Me.chkDmxin)
+        Me.grpProgramConfig.Controls.Add(Me.chkIgnoreWhileConnecting)
+        Me.grpProgramConfig.Controls.Add(Me.chkWindowsMessages)
+        Me.grpProgramConfig.Location = New System.Drawing.Point(12, 281)
+        Me.grpProgramConfig.Name = "grpProgramConfig"
+        Me.grpProgramConfig.Size = New System.Drawing.Size(539, 69)
+        Me.grpProgramConfig.TabIndex = 5
+        Me.grpProgramConfig.TabStop = False
+        Me.grpProgramConfig.Text = "Program Configuration"
         '
         'chkDmxover
         '
@@ -276,16 +264,15 @@ Partial Class frmConfig
         Me.chkDmxin.Text = "Enable DMX-In (to LightJockey)"
         Me.chkDmxin.UseVisualStyleBackColor = True
         '
-        'chkFingers
+        'chkIgnoreWhileConnecting
         '
-        Me.chkFingers.AutoSize = True
-        Me.chkFingers.Enabled = False
-        Me.chkFingers.Location = New System.Drawing.Point(262, 19)
-        Me.chkFingers.Name = "chkFingers"
-        Me.chkFingers.Size = New System.Drawing.Size(145, 17)
-        Me.chkFingers.TabIndex = 12
-        Me.chkFingers.Text = "Enable Fingers Emulation"
-        Me.chkFingers.UseVisualStyleBackColor = True
+        Me.chkIgnoreWhileConnecting.AutoSize = True
+        Me.chkIgnoreWhileConnecting.Location = New System.Drawing.Point(262, 19)
+        Me.chkIgnoreWhileConnecting.Name = "chkIgnoreWhileConnecting"
+        Me.chkIgnoreWhileConnecting.Size = New System.Drawing.Size(243, 17)
+        Me.chkIgnoreWhileConnecting.TabIndex = 12
+        Me.chkIgnoreWhileConnecting.Text = "Ignore Events While Establishing Connections"
+        Me.chkIgnoreWhileConnecting.UseVisualStyleBackColor = True
         '
         'chkWindowsMessages
         '
@@ -302,7 +289,7 @@ Partial Class frmConfig
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(563, 362)
-        Me.Controls.Add(Me.grpNonMIDI)
+        Me.Controls.Add(Me.grpProgramConfig)
         Me.Controls.Add(Me.grpConnectionDetails)
         Me.Controls.Add(Me.lvConnections)
         Me.Controls.Add(Me.btnRemoveConnection)
@@ -313,8 +300,8 @@ Partial Class frmConfig
         Me.Text = "Feel: Connections"
         Me.grpConnectionDetails.ResumeLayout(False)
         Me.grpConnectionDetails.PerformLayout()
-        Me.grpNonMIDI.ResumeLayout(False)
-        Me.grpNonMIDI.PerformLayout()
+        Me.grpProgramConfig.ResumeLayout(False)
+        Me.grpProgramConfig.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -332,12 +319,11 @@ Partial Class frmConfig
     Friend WithEvents lblConnectionName As System.Windows.Forms.Label
     Friend WithEvents txtConnectionInitialization As System.Windows.Forms.TextBox
     Friend WithEvents lblConnectionInitialization As System.Windows.Forms.Label
-    Friend WithEvents grpNonMIDI As System.Windows.Forms.GroupBox
+    Friend WithEvents grpProgramConfig As System.Windows.Forms.GroupBox
     Friend WithEvents chkDmxover As System.Windows.Forms.CheckBox
     Friend WithEvents chkDmxin As System.Windows.Forms.CheckBox
-    Friend WithEvents chkFingers As System.Windows.Forms.CheckBox
+    Friend WithEvents chkIgnoreWhileConnecting As System.Windows.Forms.CheckBox
     Friend WithEvents chkWindowsMessages As System.Windows.Forms.CheckBox
-    Friend WithEvents cboFingersPort As System.Windows.Forms.ComboBox
     Friend WithEvents chkConnectionNoteOff As System.Windows.Forms.CheckBox
     Friend WithEvents lblConnectionBehavior As System.Windows.Forms.Label
 

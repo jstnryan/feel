@@ -40,13 +40,27 @@ Module main
             End If
         End Set
     End Property
+
+    ''Returns a boolean indicating whether it is safe to handle an event's actions.
+    '' True = do not handle event's actions
+    Private _connecting As Boolean = False
+    Public Property Connecting() As Boolean
+        Get
+            Return (_connecting And Configuration.IgnoreEvents)
+        End Get
+        Set(ByVal value As Boolean)
+            _connecting = value
+        End Set
+    End Property
+
     Public configForm As frmConfig
     Public actionForm As frmActions
     Public aboutForm As frmAbout
 
     Public Sub Main()
-        'For Each arg As String In My.Application.CommandLineArgs
-        'Next
+        For Each arg As String In My.Application.CommandLineArgs
+            System.Diagnostics.Debug.WriteLine("Command Line Arg: " & arg)
+        Next
 
         ''Aparently this is required to show Groups in ListView controls
         System.Windows.Forms.Application.EnableVisualStyles()
@@ -184,6 +198,8 @@ LoadConfig:
     ''' </summary>
     ''' <remarks>Ver:2.1</remarks>
     Private Sub ConnectDevices()
+        Connecting = True
+
         For Each device As clsConnection In Configuration.Connections.Values
             If (device.Enabled) Then
                 ''Check the stored connection index to make sure it is not greater than the number of currently connected devices
@@ -268,6 +284,8 @@ LoadConfig:
                 End If
             End If
         Next
+
+        Connecting = False
     End Sub
 
     ''' <summary>
@@ -277,6 +295,8 @@ LoadConfig:
     ''' <remarks>Ver: 1.0
     ''' Called when closing application, or opening Connection Configuration window</remarks>
     Public Sub DisconnectDevices(Optional ByVal which As Byte = 0)
+        Connecting = True
+
         Select Case which
             Case 1 ''Close incoming
                 If (midiIn.Count > 0) Then
@@ -305,6 +325,8 @@ LoadConfig:
                 DisconnectDevices(1)
                 DisconnectDevices(2)
         End Select
+
+        Connecting = False
     End Sub
 #End Region
 
@@ -322,7 +344,7 @@ LoadConfig:
                 actionForm.CurrentControl = newCont
                 newCont = Nothing
             End If
-        ElseIf Not configMode Then
+        ElseIf Not configMode And Not Connecting Then
             'Diagnostics.Debug.WriteLine("On : " & msg.Device.Name & " (" & Configuration.Connections(msg.Device.Name).Name & "), " & msg.Channel.ToString & ", " & msg.Pitch.ToString & ", " & msg.Velocity.ToString)
             Dim device As Integer = FindDevice(msg.Device.Name)
             'TODO: Previous line makes next line unneccessary:
@@ -376,7 +398,7 @@ LoadConfig:
 
     Private Sub NoteOff(ByVal msg As NoteOffMessage)
         ''Really no need to send this to actionForm in configMode, because we'd probably end up associating actions to button up actions by mistake.
-        If Not configMode Then
+        If Not configMode And Not Connecting Then
             'System.Diagnostics.Debug.WriteLine("Off: " & msg.Device.Name & " (" & Configuration.Connections(msg.Device.Name).Name & "), " & msg.Channel.ToString & ", " & msg.Pitch.ToString & ", " & msg.Velocity.ToString)
             Dim device As Integer = FindDevice(msg.Device.Name)
             'TODO: Previous line makes next line unneccessary:
@@ -422,7 +444,7 @@ LoadConfig:
                 actionForm.CurrentControl = newCont
                 newCont = Nothing
             End If
-        ElseIf Not configMode Then
+        ElseIf Not configMode And Not Connecting Then
             Dim device As Integer = FindDevice(msg.Device.Name)
             'TODO: Previous line makes next line unneccessary:
             If (Configuration.Connections.ContainsKey(device)) Then

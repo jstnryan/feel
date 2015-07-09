@@ -406,6 +406,8 @@ Partial Class frmActions
         Me.grpInput.TabIndex = 2
         Me.grpInput.TabStop = False
         Me.grpInput.Text = "Input"
+        ''ToolTip for custom CheckedGroupBox
+        Me.ttActions.SetToolTip(Me.grpInput.m_checkbox, "Lock last input.")
         '
         'chkPaged
         '

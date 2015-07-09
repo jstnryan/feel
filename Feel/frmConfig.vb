@@ -53,9 +53,7 @@
         'Read Configuration and properly populate/set controls
         PopulateConnections()
         chkWindowsMessages.Checked = Configuration.WmEnable
-        chkFingers.Checked = Configuration.FingersEnable
-        cboFingersPort.SelectedIndex = Configuration.FingersPort + 1
-        cboFingersPort.Enabled = Configuration.FingersEnable
+        chkIgnoreWhileConnecting.Checked = Configuration.IgnoreEvents
         chkDmxin.Checked = Configuration.DmxinEnable
         chkDmxover.Checked = Configuration.DmxoverEnable
     End Sub
@@ -149,9 +147,8 @@
         Configuration.DmxoverEnable = chkDmxover.Checked
     End Sub
 
-    Private Sub chkFingers_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkFingers.CheckedChanged
-        Configuration.FingersEnable = chkFingers.Checked
-        cboFingersPort.Enabled = chkFingers.Checked
+    Private Sub chkIgnoreWhileConnecting_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkIgnoreWhileConnecting.CheckedChanged
+        Configuration.IgnoreEvents = chkIgnoreWhileConnecting.Checked
     End Sub
 
     Private Sub btnAddConnection_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnAddConnection.Click

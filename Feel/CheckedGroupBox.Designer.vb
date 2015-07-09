@@ -52,5 +52,6 @@
     End Sub
 #End Region
 
-    Private m_checkBox As System.Windows.Forms.CheckBox
+    ''Private
+    Public m_checkBox As System.Windows.Forms.CheckBox
 End Class

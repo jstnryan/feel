@@ -444,9 +444,9 @@ Public Class frmActions
     End Function
 
     Private Sub lvActions_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles lvActions.Click
-        If (False) Then
-
-        End If
+        'If (My.Computer.Keyboard.ShiftKeyDown) Then
+        '    'make multiselect possible
+        'End If
     End Sub
 
     ''The ItemSelectionChanged event occurs whether the item state changes from selected to deselected or deselected to selected.

@@ -5,12 +5,12 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{F035304D-95EE-42B4-9A96-F03F4F05EF56}</ProjectGuid>
+    <ProjectGuid>{EC5E9353-090C-4C31-B579-FDB9D2C6DC21}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Feel</RootNamespace>
     <AssemblyName>Feel</AssemblyName>
     <FileAlignment>512</FileAlignment>
-    <MyType>WindowsForm</MyType>
+    <MyType>WindowsFormsWithCustomSubMain</MyType>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <OptionExplicit>On</OptionExplicit>
@@ -75,6 +75,10 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="main.vb">
+    </Compile>
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
     </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="frmAbout.Designer.vb">
@@ -155,6 +159,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="feel.ico" />
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
     <None Include="My Project\app.manifest" />
     <None Include="Resources\feel.png" />
   </ItemGroup>

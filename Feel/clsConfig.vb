@@ -10,23 +10,13 @@ Public Class clsConfig
     Public Connections As Collections.Generic.Dictionary(Of Integer, clsConnection)
 
     Public WmEnable As Boolean          'Enable Windows Messages to LightJockey
-    Public FingersEnable As Boolean     'Enable Serial to LightJockey
-    Public FingersPort As Integer       'Serial interface Port #
+    Public IgnoreEvents As Boolean      'Ignore events raised by devices/connections while still establishing other connections
     Public DmxinEnable As Boolean       'Enable DMX-In to LightJockey
     Public DmxoverEnable As Boolean     'Enable DMX-Override to LightJockey
 
-    '''Connections are referenced by "Device Name" or clsConnection.InputName
-    ''' When changing Input, the connection's key must also be updated
-    'Public Sub ChangeKey(ByRef newKey As String, ByRef oldKey As String)
-    '    If (newKey = oldKey) Then Exit Sub
-    '    Connections.Add(newKey, Connections.Item(oldKey))
-    '    Connections.Remove(oldKey)
-    'End Sub
-
     Public Sub New()
         WmEnable = False
-        FingersEnable = False
-        FingersPort = -1
+        IgnoreEvents = False
         DmxinEnable = False
         DmxoverEnable = False
         Connections = New Collections.Generic.Dictionary(Of Integer, clsConnection)
@@ -175,3 +165,31 @@ Public Class clsCopiedActions
         ActionsOff = New Collections.Generic.List(Of clsAction)
     End Sub
 End Class
+
+#Region "Previous Class Versions"
+''REMOVED:
+'' FingersEnable
+'' FingersPort
+''ADDED:
+'' IgnoreEvents
+<Serializable()> _
+Public Class clsConfig_01
+    'MIDI Connections (Virtual ports & MIDI devices)
+    Public Connections As Collections.Generic.Dictionary(Of Integer, clsConnection)
+
+    Public WmEnable As Boolean          'Enable Windows Messages to LightJockey
+    Public FingersEnable As Boolean     'Enable Serial to LightJockey
+    Public FingersPort As Integer       'Serial interface Port #
+    Public DmxinEnable As Boolean       'Enable DMX-In to LightJockey
+    Public DmxoverEnable As Boolean     'Enable DMX-Override to LightJockey
+
+    Public Sub New()
+        WmEnable = False
+        FingersEnable = False
+        FingersPort = -1
+        DmxinEnable = False
+        DmxoverEnable = False
+        Connections = New Collections.Generic.Dictionary(Of Integer, clsConnection)
+    End Sub
+End Class
+#End Region
