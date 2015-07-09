@@ -1,4 +1,6 @@
-﻿'Imports Feel.My.Resources
+﻿Imports System.ComponentModel
+
+'Imports Feel.My.Resources
 Public Class frmActions
     'Dim activeProperty As New Object 'Currently highlighted action
     Dim DeviceList As Collections.Generic.Dictionary(Of String, Integer)
@@ -33,7 +35,7 @@ Public Class frmActions
         End Property
     End Class
     'Holds information about the last touched control
-    Private curCont As curControl
+    Private _curCont As curControl
     Public WriteOnly Property CurrentControl() As curControl
         Set(ByVal value As curControl)
             If Not (holdControl) Then
@@ -41,7 +43,7 @@ Public Class frmActions
                 updateLastControl()
 
                 'Update the current control marker
-                curCont = value
+                _curCont = value
                 updateCurrentControl(value)
             End If
         End Set
@@ -51,14 +53,14 @@ Public Class frmActions
     Dim holdControl As Boolean = False
 
     Private Sub updateLastControl()
-        If Not (curCont Is Nothing) Then
-            Dim _device As Integer = serviceHost.FindDeviceIndexByInput(curCont.Device)
+        If Not (_curCont Is Nothing) Then
+            Dim _device As Integer = serviceHost.FindDeviceIndexByInput(_curCont.Device)
             If (FeelConfig.Connections.ContainsKey(_device)) Then
                 With FeelConfig.Connections(_device)
-                    If (.Control.ContainsKey(curCont.ContStr)) Then
-                        If (.Control(curCont.ContStr).Page.ContainsKey(curCont.ContPage)) Then
-                            If Not (.Control(curCont.ContStr).Page(curCont.ContPage).CurrentState = "") Then
-                                serviceHost.SendMIDI(_device, .Control(curCont.ContStr).Page(curCont.ContPage).CurrentState)
+                    If (.Control.ContainsKey(_curCont.ContStr)) Then
+                        If (.Control(_curCont.ContStr).Page.ContainsKey(_curCont.ContPage)) Then
+                            If Not (.Control(_curCont.ContStr).Page(_curCont.ContPage).CurrentState = "") Then
+                                serviceHost.SendMIDI(_device, .Control(_curCont.ContStr).Page(_curCont.ContPage).CurrentState)
                                 'ElseIf Not (.InitialState = "") Then
                                 '    main.SendMidi(_device, .InitialState)
                             End If
@@ -78,7 +80,8 @@ Public Class frmActions
             Dim _device As Integer = serviceHost.FindDeviceIndexByInput(value.Device)
 
             'Update UI
-            setLabels(FeelConfig.Connections(_device).Name, value.Type, "Channel " & value.Channel.ToString, If(value.Type = "Note", CType(value.NotCon, Midi.Pitch).ToString, value.NotCon.ToString), value.VelVal.ToString)
+            'setLabels(FeelConfig.Connections(_device).Name, value.Type, "Channel " & value.Channel.ToString, If(value.Type = "Note", CType(value.NotCon, Midi.Pitch).ToString, value.NotCon.ToString), value.VelVal.ToString)
+            setLabels(FeelConfig.Connections(_device).Name, value.Type, "Channel " & DisplayChannel(value.Channel), If(value.Type = "Note", DisplayNote(value.NotCon), value.NotCon.ToString), DisplayVelVal(value.VelVal))
             ''If this is the first device control recieved, enable the form controls.
             If (chkPaged.Enabled = False) Then
                 chkPaged.Enabled = True
@@ -99,15 +102,15 @@ Public Class frmActions
             If False Then
                 'change page
             Else
-                nudDevicePage.Value = curCont.ContPage
+                nudDevicePage.Value = _curCont.ContPage
             End If
 
             ''Check to see if this control has been programmed, update UI with configuration data
             If SetControl(False) Then
-                With FeelConfig.Connections(_device).Control(curCont.ContStr)
+                With FeelConfig.Connections(_device).Control(_curCont.ContStr)
                     chkPaged.Checked = .Paged
                     If SetPage(False) Then
-                        With .Page(curCont.ContPage)
+                        With .Page(_curCont.ContPage)
                             txtInitialState.Text = .InitialState
                             nudControlGroup.Value = .ControlGroup
                             If .Behavior = 0 Then
@@ -158,24 +161,24 @@ Public Class frmActions
             lblNoteControl.Text = If(NoteControl = "%", lblNoteControl.Text, NoteControl)
             lblVelocityValue.Text = If(VelocityValue = "%", lblVelocityValue.Text, VelocityValue)
             'Change labels, if neccessary
-            ttActions.SetToolTip(lblDevice, FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).InputName)
-            ttActions.SetToolTip(lblVelocityValue, "Hex:" & curCont.VelVal.ToString("X2"))
+            ttActions.SetToolTip(lblDevice, FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).InputName)
+            ttActions.SetToolTip(lblVelocityValue, "Dec: " & _curCont.VelVal.ToString & ", Hex:" & _curCont.VelVal.ToString("X2"))
             If (Description = "Note") Then
                 lblNotCon.Text = "Note:"
                 lblVelVal.Text = "Velocity:"
                 rdoMomentaryAbsolute.Text = "Momentary"
                 rdoLatchRelative.Text = "Latch"
 
-                ttActions.SetToolTip(lblChannel, "Hex:" & (144 + curCont.Channel).ToString("X2"))
-                ttActions.SetToolTip(lblNoteControl, "Dec:" & curCont.NotCon.ToString & ", Hex:" & curCont.NotCon.ToString("X2"))
+                ttActions.SetToolTip(lblChannel, "Hex:" & (144 + _curCont.Channel).ToString("X2"))
+                ttActions.SetToolTip(lblNoteControl, "Note: " & DisplayNoteAsString(_curCont.NotCon) & ", Dec:" & _curCont.NotCon.ToString & ", Hex:" & _curCont.NotCon.ToString("X2"))
             ElseIf (Description = "Control") Then
                 lblNotCon.Text = "Control:"
                 lblVelVal.Text = "Value:"
                 rdoMomentaryAbsolute.Text = "Absolute"
                 rdoLatchRelative.Text = "Relative"
 
-                ttActions.SetToolTip(lblChannel, "Hex:" & (176 + curCont.Channel).ToString("X2"))
-                ttActions.SetToolTip(lblNoteControl, "Hex:" & curCont.NotCon.ToString("X2"))
+                ttActions.SetToolTip(lblChannel, "Hex:" & (176 + _curCont.Channel).ToString("X2"))
+                ttActions.SetToolTip(lblNoteControl, "Dec: " & _curCont.NotCon.ToString & ", Hex:" & _curCont.NotCon.ToString("X2"))
             End If
         End If
     End Sub
@@ -186,20 +189,20 @@ Public Class frmActions
     Private Sub PopulateActions()
         lvActions.Items.Clear()
         If (SetPage(False)) Then
-            Dim _device As Integer = serviceHost.FindDeviceIndexByInput(curCont.Device)
+            Dim _device As Integer = serviceHost.FindDeviceIndexByInput(_curCont.Device)
 
-            For Each act As clsAction In FeelConfig.Connections(_device).Control(curCont.ContStr).Page(curCont.ContPage).Actions
+            For Each act As clsAction In FeelConfig.Connections(_device).Control(_curCont.ContStr).Page(_curCont.ContPage).Actions
                 Dim lvi As Windows.Forms.ListViewItem = New Windows.Forms.ListViewItem
                 With lvi
                     .Text = act.Name
                     .Checked = act.Enabled
-                    .Group = If(curCont.Type = "Note", lvActions.Groups(0), lvActions.Groups(2))
+                    .Group = If(_curCont.Type = "Note", lvActions.Groups(0), lvActions.Groups(2))
                 End With
                 lvActions.Items.Add(lvi)
                 lvi = Nothing
             Next
-            If (curCont.Type = "Note") Then ''Only need to go through this for Notes, not CC
-                For Each act As clsAction In FeelConfig.Connections(_device).Control(curCont.ContStr).Page(curCont.ContPage).ActionsOff
+            If (_curCont.Type = "Note") Then ''Only need to go through this for Notes, not CC
+                For Each act As clsAction In FeelConfig.Connections(_device).Control(_curCont.ContStr).Page(_curCont.ContPage).ActionsOff
                     Dim lvi As Windows.Forms.ListViewItem = New Windows.Forms.ListViewItem
                     With lvi
                         .Text = act.Name
@@ -217,12 +220,12 @@ Public Class frmActions
         PopulateActions()
 
         ''Reselect the desired item
-        With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage)
+        With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
             Dim foundIndex As Integer = .Actions.IndexOf(selAction)
             If Not (foundIndex = -1) Then
                 ''found in .Actions
-                lvActions.Groups(If(curCont.Type = "Note", 0, 2)).Items(foundIndex).Selected = True
-                lvActions.Groups(If(curCont.Type = "Note", 0, 2)).Items(foundIndex).EnsureVisible()
+                lvActions.Groups(If(_curCont.Type = "Note", 0, 2)).Items(foundIndex).Selected = True
+                lvActions.Groups(If(_curCont.Type = "Note", 0, 2)).Items(foundIndex).EnsureVisible()
             Else
                 foundIndex = .ActionsOff.IndexOf(selAction)
                 If Not (foundIndex = -1) Then
@@ -240,15 +243,6 @@ Public Class frmActions
         cboActionFunction.ValueMember = "Value"
         cboActionFunction.DisplayMember = "Display"
         cboActionFunction.GroupMember = "Group"
-        'cboActionFunction.DataSource = New Collections.ArrayList(New Object() { _
-        '    New With {Key .Value = 101, Key .Group = "1. Internal Functions", Key .Display = "01. Configure Actions"}, _
-        '    New With {Key .Value = 201, Key .Group = "2. MIDI Functions", Key .Display = "01. Send MIDI (String)"}, _
-        '    New With {Key .Value = 301, Key .Group = "3. LightJockey Functions", Key .Display = "01. Send Windows Message"}, _
-        '    })
-        ''New With {Key .Value = 401, Key .Group = "4. Windows Functions", Key .Display = "String.Empty"}, _
-        ''New With {Key .Value = 501, Key .Group = "5. Fingers Emulation", Key .Display = String.Empty}, _
-        ''New With {Key .Value = 601, Key .Group = "6. DMX-In", Key .Display = String.Empty}, _
-        ''New With {Key .Value = 701, Key .Group = "7. DMX-Override", Key .Display = String.Empty} _
 
         'TODO: Figure out why there are empty lines in cboActionFunction
         Dim actionlist As New Collections.ArrayList()
@@ -301,7 +295,7 @@ Public Class frmActions
             Dim targetGuid As Guid = CType(cboActionFunction.SelectedValue, Guid)
             If Not (targetGuid = Guid.Empty) Then
                 txtActionDescription.Text = main.actionModules.Item(targetGuid).Description
-                With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage)
+                With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                     Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
                     Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
                     If (cboActionFunctionQualify(whichGroup, curIndex)) Then
@@ -335,7 +329,7 @@ Public Class frmActions
     ''' <returns>True if .Data Is Nothing, otherwise False.</returns>
     ''' <remarks></remarks>
     Private Function cboActionFunctionQualify(ByVal whichGroup As Integer, ByVal curIndex As Integer) As Boolean
-        With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage)
+        With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
             If (whichGroup = 1) Then
                 If (.ActionsOff(curIndex).Data Is Nothing) Then
                     Return True
@@ -368,27 +362,36 @@ Public Class frmActions
             cmdActionRemove.Enabled = True
             cmdActionUp.Enabled = True
             cmdActionDown.Enabled = True
-            If (curCont.Type = "Note") Then cmdActionSwap.Enabled = True
+            If (_curCont.Type = "Note") Then cmdActionSwap.Enabled = True
             cmdActionClear.Enabled = True
             grpAction.Enabled = True
 
             ''Action pane:
             Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
             Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
-            With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage)
+            With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                 If (whichGroup = 1) Then
                     txtActionName.Text = .ActionsOff(curIndex).Name
-                    'TODO: figure out how to set description, without knowing what Object Type the class is, until then:
-                    'cboActionFunction.SelectedItem = -1
 
-                    Dim targetGuid As Guid = .ActionsOff(curIndex).Type
-                    cboActionFunction.SelectedValue = targetGuid
+                    Try
+                        cboActionFunction.SelectedValue = .ActionsOff(curIndex).Type
+                    Catch ex As Exception
+                        Windows.MessageBox.Show("This action is not currently loaded.")
+                    End Try
 
                     'pgAction.SelectedObject = .ActionsOff(curIndex).Data
                 Else
-                    'cboActionFunction.SelectedItem = -1
                     txtActionName.Text = .Actions(curIndex).Name
-                    pgAction.SelectedObject = .Actions(curIndex).Data
+
+                    'cboActionFunction.SelectedItem = -1
+                    'cboActionFunction.Select()
+                    Try
+                        cboActionFunction.SelectedValue = .Actions(curIndex).Type
+                    Catch ex As Exception
+                        Windows.MessageBox.Show("This action is not currently loaded.")
+                    End Try
+
+                    'pgAction.SelectedObject = .Actions(curIndex).Data
                 End If
             End With
         Else
@@ -396,17 +399,17 @@ Public Class frmActions
             DeselectAction()
         End If
     End Sub
-    Private Sub lvActions_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lvActions.SelectedIndexChanged
-        ''Update grpAction fields
-        'lvActions_ItemSelectionChanged()
-        cboActionFunction.SelectedIndex = -1
-    End Sub
+    'Private Sub lvActions_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lvActions.SelectedIndexChanged
+    '    ''Update grpAction fields
+    '    'lvActions_ItemSelectionChanged()
+    '    'cboActionFunction.SelectedIndex = -1
+    'End Sub
 
     Private Sub lvActions_ItemChecked(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckedEventArgs) Handles lvActions.ItemChecked
         If (SetPage(False)) Then
             Dim whichGroup As Integer = lvActions.Groups.IndexOf((e.Item.Group))
             Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(e.Item)
-            With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage)
+            With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                 If (whichGroup = 1) Then
                     .ActionsOff(curIndex).Enabled = e.Item.Checked
                     'Diagnostics.Debug.WriteLine(.ActionsOff(curIndex).Name & ": " & .ActionsOff(curIndex).Enabled.ToString)
@@ -425,7 +428,7 @@ Public Class frmActions
             lvActions_ItemSelectionChanged()
             If SetPage(True) Then
                 'TODO: (not sure if this is the best way to do this)
-                With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage)
+                With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                     .Actions = New Collections.Generic.List(Of clsAction)
                     .ActionsOff = New Collections.Generic.List(Of clsAction)
                 End With
@@ -441,7 +444,7 @@ Public Class frmActions
             End If
         End If
         If (SetPage(True)) Then
-            With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage)
+            With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                 Dim tmpAction As clsAction = New clsAction
                 tmpAction.Name = "New Action (" & (lvActions.Items.Count + 1).ToString & ")"
                 If (groupReleased) Then
@@ -461,9 +464,9 @@ Public Class frmActions
             Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
             Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
             If (whichGroup = 1) Then
-                FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage).ActionsOff.RemoveAt(curIndex)
+                FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage).ActionsOff.RemoveAt(curIndex)
             Else
-                FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage).Actions.RemoveAt(curIndex)
+                FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage).Actions.RemoveAt(curIndex)
             End If
             ''Then, remove from lvActions
             lvActions.Items.Remove(lvActions.SelectedItems(0))
@@ -476,7 +479,7 @@ Public Class frmActions
             Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
             Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
             If (curIndex > 0) Then
-                With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage)
+                With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                     Dim tmpAction As clsAction
                     If (whichGroup = 1) Then
                         tmpAction = .ActionsOff(curIndex)
@@ -499,7 +502,7 @@ Public Class frmActions
             Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
             Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
             If (curIndex <> lvActions.Groups(whichGroup).Items.Count - 1) Then
-                With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage)
+                With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                     Dim tmpAction As clsAction
                     If (whichGroup = 1) Then
                         tmpAction = .ActionsOff(curIndex)
@@ -522,7 +525,7 @@ Public Class frmActions
             Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
             Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
             Dim tmpAction As New clsAction
-            With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage)
+            With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                 If (whichGroup = 1) Then
                     tmpAction = .ActionsOff(curIndex)
                     .ActionsOff.RemoveAt(curIndex)
@@ -546,7 +549,7 @@ Public Class frmActions
 
             Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
             Dim whichAction As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
-            With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage)
+            With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                 If (whichGroup = 1) Then
                     .ActionsOff(whichAction).Name = txtActionName.Text
                 Else
@@ -558,14 +561,14 @@ Public Class frmActions
 
     Private Sub chkPaged_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkPaged.CheckedChanged
         If SetControl(True) Then
-            FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Paged = chkPaged.Checked
+            FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Paged = chkPaged.Checked
             'TODO: Set nudDevicePage to 0, and disable?
         End If
     End Sub
 
     Private Sub txtInitialState_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtInitialState.TextChanged
         If SetPage(True) Then
-            FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage).InitialState = txtInitialState.Text
+            FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage).InitialState = txtInitialState.Text
         Else
             'TODO: need this?
             ''error that should never happen
@@ -576,16 +579,16 @@ Public Class frmActions
 
     Private Sub nudControlGroup_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudControlGroup.ValueChanged
         If SetPage(True) Then
-            FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage).ControlGroup = CByte(nudControlGroup.Value)
+            FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage).ControlGroup = CByte(nudControlGroup.Value)
         End If
     End Sub
 
     Private Sub rdoMomentaryAbsolute_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles rdoMomentaryAbsolute.CheckedChanged
         If SetPage(True) Then
             If rdoMomentaryAbsolute.Checked Then
-                FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage).Behavior = 0
+                FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage).Behavior = 0
             Else
-                FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page(curCont.ContPage).Behavior = 1
+                FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage).Behavior = 1
             End If
         End If
     End Sub
@@ -601,18 +604,18 @@ Public Class frmActions
     'End Sub
 
     Private Sub nudDevicePage_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudDevicePage.ValueChanged
-        Dim _device As Integer = serviceHost.FindDeviceIndexByInput(curCont.Device)
+        Dim _device As Integer = serviceHost.FindDeviceIndexByInput(_curCont.Device)
         'TODO: Remove pages that have not had any actions added
         'If (Not curCont.ContPage = 0) And (Configuration.Connections(_device).Control(curCont.ContStr).Page(curCont.ContPage).Actions.Count = 0) And (Configuration.Connections(_device).Control(curCont.ContStr).Page(curCont.ContPage).ActionsOff.Count = 0) Then
         '    ''No Actions on this page, so delete it
         '    Configuration.Connections(_device).Control(curCont.ContStr).Page(curCont.ContPage) = Nothing
         'End If
         FeelConfig.Connections(_device).PageCurrent = CByte(nudDevicePage.Value)
-        If Not (FeelConfig.Connections(_device).Control(curCont.ContStr).Page.ContainsKey(CByte(nudDevicePage.Value))) Then
+        If Not (FeelConfig.Connections(_device).Control(_curCont.ContStr).Page.ContainsKey(CByte(nudDevicePage.Value))) Then
             SetPage(True)
         End If
         lvActions.SelectedItems.Clear()
-        With FeelConfig.Connections(_device).Control(curCont.ContStr).Page(curCont.ContPage)
+        With FeelConfig.Connections(_device).Control(_curCont.ContStr).Page(_curCont.ContPage)
             txtInitialState.Text = .InitialState
             nudControlGroup.Value = .ControlGroup
             If .Behavior = 0 Then
@@ -630,11 +633,11 @@ Public Class frmActions
 
     ''Generates a new Control in the Device Configuration, if not exist
     Private Function SetControl(ByVal createControl As Boolean) As Boolean
-        If Not curCont Is Nothing Then
-            If Not (FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control.ContainsKey(curCont.ContStr)) Then
+        If Not _curCont Is Nothing Then
+            If Not (FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control.ContainsKey(_curCont.ContStr)) Then
                 If createControl Then
                     Dim newControl As clsControl = New clsControl
-                    FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control.Add(curCont.ContStr, newControl)
+                    FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control.Add(_curCont.ContStr, newControl)
                     Return True
                 Else
                     Return False
@@ -648,12 +651,12 @@ Public Class frmActions
 
     ''Generates a new Page in the Control, if not exist
     Private Function SetPage(ByVal createPage As Boolean) As Boolean
-        If Not curCont Is Nothing Then
+        If Not _curCont Is Nothing Then
             If SetControl(createPage) Then
-                If Not (FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page.ContainsKey(curCont.ContPage)) Then
+                If Not (FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page.ContainsKey(_curCont.ContPage)) Then
                     If createPage Then
                         Dim newPage As clsControlPage = New clsControlPage
-                        FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(curCont.Device)).Control(curCont.ContStr).Page.Add(curCont.ContPage, newPage)
+                        FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page.Add(_curCont.ContPage, newPage)
                         Return True
                     Else
                         Return False
@@ -667,6 +670,52 @@ Public Class frmActions
         Else : Return False
         End If
     End Function
+
+#Region "Display Preference Conversions"
+    Private Function DisplayChannel(ByVal channel As Byte) As String
+        Return If(FeelConfig.MidiNumbering = 0, channel.ToString, (channel + 1).ToString)
+    End Function
+
+    Private Function DisplayNote(ByVal note As Byte) As String
+        Select Case FeelConfig.MidiNotation
+            Case 1, 2 ''Dec
+                Return note.ToString & If(FeelConfig.MidiNotation = 2, "d", "")
+            Case 3, 4 ''Hex
+                Return If(FeelConfig.MidiNotation = 3, "0x" & note.ToString("X2"), note.ToString("X2") & "h")
+            Case Else ''Word (0)
+                Return DisplayNoteAsString(note)
+        End Select
+    End Function
+
+    Private Function DisplayNoteAsString(ByVal note As Byte) As String
+        If (FeelConfig.MidiTranspose = 1) Then
+            Return [Enum].GetName(GetType(Midi.Pitch), note).Replace("Sharp", "#")
+        Else
+            'TODO: there's got to be a better way to do this (look in MIDI.NET's Pitch "Octave" method...)
+            Dim _note As String = [Enum].GetName(GetType(Midi.Pitch), note).Replace("Sharp", "#")
+            Dim _octave As Integer
+            Dim _not As String
+            If (note < 12) Then
+                _octave = -1
+                _not = Strings.Left(_note, _note.Length - 4)
+            Else
+                _not = Strings.Left(_note, _note.Length - 1)
+                _octave = CInt(Strings.Right(_note, 1))
+            End If
+            Return If(FeelConfig.MidiTranspose = 0, _not & (_octave + 1).ToString, _not & (_octave - 1).ToString)
+        End If
+    End Function
+
+    Private Function DisplayVelVal(ByVal velval As Byte) As String
+        If (FeelConfig.MidiNotation = 3 Or FeelConfig.MidiNotation = 4) Then
+            ''Hex
+            Return velval.ToString("X2")
+        Else
+            ''Dec, or Word
+            Return velval.ToString
+        End If
+    End Function
+#End Region
 End Class
 
 '''Keeping this solely because I found a little way to make shit transparent

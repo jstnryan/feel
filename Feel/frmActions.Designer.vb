@@ -13,8 +13,8 @@ Partial Class frmActions
             MyBase.Dispose(disposing)
 
             ''Singleon Pattern: http://www.codeproject.com/KB/vb/Simple_Singleton_Forms.aspx
-            'main.actionForm = Nothing
-            main.DisposeActionWindow()
+            main.actionForm = Nothing
+            'main.DisposeActionWindow()
         End Try
     End Sub
 
@@ -382,9 +382,8 @@ Partial Class frmActions
         Me.cboActionFunction.FormattingEnabled = True
         Me.cboActionFunction.GroupMember = "Group"
         Me.cboActionFunction.IntegralHeight = False
-        Me.cboActionFunction.Items.AddRange(New Object() {"(I) Go to Page", "(I) Skip Pages", "(I) Shift", "(I) Redraw Controls", "(M) Send MIDI", "(M) Send Sysex", "(W) Execute Command Line", "(W) Run Program", "(W) Send Keys to Program", "", "(L)ightJockey Functions", "(F)Fingers Emulation", "(D)MX-In", "DMX-(O)verride"})
         Me.cboActionFunction.Location = New System.Drawing.Point(69, 44)
-        Me.cboActionFunction.MaxDropDownItems = 12
+        Me.cboActionFunction.MaxDropDownItems = 20
         Me.cboActionFunction.Name = "cboActionFunction"
         Me.cboActionFunction.Size = New System.Drawing.Size(193, 21)
         Me.cboActionFunction.TabIndex = 14

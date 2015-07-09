@@ -3,6 +3,9 @@ Imports Midi
 Imports System.Runtime.InteropServices
 
 Module main
+    'TODO:
+    Friend _threadcontext As New System.Threading.SynchronizationContext
+
     ''Components for System Tray icon
     Dim WithEvents trayIcon As New NotifyIcon
     Dim trayMenu As New ContextMenu
@@ -19,9 +22,19 @@ Module main
     ''Container for program configuration
     Public FeelConfig As clsConfig
 
+    ''Collections of loaded Action plugins
+    Friend actionModules As Collections.Generic.Dictionary(Of Guid, ActionInterface.IAction) = New Collections.Generic.Dictionary(Of Guid, ActionInterface.IAction)
+    Public serviceHost As ActionInterface.IServices = New Interfaces.ServiceHost
+
     ''Collections of MIDI input and output devices
     Public midiIn As System.Collections.Generic.Dictionary(Of String, InputDevice) = New Collections.Generic.Dictionary(Of String, InputDevice)
     Public midiOut As System.Collections.Generic.Dictionary(Of String, OutputDevice) = New Collections.Generic.Dictionary(Of String, OutputDevice)
+
+    Friend configForm As frmConfiguration
+    Friend connectForm As frmConnections
+    Friend actionForm As frmActions
+    Friend aboutForm As frmAbout '= New frmAbout ''Have to do this in order to get a valid SynchronizationContext
+    Dim _dummyControl As System.Windows.Forms.Control = New Windows.Forms.Control
 
     Private _configMode As Boolean = False    ''when configuring actions, override output to LJ
     Public Property configMode(Optional ByVal reConnect As Boolean = False) As Boolean
@@ -65,15 +78,6 @@ Module main
         End Set
     End Property
 
-    Public configForm As frmConfiguration
-    Public connectForm As frmConnections
-    Private actionForm As frmActions = New frmActions
-    Public aboutForm As frmAbout
-
-    Friend actionModules As Collections.Generic.Dictionary(Of Guid, ActionInterface.IAction) = New Collections.Generic.Dictionary(Of Guid, ActionInterface.IAction)
-    'Private actionModules As Collections.Generic.Dictionary(Of String, ActionInterface.IAction)
-    Public serviceHost As ActionInterface.IServices = New Interfaces.ServiceHost
-
     Public Sub Main()
         For Each arg As String In My.Application.CommandLineArgs
             'TODO:
@@ -90,8 +94,8 @@ Module main
         menuConfigActions.Text = "Configure &Actions"
         ''NEW:
         menuAdvancedTasks.Text = "Advanced &Tasks"
-        menuRefreshWindowHandle.Text = "&Refresh LJ Handle"
         menuSaveConfiguration.Text = "&Save Configuration"
+        menuRefreshWindowHandle.Text = "&Refresh LJ Handle"
         menuUpdateAvailableDevices.Text = "&Update Available Devices"
         '':NEW
         menuAbout.Text = "About"
@@ -112,10 +116,19 @@ Module main
         trayIcon.Icon = My.Resources.Feel.feel
         trayIcon.Visible = True
 
-        LoadModules() ''Populate our list of currently available action plug-ins
+        LoadModules() ''Populate list of currently available action plug-ins
 
         LoadConfiguration() ''Read serialzed config data from file
         If Not _configMode Then ConnectDevices() ''Make MIDI connections
+
+        ''Store a reference to the UI thread (for opening forms from events)
+        '' Source: http://www.codeproject.com/Articles/31971/Understanding-SynchronizationContext-Part-I
+        '_threadcontext = System.Windows.Forms.WindowsFormsSynchronizationContext.Current
+        _threadcontext = System.Threading.SynchronizationContext.Current ''This Is Nothing if we don't initialize at least one form in the declarations above
+        _dummyControl.Dispose()
+        'System.Threading.SynchronizationContext.SetSynchronizationContext(_threadcontext)
+        'System.Windows.Forms.WindowsFormsSynchronizationContext.SetSynchronizationContext(_threadcontext)
+        'If _threadcontext Is Nothing Then Diagnostics.Debug.WriteLine("Thread Context is Nothing!")
 
         Application.Run()
     End Sub
@@ -143,6 +156,9 @@ Module main
         configForm.Show()
         'configForm.Focus()
     End Sub
+    Friend Sub OpenConfigWindow_Ext(ByVal state As Object)
+        OpenProgramWindow()
+    End Sub
 
     Friend Sub OpenConnectWindow() Handles menuConfigConnections.Click
         ''The Connections Configuration form makes its own connections to
@@ -154,6 +170,9 @@ Module main
         End If
         connectForm.Show()
         'configForm.Focus()
+    End Sub
+    Friend Sub OpenConnectWindow_Ext(ByVal state As Object)
+        OpenConnectWindow()
     End Sub
 
     Delegate Sub dlgOpenActionWindow()
@@ -173,14 +192,21 @@ Module main
         End If
         actionForm.Show()
     End Sub
-    'Delegate Sub dlgDisposeActionWindow()
-    Friend Sub DisposeActionWindow()
-        'If actionForm.InvokeRequired Then
-        '    actionForm.Invoke(New dlgDisposeActionWindow(AddressOf DisposeActionWindow))
-        'Else
-        '    actionForm = Nothing
-        'End If
-        actionForm = Nothing
+    ''Delegate Sub dlgDisposeActionWindow()
+    'Friend Sub DisposeActionWindow()
+    '    'If actionForm.InvokeRequired Then
+    '    '    actionForm.Invoke(New dlgDisposeActionWindow(AddressOf DisposeActionWindow))
+    '    'Else
+    '    '    actionForm = Nothing
+    '    'End If
+    '    actionForm = Nothing
+    'End Sub
+    ''The following two Subs for opening Action window on UI thread
+    'Friend Sub OpenActionWindow_Ext()
+    '    _threadcontext.Post(AddressOf OpenActionWindow_Del, _threadcontext)
+    'End Sub
+    Friend Sub OpenActionWindow_Ext(ByVal state As Object)
+        OpenActionWindow()
     End Sub
 
     Private Sub OpenAbout() Handles menuAbout.Click
@@ -1001,20 +1027,8 @@ LoadConfig:
 #End Region
 
 #Region "Action Plugins"
-    'Private Sub LoadActions()
-    '    Dim serviceHost As ActionInterface.IServices = New Interfaces.ServiceHost
-    '    Dim actionsList As Interfaces = New Interfaces
-    '    actionsList.LoadModules()
-    '    For Each actn As ActionInterface.IAction In actionsList.m_addonInstances
-    '        actn.Initialize(serviceHost)
-    '        Diagnostics.Debug.WriteLine(vbCrLf)
-    '        actn.Execute("device", CByte("127"), CByte("0"), CByte("0"), CByte("0"))
-    '    Next
-    'End Sub
-
     Friend Sub LoadModules()
-        Dim currentApplicationDirectory As String = My.Application.Info.DirectoryPath
-        Dim addonsRootDirectory As String = currentApplicationDirectory & "\actions\"
+        Dim addonsRootDirectory As String = My.Application.Info.DirectoryPath & "\actions\"
         Dim addonsLoaded As New Collections.Generic.List(Of System.Type)
 
         If My.Computer.FileSystem.DirectoryExists(addonsRootDirectory) Then

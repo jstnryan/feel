@@ -40,6 +40,7 @@
         chkDmxin.Checked = FeelConfig.DmxinEnable
         chkDmxover.Checked = FeelConfig.DmxoverEnable
         ''MIDI Display Preferences settings:
+        'TODO: Better way to do this?
         Select Case FeelConfig.MidiNotation
             Case 0
                 rdoNotationNot.Checked = True

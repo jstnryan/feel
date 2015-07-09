@@ -90,10 +90,10 @@ Partial Class frmConfiguration
         Me.rdoTransposeC3.AutoSize = True
         Me.rdoTransposeC3.Location = New System.Drawing.Point(15, 65)
         Me.rdoTransposeC3.Name = "rdoTransposeC3"
-        Me.rdoTransposeC3.Size = New System.Drawing.Size(147, 17)
+        Me.rdoTransposeC3.Size = New System.Drawing.Size(191, 17)
         Me.rdoTransposeC3.TabIndex = 2
         Me.rdoTransposeC3.TabStop = True
-        Me.rdoTransposeC3.Text = "C3 (Octaves -2 through 8)"
+        Me.rdoTransposeC3.Text = "C3 (Note 48, Octaves -2 through 8)"
         Me.rdoTransposeC3.UseVisualStyleBackColor = True
         '
         'rdoTransposeC4
@@ -101,10 +101,10 @@ Partial Class frmConfiguration
         Me.rdoTransposeC4.AutoSize = True
         Me.rdoTransposeC4.Location = New System.Drawing.Point(15, 42)
         Me.rdoTransposeC4.Name = "rdoTransposeC4"
-        Me.rdoTransposeC4.Size = New System.Drawing.Size(147, 17)
+        Me.rdoTransposeC4.Size = New System.Drawing.Size(191, 17)
         Me.rdoTransposeC4.TabIndex = 1
         Me.rdoTransposeC4.TabStop = True
-        Me.rdoTransposeC4.Text = "C4 (Octaves -1 through 9)"
+        Me.rdoTransposeC4.Text = "C4 (Note 60, Octaves -1 through 9)"
         Me.rdoTransposeC4.UseVisualStyleBackColor = True
         '
         'rdoTransposeC5
@@ -112,10 +112,10 @@ Partial Class frmConfiguration
         Me.rdoTransposeC5.AutoSize = True
         Me.rdoTransposeC5.Location = New System.Drawing.Point(15, 19)
         Me.rdoTransposeC5.Name = "rdoTransposeC5"
-        Me.rdoTransposeC5.Size = New System.Drawing.Size(150, 17)
+        Me.rdoTransposeC5.Size = New System.Drawing.Size(194, 17)
         Me.rdoTransposeC5.TabIndex = 0
         Me.rdoTransposeC5.TabStop = True
-        Me.rdoTransposeC5.Text = "C5 (Octaves 0 through 10)"
+        Me.rdoTransposeC5.Text = "C5 (Note 72, Octaves 0 through 10)"
         Me.rdoTransposeC5.UseVisualStyleBackColor = True
         '
         'grpNumbering

@@ -2,6 +2,56 @@
 Imports System.ComponentModel
 Imports Feel.ActionInterface
 
+<Guid("15ABCE5A-D91E-4d65-946A-58394B9FE478")> _
+Public Class ConfigureProgram
+    Implements IAction
+
+    Private _host As IServices
+
+    Public Property Data() As Object Implements IAction.Data
+        Get
+            Return False
+        End Get
+        Set(ByVal value As Object)
+            ''Nothing to do
+        End Set
+    End Property
+
+    Public ReadOnly Property Description() As String Implements IAction.Description
+        Get
+            Return "Opens the 'Configure Program' window." & vbCrLf & vbCrLf & "This action has no editable properties."
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements IAction.Execute
+        _host.OpenWindowConfig()
+        Return True
+    End Function
+
+    Public ReadOnly Property Group() As String Implements IAction.Group
+        Get
+            Return "Internal Functions"
+        End Get
+    End Property
+
+    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+        _host = Host
+        'Return
+    End Sub
+
+    Public ReadOnly Property Name() As String Implements IAction.Name
+        Get
+            Return "Configure Program"
+        End Get
+    End Property
+
+    Public ReadOnly Property UniqueID() As Guid Implements IAction.UniqueID
+        Get
+            Return New Guid("15ABCE5A-D91E-4d65-946A-58394B9FE478")
+        End Get
+    End Property
+End Class
+
 <Guid("15ABCE5A-D91E-4d65-946A-58394B9FE472")> _
 Public Class ConfigureConnections
     Implements IAction
@@ -29,7 +79,8 @@ Public Class ConfigureConnections
     End Property
 
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements IAction.Execute
-        _host.ConfigureConnections()
+        _host.OpenWindowConnections()
+        Return True
     End Function
 
     Public ReadOnly Property Group() As String Implements IAction.Group
@@ -89,9 +140,8 @@ Public Class ConfigureActions
     End Property
 
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements IAction.Execute
-        Diagnostics.Debug.WriteLine("ConfigureActions:before")
-        _host.ConfigureActions()
-        Diagnostics.Debug.WriteLine("ConfigureActions:after")
+        _host.OpenWindowActions()
+        Return True
     End Function
 
     Public ReadOnly Property Group() As String Implements IAction.Group

@@ -115,7 +115,7 @@ Public Class IntensityGroupValueAbs
                 Return _group
             End Get
             Set(ByVal value As Byte)
-                _group = value
+                _group = CByte(If(value > 8, 8, If(value < 0, 0, value)))
             End Set
         End Property
 
@@ -151,10 +151,132 @@ Public Class IntensityGroupValueAbs
     End Class
 End Class
 
-'TODO:
 <Guid("88F81E46-596B-4aa3-A5C4-8FB475DA21A1")> _
-Public Class clsActionIntensityGroupRelative
-    ''See uMsg 135, 53, x
+Public Class IntensityGroupValueRel
+    Implements IAction
+
+    Private _myData As ActionData
+    Private Shared _host As IServices
+
+    Public ReadOnly Property Description() As String Implements IAction.Description
+        Get
+            'Return "Control intensity values by Intensity Group."
+            Return "Control the value of an Intensity Group, or Master fader." & vbCrLf & vbCrLf & "Intended for use with relative controls, such as 'endless encoders.'"
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements IAction.Execute
+        Dim amt As Integer = VelVal
+        If (VelVal > 63) Then
+            ''decrement
+            amt = CType(Math.Ceiling(((128 - VelVal) * _myData._multiplier) / 100), Integer)
+            If (amt > 32767) Then amt = 32767
+            If Not (_myData._invert) Then
+                amt = 65536 - amt
+            End If
+        Else
+            ''increment
+            amt = CType(Math.Ceiling((VelVal * _myData._multiplier) / 100), Integer)
+            If (amt > 32767) Then amt = 32767
+            If (_myData._invert) Then
+                amt = 65536 - amt
+            End If
+        End If
+
+        amt = (65536 * _myData._group) + amt
+
+        Dim ret As Integer = _host.PostLJMessage(135, 53, amt)
+        If (ret = -1) Then
+            Return False
+        Else
+            Return True
+        End If
+    End Function
+
+    Public ReadOnly Property Group() As String Implements IAction.Group
+        Get
+            Return "LJ Advanced Functions"
+        End Get
+    End Property
+
+    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+        _myData = New ActionData
+        _host = Host
+    End Sub
+
+    Public ReadOnly Property Name() As String Implements IAction.Name
+        Get
+            Return "Intensity Group Value (rel)"
+        End Get
+    End Property
+
+    Public ReadOnly Property UniqueID() As System.Guid Implements IAction.UniqueID
+        Get
+            Return New Guid("88F81E46-596B-4aa3-A5C4-8FB475DA21A1")
+        End Get
+    End Property
+
+    Public Property Data() As Object Implements IAction.Data
+        Get
+            Return _myData
+        End Get
+        Set(ByVal value As Object)
+            _myData = DirectCast(value, IntensityGroupValueRel.ActionData)
+        End Set
+    End Property
+
+    ''' <summary>
+    ''' IntensityGroupValueRel.ActionData
+    ''' </summary>
+    ''' <remarks>Stores the properties for this action.</remarks>
+    <Serializable()> _
+    Public Class ActionData
+        Friend _group As Byte
+        Friend _multiplier As Integer
+        Friend _invert As Boolean
+
+        <DisplayName("Group"), _
+            Description("The index of the group to be controlled. For example, Master is '0', Intensity Group 1 is '1', and so on."), _
+            DefaultValue(0)> _
+        Public Property Group() As Byte
+            Get
+                Return _group
+            End Get
+            Set(ByVal value As Byte)
+                _group = CByte(If(value > 8, 8, If(value < 0, 0, value)))
+            End Set
+        End Property
+
+        <DisplayName("Increment Multiplier"), _
+            Description("Typically used only with extremely sensitive or insensitive controls, adjust this value to change the multiplier of the given amount provided by the physical control." & vbCrLf & vbCrLf & "The default value of 100 (meaning '100%') uses the values sent by the controller. Values greater than 100 increase the 'speed' of change by that factor, while values between 0 and 100 decrease the speed of change."), _
+            DefaultValue(100)> _
+        Public Property Multiplier() As Integer
+            Get
+                Return _multiplier
+            End Get
+            Set(ByVal value As Integer)
+                _multiplier = value
+            End Set
+        End Property
+
+        <DisplayName("Invert"), _
+            Description("Set to 'True' to swap increment/decrement direction."), _
+            DefaultValue(False)> _
+        Public Property Invert() As Boolean
+            Get
+                Return _invert
+            End Get
+            Set(ByVal value As Boolean)
+                _invert = value
+            End Set
+        End Property
+
+        Public Sub New()
+            _group = 0
+            _multiplier = 100
+            _invert = False
+        End Sub
+    End Class
 End Class
 
 <Guid("88F81E46-596B-4aa3-A5C4-8FB475DA21A2")> _
@@ -883,7 +1005,13 @@ Public Class FlashSequence
     Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements IAction.Execute
         Dim ret As Integer
         If _myData._clear Then
-            ret = _host.PostLJMessage(1004, _myData._sequence, -1)
+            'TODO:
+            ''Strange behaviours here...
+            'ret = _host.PostLJMessage(1004, _myData._sequence, -1)
+            'ret = _host.PostLJMessage(125, 68, 0)
+            'ret = _host.PostLJMessage(125, 88, -1)
+            'ret = _host.PostLJMessage(1006, 284, 0)
+            ret = _host.PostLJMessage(1007, 284, 0)
         Else
             ret = _host.PostLJMessage(1004, _myData._sequence, 0)
         End If
@@ -960,7 +1088,7 @@ Public Class FlashSequence
         End Property
 
         Public Sub New()
-            _sequence = 100
+            _sequence = 0
             _clear = False
         End Sub
     End Class

@@ -1,77 +1,20 @@
 ﻿Public Class Interfaces
-    'Friend m_addonInstances As New List(Of ActionInterface.IAction)
-
-    'Friend Sub LoadModules()
-    '    Dim currentApplicationDirectory As String = My.Application.Info.DirectoryPath
-    '    Dim addonsRootDirectory As String = currentApplicationDirectory & "\actions\"
-    '    Dim addonsLoaded As New List(Of System.Type)
-
-    '    If My.Computer.FileSystem.DirectoryExists(addonsRootDirectory) Then
-    '        Dim dllFilesFound As System.Collections.ObjectModel.ReadOnlyCollection(Of String) = My.Computer.FileSystem.GetFiles(addonsRootDirectory, Microsoft.VisualBasic.FileIO.SearchOption.SearchAllSubDirectories, "*.dll")
-    '        For Each dllFile As String In dllFilesFound
-    '            Dim modulesFound As System.Collections.Generic.List(Of System.Type) = TryLoadAssemblyReference(dllFile)
-    '            addonsLoaded.AddRange(modulesFound)
-    '        Next
-    '    End If
-
-    '    If addonsLoaded.Count > 0 Then
-    '        For Each addonToInstantiate As System.Type In addonsLoaded
-    '            Dim thisInstance As ActionInterface.IAction = CType(Activator.CreateInstance(addonToInstantiate), ActionInterface.IAction)
-    '            'TODO: need this??
-    '            'Dim thisTypedInstance As ActionInterface.IAction = CType(thisInstance, ActionInterface.IAction)
-    '            'thisTypedInstance.Initialise()
-    '            m_addonInstances.Add(thisInstance)
-    '        Next
-    '    End If
-    'End Sub
-
-    'Private Function TryLoadAssemblyReference(ByVal dllFilePath As String) As List(Of System.Type)
-    '    Dim loadedAssembly As Reflection.Assembly = Nothing
-    '    Dim listOfModules As New List(Of System.Type)
-    '    Try
-    '        loadedAssembly = Reflection.Assembly.LoadFile(dllFilePath)
-    '    Catch ex As Exception
-    '        Diagnostics.Debug.WriteLine("Reflection.Assembly exception")
-    '    End Try
-    '    If loadedAssembly IsNot Nothing Then
-    '        For Each assemblyModule As System.Reflection.Module In loadedAssembly.GetModules
-    '            For Each moduleType As System.Type In assemblyModule.GetTypes()
-    '                For Each interfaceImplemented As System.Type In moduleType.GetInterfaces()
-    '                    'Diagnostics.Debug.WriteLine("moduletype.Name: " & moduleType.Name & " | interfaceImplemented.Name: " & interfaceImplemented.Name & " | interfaceImplemented.FullName: " & interfaceImplemented.FullName)
-    '                    'If interfaceImplemented.FullName = "ActionInterface.iAction" Then
-    '                    If (interfaceImplemented.Name = "IAction") Then
-    '                        listOfModules.Add(moduleType)
-    '                    End If
-    '                Next
-    '            Next
-    '        Next
-    '    End If
-    '    'Diagnostics.Debug.WriteLine("loadedmodules.count: " & listOfModules.Count.ToString)
-    '    Return listOfModules
-    'End Function
-
-    ''Public Sub New()
-    ''    LoadAdditionalModules()
-    ''End Sub
-
-    ''Public Function GetThingy() As String
-    ''    Dim thing As String = ""
-    ''    For Each inst As iAction In m_addonInstances
-    ''        thing &= inst.Name.ToString & vbCrLf
-    ''    Next
-    ''    Return thing
-    ''End Function
-
     Friend Class ServiceHost
         Inherits ActionInterface.IServices
 
         ''Feel Functions:
-        Public Overrides Sub ConfigureActions()
-            main.OpenActionWindow()
+        Public Overrides Sub OpenWindowActions()
+            'Source: http://www.codeproject.com/Articles/31971/Understanding-SynchronizationContext-Part-I
+            'main._threadcontext.Post(AddressOf main.OpenActionWindow_Ext, main._threadcontext)
+            main._threadcontext.Post(AddressOf main.OpenActionWindow_Ext, Nothing)
         End Sub
 
-        Public Overrides Sub ConfigureConnections()
-            main.OpenConnectWindow()
+        Public Overrides Sub OpenWindowConnections()
+            If (_threadcontext IsNot Nothing) Then main._threadcontext.Post(AddressOf main.OpenConnectWindow_Ext, _threadcontext)
+        End Sub
+
+        Public Overrides Sub OpenWindowConfig()
+            If (_threadcontext IsNot Nothing) Then main._threadcontext.Post(AddressOf main.OpenConfigWindow_Ext, _threadcontext)
         End Sub
 
         Public Overrides Sub SetPage(ByVal Device As String, ByVal Page As Byte)

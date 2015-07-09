@@ -35,8 +35,9 @@ Public Class ActionInterface
                 Return 1
             End Get
         End Property
-        MustOverride Sub ConfigureConnections()
-        MustOverride Sub ConfigureActions()
+        MustOverride Sub OpenWindowConfig()
+        MustOverride Sub OpenWindowConnections()
+        MustOverride Sub OpenWindowActions()
         MustOverride Sub SetPage(ByVal Device As String, ByVal Page As Byte)
         MustOverride Sub SetPage(ByVal Device As Integer, ByVal Page As Byte)
         MustOverride Sub RedrawControls(ByVal Device As Integer)

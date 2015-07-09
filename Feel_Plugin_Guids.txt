@@ -9,6 +9,7 @@ ChangePage                    15ABCE5A-D91E-4d65-946A-58394B9FE474
 ShowMessageBox                15ABCE5A-D91E-4d65-946A-58394B9FE475  ##Depreciated
 ChangeControlState            15ABCE5A-D91E-4d65-946A-58394B9FE476
 ResetControlGroup             15ABCE5A-D91E-4d65-946A-58394B9FE477
+ConfigureProgram              15ABCE5A-D91E-4d65-946A-58394B9FE478
 
 ##EXTERNAL ("LJ External Hotkeys")
 ExternalSystem                D5644026-BD84-482b-AF02-BB844852BF00
