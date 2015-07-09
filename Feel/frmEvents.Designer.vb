@@ -276,7 +276,6 @@ Partial Class frmEvents
         'cmdActionAdd
         '
         Me.cmdActionAdd.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.cmdActionAdd.Enabled = False
         Me.cmdActionAdd.Image = CType(resources.GetObject("cmdActionAdd.Image"), System.Drawing.Image)
         Me.cmdActionAdd.Location = New System.Drawing.Point(15, 361)
         Me.cmdActionAdd.Name = "cmdActionAdd"
@@ -312,7 +311,6 @@ Partial Class frmEvents
         'cmdActionClear
         '
         Me.cmdActionClear.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
-        Me.cmdActionClear.Enabled = False
         Me.cmdActionClear.Image = CType(resources.GetObject("cmdActionClear.Image"), System.Drawing.Image)
         Me.cmdActionClear.Location = New System.Drawing.Point(189, 360)
         Me.cmdActionClear.Name = "cmdActionClear"
@@ -344,7 +342,6 @@ Partial Class frmEvents
         Me.lvActions.AutoArrange = False
         Me.lvActions.CheckBoxes = True
         Me.lvActions.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.colAction})
-        Me.lvActions.Enabled = False
         Me.lvActions.FullRowSelect = True
         ListViewGroup1.Header = "Control Pressed"
         ListViewGroup1.Name = "lvgPressed"
@@ -526,6 +523,7 @@ Partial Class frmEvents
         '
         'cmdEditDefaultState
         '
+        Me.cmdEditDefaultState.Enabled = False
         Me.cmdEditDefaultState.Image = Global.Feel.My.Resources.Feel.EditInformation
         Me.cmdEditDefaultState.Location = New System.Drawing.Point(174, 226)
         Me.cmdEditDefaultState.Name = "cmdEditDefaultState"

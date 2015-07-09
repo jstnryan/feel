@@ -164,7 +164,7 @@ Public Class clsAction
 
     Public Sub New()
         Name = "New Action"
-        Enabled = False
+        Enabled = True 'TODO: Normally False; put good thought into whether this will have unintended consequences.
         Type = Guid.Empty
         Data = Nothing
         _available = False

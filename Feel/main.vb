@@ -35,7 +35,7 @@ Module main
     Friend connectForm As frmConnections
     Friend eventForm As frmEvents
     Friend aboutForm As frmAbout '= New frmAbout ''Have to do this in order to get a valid SynchronizationContext
-    Dim _dummyControl As New System.Windows.Forms.Control
+    'Dim _dummyControl As New System.Windows.Forms.Control
 
     Private _configMode As Boolean = False    ''when configuring actions, override output to LJ
     Public Property configMode(Optional ByVal reConnect As Boolean = False) As Boolean
@@ -126,19 +126,24 @@ Module main
         trayIcon.Icon = My.Resources.Feel.feel
         trayIcon.Visible = True
 
-        LoadModules() ''Populate list of currently available action plug-ins
+        LoadModules()
 
-        LoadConfiguration() ''Read serialzed config data from file
-        If Not _configMode Then ConnectDevices() ''Make MIDI connections
+        LoadConfiguration()
+        If Not _configMode Then ConnectDevices()
 
         ''Store a reference to the UI thread (for opening forms from events)
         '' Source: http://www.codeproject.com/Articles/31971/Understanding-SynchronizationContext-Part-I
-        '_threadcontext = System.Windows.Forms.WindowsFormsSynchronizationContext.Current
-        _threadcontext = System.Threading.SynchronizationContext.Current ''This Is Nothing if we don't initialize at least one object (or form) in the declarations above
-        _dummyControl.Dispose()
-        'System.Threading.SynchronizationContext.SetSynchronizationContext(_threadcontext)
-        'System.Windows.Forms.WindowsFormsSynchronizationContext.SetSynchronizationContext(_threadcontext)
-        'If _threadcontext Is Nothing Then Diagnostics.Debug.WriteLine("Thread Context is Nothing!")
+        Using _dummyControl As New System.Windows.Forms.Control
+            ''This Is Nothing if we don't initialize at least one object (or form) in the declarations above
+            '' or, in this case, here in the Using
+            _threadcontext = System.Threading.SynchronizationContext.Current
+            '_threadcontext = System.Windows.Forms.WindowsFormsSynchronizationContext.Current
+
+            ''The following do not work to set context without initializing a control, but are kept here for reference
+            'System.Threading.SynchronizationContext.SetSynchronizationContext(_threadcontext)
+            'System.Windows.Forms.WindowsFormsSynchronizationContext.SetSynchronizationContext(_threadcontext)
+        End Using
+        If _threadcontext Is Nothing Then Diagnostics.Debug.WriteLine("Thread Context is Nothing!")
 
         Application.Run()
         'Catch ex As Exception
@@ -272,6 +277,8 @@ Module main
 #End Region
 
 #Region "File I/O"
+    ''' <summary>Attempts to read serialzed configuration data from disk.</summary>
+    ''' <remarks>Creates a blank configuration upon failure.</remarks>
     Friend Sub LoadConfiguration()
         ''Check to make sure a configuration file has been set, if not make one
         If (My.Settings.ConfigFile = "") Then
@@ -312,7 +319,8 @@ LoadConfig:
         End Try
     End Sub
 
-    ''TODO: Does this really need to be broken out into its own subroutine?
+    ''' <summary>Completely clears the current configuration object.</summary>
+    ''' <remarks>This affects only the configuration loaded into memory. Any saved configurations remain.</remarks>
     <Diagnostics.DebuggerStepThrough()> _
     Friend Sub CreateNewConfiguration()
         FeelConfig = New clsConfig
@@ -421,6 +429,9 @@ LoadConfig:
         Return Configuration
     End Function
 
+    ''' <summary>Checks the (current) availability of a plugin based on its GUID.</summary>
+    ''' <param name="PluginGuid">The GUID to find</param>
+    ''' <returns>True if plugin currently loaded and ready for use</returns>
     <Diagnostics.DebuggerStepThrough()> _
     Public Function CheckPluginAvailability(ByRef PluginGuid As Guid) As Boolean
         Return actionModules.ContainsKey(PluginGuid)
@@ -817,6 +828,8 @@ LoadConfig:
 #End Region
 
 #Region "Action Plugins"
+    ''' <summary>Populates list of currently available action plug-ins.</summary>
+    ''' <remarks>Attempts to load each instance of ActionInterface.IAction; upon success stores refernces by GUID in <see cref="actionModules">actionModules</see>.</remarks>
     <Diagnostics.DebuggerStepThrough()> _
     Friend Sub LoadModules()
         Dim addonsRootDirectory As String = My.Application.Info.DirectoryPath & "\actions\"
@@ -836,11 +849,20 @@ LoadConfig:
                 ''TODO: need this??
                 'Dim thisTypedInstance As ActionInterface.IAction = CType(thisInstance, ActionInterface.IAction)
                 'thisTypedInstance.Initialise()
-                If (thisInstance.Initialize(serviceHost)) Then actionModules.Add(thisInstance.UniqueID, thisInstance)
+                'TODO: Clean this up some..
+                If (actionModules.ContainsKey(thisInstance.UniqueID)) Then
+                    System.Windows.Forms.MessageBox.Show("The plugin '" & thisInstance.Name & "' has an ID which matches another plugin already loaded. Loading of this plugin was skipped, and it will not be available for use.", "Feel: Duplicate Action Plugin ID", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Else
+                    If (thisInstance.Initialize(serviceHost)) Then actionModules.Add(thisInstance.UniqueID, thisInstance)
+                End If
             Next
         End If
     End Sub
 
+    ''' <summary>Searches through a DLL to find instances of classes which implement IAction.</summary>
+    ''' <param name="dllFilePath">Fully qualified path to DLL to search</param>
+    ''' <returns>List of all IAction classes in DLL</returns>
+    ''' <remarks>For use only within <see cref="LoadModules">LoadModules</see>.</remarks>
     <Diagnostics.DebuggerStepThrough()> _
     Private Function TryLoadAssemblyReference(ByVal dllFilePath As String) As Collections.Generic.List(Of System.Type)
         Dim loadedAssembly As Reflection.Assembly = Nothing
@@ -867,6 +889,7 @@ LoadConfig:
         Return listOfModules
     End Function
 
+    ''' <summary>Updates the list of available plugins.</summary>
     <Diagnostics.DebuggerStepThrough()> _
     Private Sub ReloadModules() Handles menuUpdateAvailablePlugins.Click
         actionModules.Clear()

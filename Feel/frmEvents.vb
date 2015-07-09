@@ -89,19 +89,16 @@ Public Class frmEvents
             Dim _device As Integer = serviceHost.FindDeviceIndexByInput(_curCont.Device)
 
             'Update UI
-            'setLabels(FeelConfig.Connections(_device).Name, value.Type, "Channel " & value.Channel.ToString, If(value.Type = "Note", CType(value.NotCon, Midi.Pitch).ToString, value.NotCon.ToString), value.VelVal.ToString)
             setLabels(FeelConfig.Connections(_device).Name, _curCont.Type, "Channel " & DisplayChannel(_curCont.Channel), If(_curCont.Type = "Note", DisplayNote(_curCont.NotCon), _curCont.NotCon.ToString), DisplayVelVal(_curCont.VelVal))
+
             ''If this is the first device control recieved, enable the form controls.
             If (chkPaged.Enabled = False) Then
                 chkPaged.Enabled = True
                 nudDevicePage.Enabled = True
                 txtDefaultState.Enabled = True
+                cmdEditDefaultState.Enabled = True
                 grpConfiguration.Enabled = True
                 grpActions.Enabled = True
-                'TODO: Previous makes the following unneccessary?
-                lvActions.Enabled = True
-                cmdActionAdd.Enabled = True
-                cmdActionClear.Enabled = True
             End If
 
             'TODO: stupid bugfix
@@ -114,7 +111,7 @@ Public Class frmEvents
 
             SetControlStates()
 
-            'TODO: Check to see if active control contains a page change action, if so, update page
+            'TODO: Check to see if active control contains a page change action, if so, update page?
             'If False Then
             '    'change page
             'Else
@@ -656,6 +653,16 @@ Public Class frmEvents
         End If
     End Sub
 
+    ''' <summary>Courtesy copying of values between similar fields</summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks>It is likely that these two fields will have the same value (or at least similar), so if they have not been previously set, they are set to equal values on first input. See also <see cref="txtInitialState_Leave">txtInitialState_Leave</see>.</remarks>
+    Private Sub txtDefaultState_Leave(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtDefaultState.Leave
+        If (Not txtDefaultState.Text.IsNullOrEmpty) AndAlso (txtInitialState.Text.IsNullOrEmpty) Then
+            txtInitialState.Text = txtDefaultState.Text
+        End If
+    End Sub
+
     Private Sub txtDefaultState_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDefaultState.TextChanged
         If SetControl(True) Then
             'TODO: Sanitize this input
@@ -663,6 +670,16 @@ Public Class frmEvents
         Else
             ''Should never hit this block
             Windows.Forms.MessageBox.Show("unable to set this value")
+        End If
+    End Sub
+
+    ''' <summary>Courtesy copying of values between similar fields</summary>
+    ''' <param name="sender"></param>
+    ''' <param name="e"></param>
+    ''' <remarks>It is likely that these two fields will have the same value (or at least similar), so if they have not been previously set, they are set to equal values on first input. See also <see cref="txtDefaultState_Leave">txtDefaultState_Leave</see>.</remarks>
+    Private Sub txtInitialState_Leave(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtInitialState.Leave
+        If (Not txtInitialState.Text.IsNullOrEmpty) AndAlso (txtDefaultState.Text.IsNullOrEmpty) Then
+            txtDefaultState.Text = txtInitialState.Text
         End If
     End Sub
 
