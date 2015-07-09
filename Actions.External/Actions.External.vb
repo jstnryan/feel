@@ -26,10 +26,11 @@ Public Class ExternalSystem
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -133,10 +134,11 @@ Public Class ExternalGlobalIntensity
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -306,10 +308,11 @@ Public Class ExternalControls
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -461,10 +464,11 @@ Public Class ExternalSequenceFunctions
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -572,10 +576,11 @@ Public Class ExternalCue
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -869,10 +874,11 @@ Public Class ExternalCueBuilder
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -972,10 +978,11 @@ Public Class ExternalGenericMacro
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -1075,10 +1082,11 @@ Public Class ExternalCuelist
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -1192,10 +1200,11 @@ Public Class ExternalBackgroundCues
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -1298,10 +1307,11 @@ Public Class ExternalStaticsControl
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -1415,10 +1425,11 @@ Public Class ExternalFixtureSelection
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -1538,10 +1549,11 @@ Public Class ExternalOfflineVisualizer
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -1600,7 +1612,7 @@ Public Class ExternalOfflineVisualizer
         End Property
 
         Public Sub New()
-            _function = ExternalOfflineVisualizer.Hotkey.ToggleOfflineVisualizer
+            _function = ExternalOfflineVisualizer.Hotkey.ToggleOffLineVisualizer
             _state = FunctionState.FunctionOn
         End Sub
     End Class
@@ -1642,10 +1654,11 @@ Public Class ExternalEmulate2532
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -1744,10 +1757,11 @@ Public Class ExternalDMXIN
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get

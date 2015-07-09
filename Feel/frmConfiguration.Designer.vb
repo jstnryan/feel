@@ -45,14 +45,15 @@ Partial Class frmConfiguration
         Me.chkDmxin = New System.Windows.Forms.CheckBox
         Me.chkWindowsMessages = New System.Windows.Forms.CheckBox
         Me.grpConnection = New System.Windows.Forms.GroupBox
-        Me.chkFeedbackDetection = New System.Windows.Forms.CheckBox
+        Me.chkReconnectDevices = New System.Windows.Forms.CheckBox
         Me.chkIgnoreWhileConnecting = New System.Windows.Forms.CheckBox
         Me.grpConfigFile = New System.Windows.Forms.GroupBox
         Me.cmdFileSaveAs = New System.Windows.Forms.Button
         Me.cmdFileNew = New System.Windows.Forms.Button
         Me.cmdFileOpen = New System.Windows.Forms.Button
         Me.txtConfigFile = New System.Windows.Forms.TextBox
-        Me.chkReconnectDevices = New System.Windows.Forms.CheckBox
+        Me.grpLicense = New System.Windows.Forms.GroupBox
+        Me.txtLicense = New System.Windows.Forms.TextBox
         Me.grpMidiDisplay.SuspendLayout()
         Me.grpTranspose.SuspendLayout()
         Me.grpNumbering.SuspendLayout()
@@ -60,6 +61,7 @@ Partial Class frmConfiguration
         Me.grpLJConfig.SuspendLayout()
         Me.grpConnection.SuspendLayout()
         Me.grpConfigFile.SuspendLayout()
+        Me.grpLicense.SuspendLayout()
         Me.SuspendLayout()
         '
         'grpMidiDisplay
@@ -226,12 +228,13 @@ Partial Class frmConfiguration
         Me.grpLJConfig.Controls.Add(Me.chkDmxover)
         Me.grpLJConfig.Controls.Add(Me.chkDmxin)
         Me.grpLJConfig.Controls.Add(Me.chkWindowsMessages)
-        Me.grpLJConfig.Location = New System.Drawing.Point(12, 201)
+        Me.grpLJConfig.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.grpLJConfig.Location = New System.Drawing.Point(12, 177)
         Me.grpLJConfig.Name = "grpLJConfig"
         Me.grpLJConfig.Size = New System.Drawing.Size(269, 91)
         Me.grpLJConfig.TabIndex = 7
         Me.grpLJConfig.TabStop = False
-        Me.grpLJConfig.Text = "LightJockey Functions"
+        Me.grpLJConfig.Text = "LightJockey Communication"
         '
         'chkDmxover
         '
@@ -268,30 +271,29 @@ Partial Class frmConfiguration
         'grpConnection
         '
         Me.grpConnection.Controls.Add(Me.chkReconnectDevices)
-        Me.grpConnection.Controls.Add(Me.chkFeedbackDetection)
         Me.grpConnection.Controls.Add(Me.chkIgnoreWhileConnecting)
         Me.grpConnection.Location = New System.Drawing.Point(12, 102)
         Me.grpConnection.Name = "grpConnection"
-        Me.grpConnection.Size = New System.Drawing.Size(269, 93)
+        Me.grpConnection.Size = New System.Drawing.Size(269, 69)
         Me.grpConnection.TabIndex = 14
         Me.grpConnection.TabStop = False
         Me.grpConnection.Text = "Connection Behavior"
         '
-        'chkFeedbackDetection
+        'chkReconnectDevices
         '
-        Me.chkFeedbackDetection.AutoSize = True
-        Me.chkFeedbackDetection.Enabled = False
-        Me.chkFeedbackDetection.Location = New System.Drawing.Point(16, 42)
-        Me.chkFeedbackDetection.Name = "chkFeedbackDetection"
-        Me.chkFeedbackDetection.Size = New System.Drawing.Size(159, 17)
-        Me.chkFeedbackDetection.TabIndex = 15
-        Me.chkFeedbackDetection.Text = "Enable Feedback Detection"
-        Me.chkFeedbackDetection.UseVisualStyleBackColor = True
+        Me.chkReconnectDevices.AutoSize = True
+        Me.chkReconnectDevices.Enabled = False
+        Me.chkReconnectDevices.Location = New System.Drawing.Point(16, 19)
+        Me.chkReconnectDevices.Name = "chkReconnectDevices"
+        Me.chkReconnectDevices.Size = New System.Drawing.Size(210, 17)
+        Me.chkReconnectDevices.TabIndex = 16
+        Me.chkReconnectDevices.Text = "Find Connections Upon Config Change"
+        Me.chkReconnectDevices.UseVisualStyleBackColor = True
         '
         'chkIgnoreWhileConnecting
         '
         Me.chkIgnoreWhileConnecting.AutoSize = True
-        Me.chkIgnoreWhileConnecting.Location = New System.Drawing.Point(16, 19)
+        Me.chkIgnoreWhileConnecting.Location = New System.Drawing.Point(16, 42)
         Me.chkIgnoreWhileConnecting.Name = "chkIgnoreWhileConnecting"
         Me.chkIgnoreWhileConnecting.Size = New System.Drawing.Size(205, 17)
         Me.chkIgnoreWhileConnecting.TabIndex = 14
@@ -345,22 +347,34 @@ Partial Class frmConfiguration
         Me.txtConfigFile.Size = New System.Drawing.Size(237, 20)
         Me.txtConfigFile.TabIndex = 0
         '
-        'chkReconnectDevices
+        'grpLicense
         '
-        Me.chkReconnectDevices.AutoSize = True
-        Me.chkReconnectDevices.Enabled = False
-        Me.chkReconnectDevices.Location = New System.Drawing.Point(16, 65)
-        Me.chkReconnectDevices.Name = "chkReconnectDevices"
-        Me.chkReconnectDevices.Size = New System.Drawing.Size(210, 17)
-        Me.chkReconnectDevices.TabIndex = 16
-        Me.chkReconnectDevices.Text = "Find Connections Upon Config Change"
-        Me.chkReconnectDevices.UseVisualStyleBackColor = True
+        Me.grpLicense.Controls.Add(Me.txtLicense)
+        Me.grpLicense.Location = New System.Drawing.Point(12, 274)
+        Me.grpLicense.Name = "grpLicense"
+        Me.grpLicense.Size = New System.Drawing.Size(269, 86)
+        Me.grpLicense.TabIndex = 16
+        Me.grpLicense.TabStop = False
+        Me.grpLicense.Text = "License Status"
+        '
+        'txtLicense
+        '
+        Me.txtLicense.Location = New System.Drawing.Point(16, 19)
+        Me.txtLicense.Multiline = True
+        Me.txtLicense.Name = "txtLicense"
+        Me.txtLicense.ReadOnly = True
+        Me.txtLicense.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.txtLicense.Size = New System.Drawing.Size(237, 58)
+        Me.txtLicense.TabIndex = 0
+        Me.txtLicense.Text = "Protection device found" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Feel single license found" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Plug-in licenses:" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Advanced L" & _
+            "J Functions license" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "OSC license."
         '
         'frmConfiguration
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(568, 372)
+        Me.Controls.Add(Me.grpLicense)
         Me.Controls.Add(Me.grpConfigFile)
         Me.Controls.Add(Me.grpConnection)
         Me.Controls.Add(Me.grpLJConfig)
@@ -381,6 +395,8 @@ Partial Class frmConfiguration
         Me.grpConnection.PerformLayout()
         Me.grpConfigFile.ResumeLayout(False)
         Me.grpConfigFile.PerformLayout()
+        Me.grpLicense.ResumeLayout(False)
+        Me.grpLicense.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -404,11 +420,12 @@ Partial Class frmConfiguration
     Friend WithEvents rdoTransposeC5 As System.Windows.Forms.RadioButton
     Friend WithEvents grpConnection As System.Windows.Forms.GroupBox
     Friend WithEvents chkIgnoreWhileConnecting As System.Windows.Forms.CheckBox
-    Friend WithEvents chkFeedbackDetection As System.Windows.Forms.CheckBox
     Friend WithEvents grpConfigFile As System.Windows.Forms.GroupBox
     Friend WithEvents txtConfigFile As System.Windows.Forms.TextBox
     Friend WithEvents cmdFileSaveAs As System.Windows.Forms.Button
     Friend WithEvents cmdFileNew As System.Windows.Forms.Button
     Friend WithEvents cmdFileOpen As System.Windows.Forms.Button
     Friend WithEvents chkReconnectDevices As System.Windows.Forms.CheckBox
+    Friend WithEvents grpLicense As System.Windows.Forms.GroupBox
+    Friend WithEvents txtLicense As System.Windows.Forms.TextBox
 End Class

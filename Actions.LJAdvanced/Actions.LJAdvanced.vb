@@ -71,10 +71,13 @@ Public Class IntensityGroupValueAbs
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
+        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -199,10 +202,13 @@ Public Class IntensityGroupValueRel
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
+        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -317,10 +323,13 @@ Public Class CueMacroAmplitudeAbs
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
+        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -422,10 +431,13 @@ Public Class CueMacroAmplitudeRel
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
+        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -526,10 +538,13 @@ Public Class CueMacroSpeedAbs
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
+        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -631,10 +646,13 @@ Public Class CueMacroSpeedRel
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
+        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -725,10 +743,13 @@ Public Class LoadCue
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
+        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -819,10 +840,13 @@ Public Class LoadCuelist
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
+        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -923,10 +947,13 @@ Public Class LoadBackgroundCue
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
+        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -1028,10 +1055,13 @@ Public Class FlashSequence
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
+        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get

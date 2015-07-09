@@ -34,10 +34,10 @@ Public Class ConfigureProgram
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _host = Host
-        'Return
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -89,10 +89,10 @@ Public Class ConfigureConnections
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _host = Host
-        'Return
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -150,9 +150,10 @@ Public Class ConfigureActions
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -194,10 +195,11 @@ Public Class ChangePage
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -433,10 +435,11 @@ Public Class ChangeControlState
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As ActionInterface.IServices) Implements ActionInterface.IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _host = Host
         _actionData = New ChangeControlState.ActionData
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements ActionInterface.IAction.Name
         Get
@@ -506,7 +509,7 @@ Public Class ResetControlGroup
         End Set
     End Property
 
-    Public ReadOnly Property Description() As String Implements ActionInterface.IAction.Description
+    Public ReadOnly Property Description() As String Implements IAction.Description
         Get
             Return "Sets all controls in group to 'inactive' (momentary/latch button status), and resets control state."
         End Get
@@ -524,10 +527,11 @@ Public Class ResetControlGroup
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As ActionInterface.IServices) Implements ActionInterface.IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _host = Host
         _actionData = New ActionData
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements ActionInterface.IAction.Name
         Get

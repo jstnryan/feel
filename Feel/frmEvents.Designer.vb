@@ -51,6 +51,7 @@ Partial Class frmEvents
         Me.grpAction = New System.Windows.Forms.GroupBox
         Me.txtActionDescription = New System.Windows.Forms.TextBox
         Me.pgAction = New System.Windows.Forms.PropertyGrid
+        Me.cboActionFunction = New Feel.GroupedComboBox
         Me.lblActionFunction = New System.Windows.Forms.Label
         Me.txtActionName = New System.Windows.Forms.TextBox
         Me.lblActionName = New System.Windows.Forms.Label
@@ -64,7 +65,6 @@ Partial Class frmEvents
         Me.grpActions = New System.Windows.Forms.GroupBox
         Me.lvActions = New System.Windows.Forms.ListView
         Me.colAction = New System.Windows.Forms.ColumnHeader
-        Me.cboActionFunction = New Feel.GroupedComboBox
         Me.grpInput = New Feel.CheckedGroupBox
         Me.chkPaged = New System.Windows.Forms.CheckBox
         Me.nudDevicePage = New System.Windows.Forms.NumericUpDown
@@ -207,6 +207,19 @@ Partial Class frmEvents
         Me.pgAction.Size = New System.Drawing.Size(247, 228)
         Me.pgAction.TabIndex = 15
         Me.pgAction.ToolbarVisible = False
+        '
+        'cboActionFunction
+        '
+        Me.cboActionFunction.DropDownHeight = 212
+        Me.cboActionFunction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cboActionFunction.FormattingEnabled = True
+        Me.cboActionFunction.GroupMember = "Group"
+        Me.cboActionFunction.IntegralHeight = False
+        Me.cboActionFunction.Location = New System.Drawing.Point(69, 44)
+        Me.cboActionFunction.MaxDropDownItems = 20
+        Me.cboActionFunction.Name = "cboActionFunction"
+        Me.cboActionFunction.Size = New System.Drawing.Size(193, 21)
+        Me.cboActionFunction.TabIndex = 14
         '
         'lblActionFunction
         '
@@ -374,19 +387,6 @@ Partial Class frmEvents
         '
         Me.colAction.Text = "Action"
         Me.colAction.Width = 174
-        '
-        'cboActionFunction
-        '
-        Me.cboActionFunction.DropDownHeight = 212
-        Me.cboActionFunction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cboActionFunction.FormattingEnabled = True
-        Me.cboActionFunction.GroupMember = "Group"
-        Me.cboActionFunction.IntegralHeight = False
-        Me.cboActionFunction.Location = New System.Drawing.Point(69, 44)
-        Me.cboActionFunction.MaxDropDownItems = 20
-        Me.cboActionFunction.Name = "cboActionFunction"
-        Me.cboActionFunction.Size = New System.Drawing.Size(193, 21)
-        Me.cboActionFunction.TabIndex = 14
         '
         'grpInput
         '

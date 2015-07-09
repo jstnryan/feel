@@ -115,6 +115,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="NativeMethods.vb" />
+    <Compile Include="validation.vb" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore">
@@ -133,6 +134,10 @@
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WibuCmNET, Version=5.10.135.500, Culture=neutral, PublicKeyToken=01d86e1eb0c69c23">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\WibuCmNET.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>

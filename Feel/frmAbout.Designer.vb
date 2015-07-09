@@ -40,7 +40,7 @@ Partial Class frmAbout
         'PictureBox1
         '
         PictureBox1.Image = Global.Feel.My.Resources.Feel.feel_large
-        PictureBox1.Location = New System.Drawing.Point(-13, 12)
+        PictureBox1.Location = New System.Drawing.Point(3, 3)
         PictureBox1.Name = "PictureBox1"
         PictureBox1.Size = New System.Drawing.Size(128, 128)
         PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize
@@ -49,12 +49,12 @@ Partial Class frmAbout
         '
         'txtAcknowledgements
         '
-        txtAcknowledgements.Location = New System.Drawing.Point(103, 63)
+        txtAcknowledgements.Location = New System.Drawing.Point(82, 59)
         txtAcknowledgements.Multiline = True
         txtAcknowledgements.Name = "txtAcknowledgements"
         txtAcknowledgements.ReadOnly = True
         txtAcknowledgements.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        txtAcknowledgements.Size = New System.Drawing.Size(277, 198)
+        txtAcknowledgements.Size = New System.Drawing.Size(298, 202)
         txtAcknowledgements.TabIndex = 1
         txtAcknowledgements.TabStop = False
         txtAcknowledgements.Text = resources.GetString("txtAcknowledgements.Text")
@@ -62,17 +62,17 @@ Partial Class frmAbout
         'Label1
         '
         Label1.AutoSize = True
-        Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Label1.Location = New System.Drawing.Point(100, 12)
+        Label1.Font = New System.Drawing.Font("Arial Black", 15.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Label1.Location = New System.Drawing.Point(137, 24)
         Label1.Name = "Label1"
-        Label1.Size = New System.Drawing.Size(63, 16)
+        Label1.Size = New System.Drawing.Size(62, 30)
         Label1.TabIndex = 2
-        Label1.Text = "Feel 2.0"
+        Label1.Text = "Feel"
         '
         'lblVersion
         '
         Me.lblVersion.AutoSize = True
-        Me.lblVersion.Location = New System.Drawing.Point(100, 37)
+        Me.lblVersion.Location = New System.Drawing.Point(253, 36)
         Me.lblVersion.Name = "lblVersion"
         Me.lblVersion.Size = New System.Drawing.Size(127, 13)
         Me.lblVersion.TabIndex = 5

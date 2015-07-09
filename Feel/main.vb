@@ -17,6 +17,7 @@ Module main
     Dim WithEvents menuRefreshWindowHandle As New MenuItem
     Dim WithEvents menuSaveConfiguration As New MenuItem
     Dim WithEvents menuUpdateAvailableDevices As New MenuItem
+    Dim WithEvents menuUpdateAvailablePlugins As New MenuItem
     Dim WithEvents menuAbout As New MenuItem
 
     ''Container for program configuration
@@ -96,7 +97,8 @@ Module main
         menuAdvancedTasks.Text = "Advanced &Tasks"
         menuSaveConfiguration.Text = "&Save Configuration"
         menuRefreshWindowHandle.Text = "&Refresh LJ Handle"
-        menuUpdateAvailableDevices.Text = "&Update Available Devices"
+        menuUpdateAvailableDevices.Text = "Update Available &Devices"
+        menuUpdateAvailablePlugins.Text = "Update Available &Plugins"
         '':NEW
         menuAbout.Text = "About"
         trayMenu.MenuItems.Add(menuExit)
@@ -106,6 +108,7 @@ Module main
         menuAdvancedTasks.MenuItems.Add(menuSaveConfiguration)
         menuAdvancedTasks.MenuItems.Add(menuRefreshWindowHandle)
         menuAdvancedTasks.MenuItems.Add(menuUpdateAvailableDevices)
+        menuAdvancedTasks.MenuItems.Add(menuUpdateAvailablePlugins)
         trayMenu.MenuItems.Add(menuAdvancedTasks)
         'trayMenu.MenuItems.Add("-")
         trayMenu.MenuItems.Add(menuConfigProgram)
@@ -124,7 +127,7 @@ Module main
         ''Store a reference to the UI thread (for opening forms from events)
         '' Source: http://www.codeproject.com/Articles/31971/Understanding-SynchronizationContext-Part-I
         '_threadcontext = System.Windows.Forms.WindowsFormsSynchronizationContext.Current
-        _threadcontext = System.Threading.SynchronizationContext.Current ''This Is Nothing if we don't initialize at least one form in the declarations above
+        _threadcontext = System.Threading.SynchronizationContext.Current ''This Is Nothing if we don't initialize at least one object (or form) in the declarations above
         _dummyControl.Dispose()
         'System.Threading.SynchronizationContext.SetSynchronizationContext(_threadcontext)
         'System.Windows.Forms.WindowsFormsSynchronizationContext.SetSynchronizationContext(_threadcontext)
@@ -804,8 +807,7 @@ LoadConfig:
                 ''TODO: need this??
                 'Dim thisTypedInstance As ActionInterface.IAction = CType(thisInstance, ActionInterface.IAction)
                 'thisTypedInstance.Initialise()
-                thisInstance.Initialize(serviceHost)
-                actionModules.Add(thisInstance.UniqueID, thisInstance)
+                If (thisInstance.Initialize(serviceHost)) Then actionModules.Add(thisInstance.UniqueID, thisInstance)
             Next
         End If
     End Sub
@@ -834,6 +836,11 @@ LoadConfig:
         'Diagnostics.Debug.WriteLine("loadedmodules.count: " & listOfModules.Count.ToString)
         Return listOfModules
     End Function
+
+    Private Sub ReloadModules() Handles menuUpdateAvailablePlugins.Click
+        actionModules.Clear()
+        LoadModules()
+    End Sub
 #End Region
 
 #Region "Random Code Helpers"

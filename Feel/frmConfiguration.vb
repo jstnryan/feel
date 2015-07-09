@@ -34,7 +34,7 @@
         txtConfigFile.Text = CompactString(My.Settings.ConfigFile, txtConfigFile.Width, txtConfigFile.Font, Windows.Forms.TextFormatFlags.PathEllipsis)
         ''Connection Behavior settings:
         chkIgnoreWhileConnecting.Checked = FeelConfig.IgnoreEvents
-        chkFeedbackDetection.Checked = FeelConfig.FeedbackDetection
+        'chkFeedbackDetection.Checked = FeelConfig.FeedbackDetection
         chkReconnectDevices.Checked = FeelConfig.RestoreConnections
         ''LightJockey Functions settings:
         chkWindowsMessages.Checked = FeelConfig.WmEnable
@@ -86,9 +86,9 @@
         FeelConfig.IgnoreEvents = chkIgnoreWhileConnecting.Checked
     End Sub
 
-    Private Sub chkFeedbackDetection_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkFeedbackDetection.CheckedChanged
-        FeelConfig.FeedbackDetection = chkFeedbackDetection.Checked
-    End Sub
+    'Private Sub chkFeedbackDetection_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs)
+    '    FeelConfig.FeedbackDetection = chkFeedbackDetection.Checked
+    'End Sub
 
     Private Sub chkReconnectDevices_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkReconnectDevices.CheckedChanged
         FeelConfig.RestoreConnections = chkReconnectDevices.Checked

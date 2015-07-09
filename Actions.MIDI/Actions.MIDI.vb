@@ -36,10 +36,11 @@ Public Class SendMidiString
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get
@@ -154,10 +155,11 @@ Public Class SendMidiComponents
         End Get
     End Property
 
-    Public Sub Initialize(ByRef Host As IServices) Implements IAction.Initialize
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
         _myData = New ActionData
         _host = Host
-    End Sub
+        Return True
+    End Function
 
     Public ReadOnly Property Name() As String Implements IAction.Name
         Get

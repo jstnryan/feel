@@ -343,6 +343,12 @@
         End Function
 #End Region
 
+#Region "Licensing"
+        Overrides Function Licensing_CodeMeter_Validate(ByVal firmCode As UInteger, Optional ByVal productCode As UInteger = Nothing, Optional ByVal featureCode As UInteger = Nothing) As Boolean
+            Return False
+        End Function
+#End Region
+
 #Region "TypeConverters"
         Public Shadows Class DeviceList
             Inherits ComponentModel.StringConverter

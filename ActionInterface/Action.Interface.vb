@@ -15,7 +15,6 @@ Public Class ActionInterface
     ''' <summary>
     ''' Interface utilized by Action plugins
     ''' </summary>
-    ''' <remarks></remarks>
     Public Interface IAction
         ReadOnly Property UniqueID() As Guid
         ReadOnly Property Group() As String
@@ -24,10 +23,14 @@ Public Class ActionInterface
         Property Data() As Object
         ''Type: 128=NoteOff, 144=NoteOn, 176=Control Change
         Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean
-        Sub Initialize(ByRef Host As IServices)
+        Function Initialize(ByRef Host As IServices) As Boolean
         'MustInherit Class ActionData : End Class
     End Interface
 
+
+    ''' <summary>
+    ''' Interface implemented by Feel, utilized by Action plugins to perform actions
+    ''' </summary>
     Public MustInherit Class IServices
         ''Feel Information
         Overridable ReadOnly Property ServicesVersion() As Integer
@@ -126,6 +129,11 @@ Public Class ActionInterface
         MustOverride Function SendWMessage(ByVal Handle As Integer, ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
         MustOverride Function PostWMessage(ByVal Handle As Integer, ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
         MustOverride Function SendLJCopyData(ByVal lParam As ActionInterface.CopyData) As Integer
+
+        ''Software protection functions (licensing)
+        Overridable Function Licensing_CodeMeter_Validate(ByVal firmCode As UInteger, Optional ByVal productCode As UInteger = Nothing, Optional ByVal featureCode As UInteger = Nothing) As Boolean
+            Return False
+        End Function
     End Class
 #End Region
 End Class

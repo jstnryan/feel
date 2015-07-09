@@ -10,7 +10,8 @@ Public Class clsConfig
     Public Connections As Collections.Generic.Dictionary(Of Integer, clsConnection)
 
     Public IgnoreEvents As Boolean          'Ignore events raised by devices/connections while still establishing other connections
-    Public FeedbackDetection As Boolean     'Enable MIDI feedback detection
+    '<Runtime.Serialization.OptionalField()> _
+    'Public FeedbackDetection As Boolean     'Enable MIDI feedback detection
     '<Runtime.Serialization.OptionalField()> _
     Public RestoreConnections As Boolean    'Attempt to reconnect devices who's connection configurations have changed
 
@@ -24,7 +25,7 @@ Public Class clsConfig
 
     Public Sub New()
         IgnoreEvents = False
-        FeedbackDetection = False
+        'FeedbackDetection = False
         WmEnable = False
         DmxinEnable = False
         DmxoverEnable = False
