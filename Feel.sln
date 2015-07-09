@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Feel", "Feel\Feel.vbproj", "{F035304D-95EE-42B4-9A96-F03F4F05EF56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MIDI", "MIDI\MIDI.csproj", "{F60D8B7B-2D2E-4B94-A736-3783FFE1A25C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F035304D-95EE-42B4-9A96-F03F4F05EF56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F035304D-95EE-42B4-9A96-F03F4F05EF56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F035304D-95EE-42B4-9A96-F03F4F05EF56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F035304D-95EE-42B4-9A96-F03F4F05EF56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F60D8B7B-2D2E-4B94-A736-3783FFE1A25C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F60D8B7B-2D2E-4B94-A736-3783FFE1A25C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F60D8B7B-2D2E-4B94-A736-3783FFE1A25C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F60D8B7B-2D2E-4B94-A736-3783FFE1A25C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
