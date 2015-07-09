@@ -8,17 +8,17 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("ExternalActions")> 
+<Assembly: AssemblyTitle("Actions.Internal")> 
 <Assembly: AssemblyDescription("")> 
 <Assembly: AssemblyCompany("LB1")> 
-<Assembly: AssemblyProduct("ExternalActions")> 
+<Assembly: AssemblyProduct("Actions.Internal")> 
 <Assembly: AssemblyCopyright("Copyright © LB1 2014")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
 
 'The following GUID is for the ID of the typelib if this project is exposed to COM
-<Assembly: Guid("878c02dc-0491-4b6d-a8d3-4fd0fc533a6b")> 
+<Assembly: Guid("50da8807-8ab4-45b7-a340-1da6c1f7d794")> 
 
 ' Version information for an assembly consists of the following four values:
 '

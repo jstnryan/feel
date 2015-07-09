@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MIDI", "MIDI\MIDI.csproj", "{F60D8B7B-2D2E-4B94-A736-3783FFE1A25C}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ActionInterface", "ActionInterface\ActionInterface.vbproj", "{C242BFED-C9F6-493A-8DC4-FB9571E3A8E0}"
-EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "ExternalActions", "ExternalActions\ExternalActions.vbproj", "{85DE0FDC-607B-4D0D-A4EE-4DF05B236FEE}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Action.Interface", "ActionInterface\Action.Interface.vbproj", "{C242BFED-C9F6-493A-8DC4-FB9571E3A8E0}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Feel", "Feel\Feel.vbproj", "{EC5E9353-090C-4C31-B579-FDB9D2C6DC21}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Actions.Internal", "Actions.Internal\Actions.Internal.vbproj", "{4E16AFD8-03CA-49C8-99EE-AA91A2834AE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,14 +23,14 @@ Global
 		{C242BFED-C9F6-493A-8DC4-FB9571E3A8E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C242BFED-C9F6-493A-8DC4-FB9571E3A8E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C242BFED-C9F6-493A-8DC4-FB9571E3A8E0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{85DE0FDC-607B-4D0D-A4EE-4DF05B236FEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{85DE0FDC-607B-4D0D-A4EE-4DF05B236FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{85DE0FDC-607B-4D0D-A4EE-4DF05B236FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{85DE0FDC-607B-4D0D-A4EE-4DF05B236FEE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EC5E9353-090C-4C31-B579-FDB9D2C6DC21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC5E9353-090C-4C31-B579-FDB9D2C6DC21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC5E9353-090C-4C31-B579-FDB9D2C6DC21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC5E9353-090C-4C31-B579-FDB9D2C6DC21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E16AFD8-03CA-49C8-99EE-AA91A2834AE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E16AFD8-03CA-49C8-99EE-AA91A2834AE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E16AFD8-03CA-49C8-99EE-AA91A2834AE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E16AFD8-03CA-49C8-99EE-AA91A2834AE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
