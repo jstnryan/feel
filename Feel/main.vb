@@ -12,6 +12,7 @@ Module main
     Dim menuAdvancedTasks As New MenuItem
     Dim WithEvents menuRefreshWindowHandle As New MenuItem
     Dim WithEvents menuSaveConfiguration As New MenuItem
+    'Dim WithEvents menuUpdateAvailableDevices As New MenuItem
     Dim WithEvents menuAbout As New MenuItem
 
     ''Container for program configuration
@@ -80,6 +81,7 @@ Module main
         menuAdvancedTasks.Text = "Advanced &Tasks"
         menuRefreshWindowHandle.Text = "&Refresh LJ Handle"
         menuSaveConfiguration.Text = "&Save Configuration"
+        'menuUpdateAvailableDevices.Text = "&Update Available Devices"
         '':NEW
         menuAbout.Text = "About"
         trayMenu.MenuItems.Add(menuExit)
@@ -88,6 +90,7 @@ Module main
         trayMenu.MenuItems.Add("-")
         menuAdvancedTasks.MenuItems.Add(menuSaveConfiguration)
         menuAdvancedTasks.MenuItems.Add(menuRefreshWindowHandle)
+        'menuAdvancedTasks.MenuItems.Add(menuUpdateAvailableDevices)
         trayMenu.MenuItems.Add(menuAdvancedTasks)
         'trayMenu.MenuItems.Add("-")
         trayMenu.MenuItems.Add(menuConfigConnections)
@@ -101,8 +104,6 @@ Module main
 
         LoadConfiguration() ''Read serialzed config data from file
         If Not configM Then ConnectDevices() ''Make MIDI connections
-
-
 
         Application.Run()
     End Sub
@@ -180,6 +181,10 @@ Module main
 
     ''See: #Region "File I/O", SaveConfiguration()
     'Private Sub SaveConfiguration() Handles menuSaveConfiguration.Click
+
+    'Friend Sub UpdateAvailableDevices() Handles menuUpdateAvailableDevices.Click
+    '    ''There doesn't seem to be a way to do this right now..
+    'End Sub
 #End Region
 
 #Region "File I/O"

@@ -311,7 +311,7 @@ Public Class frmActions
                             .ActionsOff(curIndex)._available = True
                         Else
                             .Actions(curIndex).Type = targetGuid
-                            Diagnostics.Debug.WriteLine(main.actionModules.Item(targetGuid).Data.GetType.ToString)
+                            'Diagnostics.Debug.WriteLine(main.actionModules.Item(targetGuid).Data.GetType.ToString)
                             .Actions(curIndex).Data = ObjectCopier.Clone(main.actionModules.Item(.Actions(curIndex).Type).Data)
                             .Actions(curIndex)._available = True
                         End If

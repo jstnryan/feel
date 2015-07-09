@@ -122,7 +122,7 @@ Public Class ChangePage
     Implements IAction
 
     Private _myData As ActionData
-    Private _host As IServices
+    Private Shared _host As IServices
 
     Public ReadOnly Property Description() As String Implements IAction.Description
         Get
@@ -175,7 +175,7 @@ Public Class ChangePage
         Private _device As String
         Private _page As Byte
 
-        <TypeConverter(GetType(IServices.DeviceList)), _
+        <TypeConverter(GetType(ChangePage.DeviceList)), _
             DisplayName("Target Device"), _
             Description("Which connection (or device) to update."), _
             DefaultValue("ALL DEVICES")> _
@@ -209,83 +209,100 @@ Public Class ChangePage
             _page = 0
         End Sub
     End Class
-End Class
 
-<Guid("15ABCE5A-D91E-4d65-946A-58394B9FE475")> _
-Public Class ShowMessageBox
-    Implements ActionInterface.IAction
+    Public Class DeviceList
+        Inherits ComponentModel.StringConverter
 
-    Private _actionData As ActionData
-    Private _host As ActionInterface.IServices
+        Public Overloads Overrides Function GetStandardValuesSupported(ByVal context As ComponentModel.ITypeDescriptorContext) As Boolean
+            Return True
+        End Function
 
-    ''' <summary>
-    ''' ShowMessageBox.ActionData
-    ''' </summary>
-    ''' <remarks>Stores the custom message to display in the messagebox.</remarks>
-    <Serializable()> _
-    Public Class ActionData
-        Private _message As String
-
-        <DisplayName("Message"), _
-            Description("The message to display in the message dialog box."), _
-            DefaultValue("My message!")> _
-        Public Property Message() As String
-            Get
-                Return _message
-            End Get
-            Set(ByVal value As String)
-                _message = value
-            End Set
-        End Property
-
-        Public Sub New()
-            _message = "My message!"
-        End Sub
+        Public Overloads Overrides Function GetStandardValues(ByVal context As ComponentModel.ITypeDescriptorContext) As StandardValuesCollection
+            Dim devArr As String() = New String() {}
+            For Each device As String In ChangePage._host.GetMIDIDeviceList
+                Array.Resize(devArr, devArr.Length + 1)
+                devArr(devArr.Length - 1) = device
+            Next
+            Return New StandardValuesCollection(devArr)
+        End Function
     End Class
-
-    Public Property Data() As Object Implements ActionInterface.IAction.Data
-        Get
-            Return _actionData
-        End Get
-        Set(ByVal value As Object)
-            _actionData = DirectCast(value, ActionData)
-        End Set
-    End Property
-
-    Public ReadOnly Property Description() As String Implements ActionInterface.IAction.Description
-        Get
-            Return "Displays a message box with a custom message."
-        End Get
-    End Property
-
-    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements ActionInterface.IAction.Execute
-        MsgBox(_actionData.Message)
-        Return True
-    End Function
-
-    Public ReadOnly Property Group() As String Implements ActionInterface.IAction.Group
-        Get
-            Return "Other"
-        End Get
-    End Property
-
-    Public Sub Initialize(ByRef Host As ActionInterface.IServices) Implements ActionInterface.IAction.Initialize
-        _host = Host
-        _actionData = New ActionData
-    End Sub
-
-    Public ReadOnly Property Name() As String Implements ActionInterface.IAction.Name
-        Get
-            Return "Display Message Box"
-        End Get
-    End Property
-
-    Public ReadOnly Property UniqueID() As System.Guid Implements ActionInterface.IAction.UniqueID
-        Get
-            Return New Guid("15ABCE5A-D91E-4d65-946A-58394B9FE475")
-        End Get
-    End Property
 End Class
+
+'<Guid("15ABCE5A-D91E-4d65-946A-58394B9FE475")> _
+'Public Class ShowMessageBox
+'    Implements ActionInterface.IAction
+
+'    Private _actionData As ActionData
+'    Private _host As ActionInterface.IServices
+
+'    ''' <summary>
+'    ''' ShowMessageBox.ActionData
+'    ''' </summary>
+'    ''' <remarks>Stores the custom message to display in the messagebox.</remarks>
+'    <Serializable()> _
+'    Public Class ActionData
+'        Private _message As String
+
+'        <DisplayName("Message"), _
+'            Description("The message to display in the message dialog box."), _
+'            DefaultValue("My message!")> _
+'        Public Property Message() As String
+'            Get
+'                Return _message
+'            End Get
+'            Set(ByVal value As String)
+'                _message = value
+'            End Set
+'        End Property
+
+'        Public Sub New()
+'            _message = "My message!"
+'        End Sub
+'    End Class
+
+'    Public Property Data() As Object Implements ActionInterface.IAction.Data
+'        Get
+'            Return _actionData
+'        End Get
+'        Set(ByVal value As Object)
+'            _actionData = DirectCast(value, ActionData)
+'        End Set
+'    End Property
+
+'    Public ReadOnly Property Description() As String Implements ActionInterface.IAction.Description
+'        Get
+'            Return "Displays a message box with a custom message."
+'        End Get
+'    End Property
+
+'    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements ActionInterface.IAction.Execute
+'        MsgBox(_actionData.Message)
+'        Return True
+'    End Function
+
+'    Public ReadOnly Property Group() As String Implements ActionInterface.IAction.Group
+'        Get
+'            Return "Other"
+'        End Get
+'    End Property
+
+'    Public Sub Initialize(ByRef Host As ActionInterface.IServices) Implements ActionInterface.IAction.Initialize
+'        _host = Host
+'        _actionData = New ActionData
+'    End Sub
+
+'    Public ReadOnly Property Name() As String Implements ActionInterface.IAction.Name
+'        Get
+'            Return "Display Message Box"
+'        End Get
+'    End Property
+
+'    Public ReadOnly Property UniqueID() As System.Guid Implements ActionInterface.IAction.UniqueID
+'        Get
+'            Return New Guid("15ABCE5A-D91E-4d65-946A-58394B9FE475")
+'        End Get
+'    End Property
+'End Class
 
 <Guid("15ABCE5A-D91E-4d65-946A-58394B9FE476")> _
 Public Class ChangeControlState

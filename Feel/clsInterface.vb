@@ -245,10 +245,17 @@
         End Function
 
         ''MIDI:
-        Public Overrides Function GetMIDIDeviceINList() As String()
+        Public Overrides Function GetMIDIDeviceList() As String()
             Dim devArr As String() = New String() {"ALL DEVICES"}
             For Each device As Integer In FeelConfig.Connections.Keys
                 devArr.Add(FeelConfig.Connections(device).Name)
+            Next
+            Return devArr
+        End Function
+        Public Overrides Function GetMIDIDeviceINList() As String()
+            Dim devArr As String() = New String() {"ALL DEVICES"}
+            For Each device As Integer In FeelConfig.Connections.Keys
+                If FeelConfig.Connections(device).InputEnable Then devArr.Add(FeelConfig.Connections(device).Name)
             Next
             Return devArr
         End Function
@@ -334,12 +341,12 @@
                 End If
             End If
         End Sub
-        Public Overrides Sub SendMIDI(ByVal Device As Integer, ByVal Message() As String)
-            'main.SendMidi(Device, Message)
-            For Each _msg As String In Message
-                SendMIDI(Device, _msg)
-            Next
-        End Sub
+        'Public Overrides Sub SendMIDI(ByVal Device As Integer, ByVal Message() As String)
+        '    'main.SendMidi(Device, Message)
+        '    For Each _msg As String In Message
+        '        SendMIDI(Device, _msg)
+        '    Next
+        'End Sub
         Public Overrides Sub SendMIDI(ByVal Device As String, ByVal Message As String)
             'main.SendMidi(Device, Message)
             If (Device = "ALL DEVICES") Then
@@ -350,21 +357,21 @@
                 SendMIDI(FindDeviceIndex(Device), Message)
             End If
         End Sub
-        Public Overrides Sub SendMIDI(ByVal Device As String, ByVal Message() As String)
-            'main.SendMidi(Device, Message)
-            For Each _msg As String In Message
-                SendMIDI(Device, _msg)
-            Next
-        End Sub
-        Public Overloads Sub SendMIDI(ByVal Device As String, ByVal ControlType As Byte, ByVal Channel As Byte, ByVal NotCon As Byte)
-            Dim ContStr As String = If(ControlType = 144 Or ControlType = 128, "9", "B") & Channel.ToString & NotCon.ToString("X2")
-            Dim _device As Integer = FindDeviceIndex(Device)
-            SendMIDI(Device, ContStr)
-        End Sub
-        Public Overloads Sub SendMIDI(ByVal Device As Integer, ByVal ControlType As Byte, ByVal channel As Byte, ByVal notcon As Byte)
-            Dim ContStr As String = If(ControlType = 144 Or ControlType = 128, "9", "B") & channel.ToString & notcon.ToString("X2")
-            SendMIDI(Device, ContStr)
-        End Sub
+        'Public Overrides Sub SendMIDI(ByVal Device As String, ByVal Message() As String)
+        '    'main.SendMidi(Device, Message)
+        '    For Each _msg As String In Message
+        '        SendMIDI(Device, _msg)
+        '    Next
+        'End Sub
+        'Public Overloads Sub SendMIDI(ByVal Device As String, ByVal ControlType As Byte, ByVal Channel As Byte, ByVal NotCon As Byte)
+        '    Dim ContStr As String = If(ControlType = 144 Or ControlType = 128, "9", "B") & Channel.ToString & NotCon.ToString("X2")
+        '    Dim _device As Integer = FindDeviceIndex(Device)
+        '    SendMIDI(Device, ContStr)
+        'End Sub
+        'Public Overloads Sub SendMIDI(ByVal Device As Integer, ByVal ControlType As Byte, ByVal channel As Byte, ByVal notcon As Byte)
+        '    Dim ContStr As String = If(ControlType = 144 Or ControlType = 128, "9", "B") & channel.ToString & notcon.ToString("X2")
+        '    SendMIDI(Device, ContStr)
+        'End Sub
 
         ''Windows Messages:
         Public Overrides Function PostLJMessage(ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
