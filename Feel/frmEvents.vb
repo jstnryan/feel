@@ -337,7 +337,7 @@ Public Class frmEvents
         End If
 
         ''If the X, C, V keys are pressed (along with Control), handle Cut, Copy, Paste operations
-        If (e.Control) Then
+        If (e.Control) And (lvActions.Focused) Then
             If (e.KeyCode = Windows.Forms.Keys.X) Then ''Cut
                 'TODO: Cut
             ElseIf (e.KeyCode = Windows.Forms.Keys.C) Then ''Copy
@@ -483,6 +483,13 @@ Public Class frmEvents
             ''copy/paste mode or nothing selected
         End If
         SetControlStates()
+
+        'TODO: This isn't quite right, Paste could be used, even though there are no items selected.
+        If (lvActions.SelectedItems.Count > 0) Then
+            lvActions.ContextMenuStrip = cmsCopyPaste
+        Else
+            lvActions.ContextMenuStrip = Nothing
+        End If
     End Sub
     'Private Sub lvActions_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lvActions.SelectedIndexChanged
     'End Sub

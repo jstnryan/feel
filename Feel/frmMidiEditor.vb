@@ -1,4 +1,5 @@
 ﻿Imports System.Linq
+Imports System.Collections.Generic
 
 Public Class frmMidiEditor
     ''' <summary>
@@ -14,16 +15,28 @@ Public Class frmMidiEditor
         Dim _Channel As Byte
         Dim _Data1 As Byte
         Dim _Data2 As Byte
-        Dim _Data As Byte()
+        Dim _Data As Collections.Generic.List(Of Byte)
         Dim _DataLsbMsb As Integer
 
         Public Property StringFormat() As String
             Get
+                Dim retstr As String = ""
+                retstr = If(_IsComment, "#", "") _
+                    & ((_Type << 4) + _Channel).ToString("X2")
+                If (_Type = 12) Then
+                    retstr &= _Data1.ToString("X2")
+                ElseIf (_Type = 15) Then
+                    retstr &= String.Join("", (Enumerable.Range(0, _Data.Count).[Select](Function(i As Integer) _Data(i).ToString("X2"))).ToArray)
+                Else
+                    retstr &= _Data1.ToString("X2") & _Data2.ToString("X2")
+                End If
+                Return retstr
+
                 'Return _stringFormat
-                Return _
-                    If(_IsComment, "#", "") _
-                    & ((_Type << 4) + _Channel).ToString("X2") _
-                    & String.Join("", (Enumerable.Range(0, _Data.Length).[Select](Function(i As Integer) _Data(i).ToString("X2"))).ToArray)
+                'Return _
+                '    If(_IsComment, "#", "") _
+                '    & ((_Type << 4) + _Channel).ToString("X2") _
+                '    & String.Join("", (Enumerable.Range(0, _Data.Length).[Select](Function(i As Integer) _Data(i).ToString("X2"))).ToArray)
             End Get
             Set(ByVal value As String)
                 _stringFormat = value
@@ -34,7 +47,7 @@ Public Class frmMidiEditor
                     _Channel = 0
                     _Data1 = 0
                     _Data2 = 0
-                    _Data = New Byte() {0}
+                    _Data = New Collections.Generic.List(Of Byte)(New Byte() {0, 0})
                 Else
                     ''Remove whitespace from commands, and convert to uppercase
                     Dim regex As New Text.RegularExpressions.Regex("\s")
@@ -101,18 +114,18 @@ Public Class frmMidiEditor
                 _Data(1) = value
             End Set
         End Property
-        Friend Property Data() As Byte()
+        Friend Property Data() As List(Of Byte)
             Get
                 Return _Data
             End Get
-            Set(ByVal value As Byte())
+            Set(ByVal value As List(Of Byte))
                 _Data = value
             End Set
         End Property
         Friend Property DataString() As String
             Get
                 Dim str As String = ""
-                For i As Integer = 0 To _Data.Length - 1
+                For i As Integer = 0 To _Data.Count - 1
                     str &= _Data(i).ToString("X2") & " "
                 Next
                 Return str.Substring(0, str.Length - 1)
@@ -137,10 +150,10 @@ Public Class frmMidiEditor
                 For i As Integer = 0 To upperBound
                     cmdArr(i) = Convert.ToByte(value.Substring(i * 2, 2), 16)
                 Next
-                _Data = cmdArr
+                _Data = New List(Of Byte)(cmdArr)
                 'TODO: better way to do this check?
                 _Data1 = If(cmdArr(0) > 127, CByte(127), cmdArr(0))
-                _Data2 = If(cmdArr(1) > 127, CByte(127), cmdArr(1))
+                _Data2 = CByte(If(cmdArr.Length > 1, If(cmdArr(1) > 127, 127, cmdArr(1)), 0))
             End Set
         End Property
         Friend Property DataLsbMsb() As Integer
@@ -165,6 +178,17 @@ Public Class frmMidiEditor
                 _Data(0) = _Data1
             End Set
         End Property
+
+        Public Sub New()
+            _stringFormat = ""
+            _IsComment = False
+            _Type = 0
+            _Channel = 0
+            _Data1 = 0
+            _Data2 = 0
+            _Data = New List(Of Byte)(New Byte() {0, 0})
+            _DataLsbMsb = 0
+        End Sub
     End Class
     Friend midiData As New _midiData
 
@@ -179,9 +203,12 @@ Public Class frmMidiEditor
         grpNotCon.Location = grpLoc
         grpNotCon.Enabled = False
         grpNotCon.Visible = False
-        grpProgPitch.Location = grpLoc
-        grpProgPitch.Enabled = False
-        grpProgPitch.Visible = False
+        grpProgramChange.Location = grpLoc
+        grpProgramChange.Enabled = False
+        grpProgramChange.Visible = False
+        grpPitchBend.Location = grpLoc
+        grpPitchBend.Enabled = False
+        grpPitchBend.Visible = False
         grpSysex.Location = grpLoc
         grpSysex.Enabled = False
         grpSysex.Visible = False
@@ -189,7 +216,8 @@ Public Class frmMidiEditor
         'cboNotConNotCon.Items.Clear
         For i As Byte = 0 To 15
             cboNotConChannel.Items.Add("Channel " & frmEvents.DisplayChannel(i))
-            cboProgPitchChannel.Items.Add("Channel " & frmEvents.DisplayChannel(i))
+            cboProgramChangeChannel.Items.Add("Channel " & frmEvents.DisplayChannel(i))
+            cboPitchBendChannel.Items.Add("Channel " & frmEvents.DisplayChannel(i))
         Next
         If FeelConfig.MidiNotation = 0 Then
             For i As Byte = 0 To 127
@@ -209,26 +237,30 @@ Public Class frmMidiEditor
         Me.Size = New System.Drawing.Size(302, 226)
     End Sub
 
-    ''' <summary>Clears values from, and hides <see cref="midiData" /> adjustment controls.</summary>
-    ''' <remarks>This is kept separate from <see cref="AdjustControls" /> so that user events don't change focus.</remarks>
+    ''' <summary>Clears values from, and hides <see cref="midiData">midiData</see> adjustment controls.</summary>
+    ''' <remarks>This is kept separate from <see cref="AdjustControls">AdjustControls</see> so that user events don't change focus.</remarks>
     Private Sub ClearControls()
         grpNotCon.Enabled = False
         grpNotCon.Visible = False
-        grpProgPitch.Enabled = False
-        grpProgPitch.Visible = False
+        grpProgramChange.Enabled = False
+        grpProgramChange.Visible = False
+        grpPitchBend.Enabled = False
+        grpPitchBend.Visible = False
         grpSysex.Enabled = False
         grpSysex.Visible = False
     End Sub
 
-    ''' <summary>Sets control values based on current <see cref="midiData" />.</summary>
+    ''' <summary>Sets control values based on current <see cref="midiData">midiData</see>.</summary>
     Private Sub AdjustControls()
         ''Ugh..
         RemoveHandler cboMessageType.SelectedIndexChanged, AddressOf cboMessageType_SelectedIndexChanged
         RemoveHandler cboNotConChannel.SelectedIndexChanged, AddressOf cboChannel_SelectedIndexChanged
         RemoveHandler cboNotConNotCon.SelectedIndexChanged, AddressOf cboNotConNotCon_SelectedIndexChanged
         RemoveHandler nudNotConVelVal.ValueChanged, AddressOf nudNotConVelVal_ValueChanged
-        RemoveHandler cboProgPitchChannel.SelectedIndexChanged, AddressOf cboChannel_SelectedIndexChanged
-        RemoveHandler nudProgPitchProgVal.ValueChanged, AddressOf nudProgPitchProgVal_ValueChanged
+        RemoveHandler cboProgramChangeChannel.SelectedIndexChanged, AddressOf cboChannel_SelectedIndexChanged
+        RemoveHandler nudProgramInstrument.ValueChanged, AddressOf nudProgramInstrument_ValueChanged
+        RemoveHandler cboPitchBendChannel.SelectedIndexChanged, AddressOf cboChannel_SelectedIndexChanged
+        RemoveHandler nudPitchBendValue.ValueChanged, AddressOf nudPitchBendValue_ValueChanged
         'RemoveHandler txtSysexData.TextChanged, AddressOf txtSysexData_TextChanged
         'RemoveHandler txtMidiMessage.TextChanged, AddressOf txtMidiMessage_TextChanged
 
@@ -249,10 +281,10 @@ Public Class frmMidiEditor
                 grpNotCon.Text = "Control Change Properties"
             Case 12 'Program Change
                 cboMessageType.SelectedIndex = 4
-                grpProgPitch.Text = "Program Change Properties"
+                'grpProgramChange.Text = "Program Change Properties"
             Case 14 'Pitch Wheel Change (Pitch Bend)
                 cboMessageType.SelectedIndex = 5
-                grpProgPitch.Text = "Pitch Bend Properties"
+                'grpProgramChange.Text = "Pitch Bend Properties"
             Case 15 'MIDI System-Common Message
                 cboMessageType.SelectedIndex = 6
         End Select
@@ -260,7 +292,6 @@ Public Class frmMidiEditor
             Case 0 'none
             Case 8 To 9 'MIDI Note Off, Note On
                 grpNotCon.Visible = True
-                'lblNotConChannel.Text = "Channel:"
                 cboNotConChannel.SelectedIndex = midiData.Channel
                 lblNotConNotCon.Text = "Note:"
                 cboNotConNotCon.SelectedIndex = midiData.Data1
@@ -269,7 +300,6 @@ Public Class frmMidiEditor
                 grpNotCon.Enabled = True
             Case 11 'Control Change
                 grpNotCon.Visible = True
-                'lblNotConChannel.Text = "Channel:"
                 cboNotConChannel.SelectedIndex = midiData.Channel
                 lblNotConNotCon.Text = "Control:"
                 cboNotConNotCon.SelectedIndex = midiData.Data1
@@ -277,22 +307,17 @@ Public Class frmMidiEditor
                 nudNotConVelVal.Value = midiData.Data2
                 grpNotCon.Enabled = True
             Case 12 'Program Change
-                grpProgPitch.Visible = True
-                'lblNotConChannel.Text = "Channel:"
-                cboProgPitchChannel.SelectedIndex = midiData.Channel
-                lblProgPitchProgVal.Text = "Program:"
-                nudProgPitchProgVal.Value = midiData.DataLsbMsb
-                grpProgPitch.Enabled = True
+                grpProgramChange.Visible = True
+                cboProgramChangeChannel.SelectedIndex = midiData.Channel
+                nudProgramInstrument.Value = midiData.Data1
+                grpProgramChange.Enabled = True
             Case 14 'Pitch Wheel Change (Pitch Bend)
-                grpProgPitch.Visible = True
-                'lblNotConChannel.Text = "Channel:"
-                cboProgPitchChannel.SelectedIndex = midiData.Channel
-                lblProgPitchProgVal.Text = "Value:"
-                nudProgPitchProgVal.Value = midiData.DataLsbMsb
-                grpProgPitch.Enabled = True
+                grpPitchBend.Visible = True
+                cboPitchBendChannel.SelectedIndex = midiData.Channel
+                nudPitchBendValue.Value = midiData.DataLsbMsb
+                grpPitchBend.Enabled = True
             Case 15 'MIDI System-Common Message
                 grpSysex.Visible = True
-                'lblSysexData.Text = "Data:"
                 txtSysexData.Text = midiData.DataString
                 grpSysex.Enabled = True
         End Select
@@ -303,8 +328,10 @@ Public Class frmMidiEditor
         AddHandler cboNotConChannel.SelectedIndexChanged, AddressOf cboChannel_SelectedIndexChanged
         AddHandler cboNotConNotCon.SelectedIndexChanged, AddressOf cboNotConNotCon_SelectedIndexChanged
         AddHandler nudNotConVelVal.ValueChanged, AddressOf nudNotConVelVal_ValueChanged
-        AddHandler cboProgPitchChannel.SelectedIndexChanged, AddressOf cboChannel_SelectedIndexChanged
-        AddHandler nudProgPitchProgVal.ValueChanged, AddressOf nudProgPitchProgVal_ValueChanged
+        AddHandler cboProgramChangeChannel.SelectedIndexChanged, AddressOf cboChannel_SelectedIndexChanged
+        AddHandler nudProgramInstrument.ValueChanged, AddressOf nudProgramInstrument_ValueChanged
+        AddHandler cboPitchBendChannel.SelectedIndexChanged, AddressOf cboChannel_SelectedIndexChanged
+        AddHandler nudPitchBendValue.ValueChanged, AddressOf nudPitchBendValue_ValueChanged
         'AddHandler txtSysexData.TextChanged, AddressOf txtSysexData_TextChanged
         'AddHandler txtMidiMessage.TextChanged, AddressOf txtMidiMessage_TextChanged
     End Sub
@@ -340,7 +367,7 @@ Public Class frmMidiEditor
         AdjustControls()
     End Sub
 
-    Private Sub cboChannel_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cboNotConChannel.SelectedIndexChanged, cboProgPitchChannel.SelectedIndexChanged
+    Private Sub cboChannel_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cboNotConChannel.SelectedIndexChanged, cboProgramChangeChannel.SelectedIndexChanged, cboPitchBendChannel.SelectedIndexChanged
         'TODO: Faster to just have separate Subs where no casting is involved?
         'midiData.Channel = CByte(cboNotConChannel.SelectedIndex)
         midiData.Channel = CByte(DirectCast(sender, Windows.Forms.ComboBox).SelectedIndex)
@@ -352,13 +379,18 @@ Public Class frmMidiEditor
         AdjustControls()
     End Sub
 
-    Private Sub nudNotConVelVal_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudNotConVelVal.ValueChanged
+    Private Sub nudNotConVelVal_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudNotConVelVal.ValueChanged, nudNotConVelVal.Leave
         midiData.Data2 = CByte(nudNotConVelVal.Value)
         AdjustControls()
     End Sub
 
-    Private Sub nudProgPitchProgVal_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudProgPitchProgVal.ValueChanged
-        midiData.DataLsbMsb = CInt(nudProgPitchProgVal.Value)
+    Private Sub nudProgramInstrument_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudProgramInstrument.ValueChanged, nudNotConVelVal.Leave
+        midiData.Data1 = CByte(nudProgramInstrument.Value)
+        AdjustControls()
+    End Sub
+
+    Private Sub nudPitchBendValue_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudPitchBendValue.ValueChanged, nudPitchBendValue.Leave
+        midiData.DataLsbMsb = CInt(nudPitchBendValue.Value)
         AdjustControls()
     End Sub
 
@@ -369,10 +401,20 @@ Public Class frmMidiEditor
         End If
     End Sub
 
+    Private Sub txtSysexData_Leave(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtSysexData.Leave
+        midiData.DataString = txtSysexData.Text
+        AdjustControls()
+    End Sub
+
     Private Sub txtMidiMessage_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtMidiMessage.KeyUp
         If (e.KeyCode = Windows.Forms.Keys.Enter) Then
             midiData.StringFormat = txtMidiMessage.Text
             AdjustControls()
         End If
+    End Sub
+
+    Private Sub txtMidiMessage_Leave(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtMidiMessage.Leave
+        midiData.StringFormat = txtMidiMessage.Text
+        AdjustControls()
     End Sub
 End Class

@@ -3,10 +3,9 @@ Imports Midi
 Imports System.Runtime.InteropServices
 
 Module main
-    ''Stores a 'reference' to the UI thread for opening forms from an event
+    ''' <summary>Used as a 'reference' to the UI thread for opening forms from an event</summary>
     Friend _threadcontext As System.Threading.SynchronizationContext
 
-    ''Components for System Tray icon
     Dim WithEvents trayIcon As New NotifyIcon
     Dim trayMenu As New ContextMenu
     Dim WithEvents menuExit As New MenuItem
@@ -20,24 +19,25 @@ Module main
     Dim WithEvents menuUpdateAvailablePlugins As New MenuItem
     Dim WithEvents menuAbout As New MenuItem
 
-    ''Container for program configuration
+    ''' <summary>Container for all program configuration</summary>
+    ''' <remarks>The last opened configuration file is not included here (it is in Application.Settings).</remarks>
     Public FeelConfig As clsConfig
 
-    ''Collections of loaded Action plugins
+    ''' <summary>Collections of loaded Action plugins</summary>
     Friend actionModules As Collections.Generic.Dictionary(Of Guid, ActionInterface.IAction) = New Collections.Generic.Dictionary(Of Guid, ActionInterface.IAction)
     Public serviceHost As ActionInterface.IServices = New Interfaces.ServiceHost
 
-    ''Collections of MIDI input and output devices
+    ''' <summary>Collections of MIDI input and output devices</summary>
     Public midiIn As System.Collections.Generic.Dictionary(Of String, InputDevice) = New Collections.Generic.Dictionary(Of String, InputDevice)
     Public midiOut As System.Collections.Generic.Dictionary(Of String, OutputDevice) = New Collections.Generic.Dictionary(Of String, OutputDevice)
 
     Friend configForm As frmConfiguration
     Friend connectForm As frmConnections
     Friend eventForm As frmEvents
-    Friend aboutForm As frmAbout '= New frmAbout ''Have to do this in order to get a valid SynchronizationContext
-    'Dim _dummyControl As New System.Windows.Forms.Control
+    Friend aboutForm As frmAbout
 
-    Private _configMode As Boolean = False    ''when configuring actions, override output to LJ
+    ''' <summary>ConfigMode overrides normal operation when user is modifying program configuration</summary>
+    Private _configMode As Boolean = False
     Public Property configMode(Optional ByVal reConnect As Boolean = False) As Boolean
         <Diagnostics.DebuggerStepThrough()> _
         Get
@@ -85,8 +85,6 @@ Module main
     End Property
 
     Public Sub Main()
-        'Try
-
         ''See: <project directory>\feel_commandlineargs.txt
         'For Each arg As String In Environment.GetCommandLineArgs()
         For Each arg As String In My.Application.CommandLineArgs
@@ -143,20 +141,9 @@ Module main
             'System.Threading.SynchronizationContext.SetSynchronizationContext(_threadcontext)
             'System.Windows.Forms.WindowsFormsSynchronizationContext.SetSynchronizationContext(_threadcontext)
         End Using
-        If _threadcontext Is Nothing Then Diagnostics.Debug.WriteLine("Thread Context is Nothing!")
+        'If _threadcontext Is Nothing Then Diagnostics.Debug.WriteLine("Thread Context is Nothing!")
 
         Application.Run()
-        'Catch ex As Exception
-        '    MessageBox.Show("You caught an error!")
-        '    Dim er As New Text.StringBuilder("")
-        '    er.Append(".Message:" & Environment.NewLine)
-        '    er.Append(ex.Message & Environment.NewLine & Environment.NewLine)
-        '    er.Append(".InnerException:" & Environment.NewLine)
-        '    er.Append(ex.InnerException)
-        '    Using file As New IO.StreamWriter("error.txt")
-        '        file.Write(er.ToString)
-        '    End Using
-        'End Try
     End Sub
 
 #Region "Windows & Menus"

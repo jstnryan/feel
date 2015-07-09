@@ -65,6 +65,10 @@ Partial Class frmEvents
         Me.grpActions = New System.Windows.Forms.GroupBox
         Me.lvActions = New System.Windows.Forms.ListView
         Me.colAction = New System.Windows.Forms.ColumnHeader
+        Me.cmsCopyPaste = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.tsmiCopy = New System.Windows.Forms.ToolStripMenuItem
+        Me.tsmiCut = New System.Windows.Forms.ToolStripMenuItem
+        Me.tsmiPaste = New System.Windows.Forms.ToolStripMenuItem
         Me.cboActionFunction = New Feel.GroupedComboBox
         Me.grpInput = New Feel.CheckedGroupBox
         Me.txtDefaultState = New System.Windows.Forms.TextBox
@@ -89,6 +93,7 @@ Partial Class frmEvents
         CType(Me.nudControlGroup, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.grpAction.SuspendLayout()
         Me.grpActions.SuspendLayout()
+        Me.cmsCopyPaste.SuspendLayout()
         Me.grpInput.SuspendLayout()
         Me.grpInputValues.SuspendLayout()
         CType(Me.nudDevicePage, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -342,6 +347,7 @@ Partial Class frmEvents
         Me.lvActions.AutoArrange = False
         Me.lvActions.CheckBoxes = True
         Me.lvActions.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.colAction})
+        Me.lvActions.ContextMenuStrip = Me.cmsCopyPaste
         Me.lvActions.FullRowSelect = True
         ListViewGroup1.Header = "Control Pressed"
         ListViewGroup1.Name = "lvgPressed"
@@ -386,6 +392,31 @@ Partial Class frmEvents
         '
         Me.colAction.Text = "Action"
         Me.colAction.Width = 174
+        '
+        'cmsCopyPaste
+        '
+        Me.cmsCopyPaste.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsmiCut, Me.tsmiCopy, Me.tsmiPaste})
+        Me.cmsCopyPaste.Name = "cmsCopyPaste"
+        Me.cmsCopyPaste.ShowImageMargin = False
+        Me.cmsCopyPaste.Size = New System.Drawing.Size(136, 70)
+        '
+        'tsmiCopy
+        '
+        Me.tsmiCopy.Name = "tsmiCopy"
+        Me.tsmiCopy.Size = New System.Drawing.Size(135, 22)
+        Me.tsmiCopy.Text = "Copy (Ctrl + C)"
+        '
+        'tsmiCut
+        '
+        Me.tsmiCut.Name = "tsmiCut"
+        Me.tsmiCut.Size = New System.Drawing.Size(135, 22)
+        Me.tsmiCut.Text = "Cut (Ctrl + X)"
+        '
+        'tsmiPaste
+        '
+        Me.tsmiPaste.Name = "tsmiPaste"
+        Me.tsmiPaste.Size = New System.Drawing.Size(135, 22)
+        Me.tsmiPaste.Text = "Paste (Ctrl + V)"
         '
         'cboActionFunction
         '
@@ -612,6 +643,7 @@ Partial Class frmEvents
         Me.grpAction.ResumeLayout(False)
         Me.grpAction.PerformLayout()
         Me.grpActions.ResumeLayout(False)
+        Me.cmsCopyPaste.ResumeLayout(False)
         Me.grpInput.ResumeLayout(False)
         Me.grpInput.PerformLayout()
         Me.grpInputValues.ResumeLayout(False)
@@ -664,4 +696,8 @@ Partial Class frmEvents
     Friend WithEvents lblDefaultState As System.Windows.Forms.Label
     Friend WithEvents cmdEditDefaultState As System.Windows.Forms.Button
     Friend WithEvents cmdEditInitalState As System.Windows.Forms.Button
+    Friend WithEvents cmsCopyPaste As System.Windows.Forms.ContextMenuStrip
+    Friend WithEvents tsmiCopy As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tsmiCut As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tsmiPaste As System.Windows.Forms.ToolStripMenuItem
 End Class
