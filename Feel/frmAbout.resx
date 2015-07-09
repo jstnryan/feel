@@ -124,10 +124,11 @@
     <value>False</value>
   </metadata>
   <data name="txtAcknowledgements.Text" xml:space="preserve">
-    <value>Copyright (c) 2015, Lighting Beyond 1magination
+    <value>Copyright (c) 2015
+Justin Ryan, Lighting Beyond 1magination
 All rights reserved.
 
-The Feel icon was created by Richard Schumann (http://www.schumanncombo.com), and is licensed under the Creative Commons Attribution license (CC BY 3.0 US) (http://creativecommons.org/licenses/by/3.0/us/).
+The Feel icon was created by Richard Schumann (http://www.schumanncombo.com), and is licensed under the Creative Commons Attribution license (CC BY 3.0 US) (https://creativecommons.org/licenses/by/3.0/us/legalcode).
 
 Portions of this software were derived from Tom Lokovic's MIDI-dot-net open source library, originally released under the BSD 2-Clause license, modified and distributed in binary form.
 
@@ -142,7 +143,7 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 </value>
   </data>
-  <metadata name="Label1.GenerateMember" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="lblTitle.GenerateMember" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />

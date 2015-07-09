@@ -22,7 +22,7 @@
         main.SaveConfiguration()
     End Sub
 
-    Private Sub frmConfig_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
         main.configMode = True
 
         ''TODO: Temporary clearing of fields (clear fields in designer; for production, remove these lines)
@@ -54,6 +54,11 @@
 
         'Read Configuration and properly populate/set controls
         PopulateConnections()
+
+        MyBase.OnLoad(e)
+    End Sub
+
+    Private Sub frmConfig_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
     End Sub
 
     Private Sub lvConnections_ItemChecked(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckedEventArgs) Handles lvConnections.ItemChecked

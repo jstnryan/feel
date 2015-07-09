@@ -41,6 +41,8 @@ Public Class ActionInterface
         MustOverride Sub OpenWindowConfig()
         MustOverride Sub OpenWindowConnections()
         MustOverride Sub OpenWindowActions()
+        MustOverride Sub SaveConfiguration()
+        MustOverride Sub ExitProgram(Optional ByVal Restart As Boolean = False)
         MustOverride Sub SetPage(ByVal Device As String, ByVal Page As Byte)
         MustOverride Sub SetPage(ByVal Device As Integer, ByVal Page As Byte)
         MustOverride Sub RedrawControls(ByVal Device As Integer)

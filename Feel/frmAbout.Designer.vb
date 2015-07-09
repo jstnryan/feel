@@ -29,11 +29,11 @@ Partial Class frmAbout
         Dim PictureBox1 As System.Windows.Forms.PictureBox
         Dim txtAcknowledgements As System.Windows.Forms.TextBox
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmAbout))
-        Dim Label1 As System.Windows.Forms.Label
+        Dim lblTitle As System.Windows.Forms.Label
         Me.lblVersion = New System.Windows.Forms.Label
         PictureBox1 = New System.Windows.Forms.PictureBox
         txtAcknowledgements = New System.Windows.Forms.TextBox
-        Label1 = New System.Windows.Forms.Label
+        lblTitle = New System.Windows.Forms.Label
         CType(PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -59,15 +59,15 @@ Partial Class frmAbout
         txtAcknowledgements.TabStop = False
         txtAcknowledgements.Text = resources.GetString("txtAcknowledgements.Text")
         '
-        'Label1
+        'lblTitle
         '
-        Label1.AutoSize = True
-        Label1.Font = New System.Drawing.Font("Arial Black", 15.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Label1.Location = New System.Drawing.Point(137, 24)
-        Label1.Name = "Label1"
-        Label1.Size = New System.Drawing.Size(62, 30)
-        Label1.TabIndex = 2
-        Label1.Text = "Feel"
+        lblTitle.AutoSize = True
+        lblTitle.Font = New System.Drawing.Font("UltraCondensedSansSerif", 36.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        lblTitle.Location = New System.Drawing.Point(137, -2)
+        lblTitle.Name = "lblTitle"
+        lblTitle.Size = New System.Drawing.Size(88, 58)
+        lblTitle.TabIndex = 2
+        lblTitle.Text = "Feel"
         '
         'lblVersion
         '
@@ -77,15 +77,16 @@ Partial Class frmAbout
         Me.lblVersion.Size = New System.Drawing.Size(127, 13)
         Me.lblVersion.TabIndex = 5
         Me.lblVersion.Text = "Version: 2.0.0 (Apr. 2015)"
+        Me.lblVersion.TextAlign = System.Drawing.ContentAlignment.TopRight
         '
         'frmAbout
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(392, 273)
-        Me.Controls.Add(Me.lblVersion)
-        Me.Controls.Add(Label1)
         Me.Controls.Add(txtAcknowledgements)
+        Me.Controls.Add(Me.lblVersion)
+        Me.Controls.Add(lblTitle)
         Me.Controls.Add(PictureBox1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False

@@ -41,6 +41,7 @@ Partial Class frmEvents
         Dim ListViewItem8 As System.Windows.Forms.ListViewItem = New System.Windows.Forms.ListViewItem("Action on Page 1")
         Dim ListViewItem9 As System.Windows.Forms.ListViewItem = New System.Windows.Forms.ListViewItem("Action on Page 0")
         Me.grpConfiguration = New System.Windows.Forms.GroupBox
+        Me.cmdEditInitalState = New System.Windows.Forms.Button
         Me.txtInitialState = New System.Windows.Forms.TextBox
         Me.lblInitialState = New System.Windows.Forms.Label
         Me.grpControlBehavior = New System.Windows.Forms.GroupBox
@@ -51,7 +52,6 @@ Partial Class frmEvents
         Me.grpAction = New System.Windows.Forms.GroupBox
         Me.txtActionDescription = New System.Windows.Forms.TextBox
         Me.pgAction = New System.Windows.Forms.PropertyGrid
-        Me.cboActionFunction = New Feel.GroupedComboBox
         Me.lblActionFunction = New System.Windows.Forms.Label
         Me.txtActionName = New System.Windows.Forms.TextBox
         Me.lblActionName = New System.Windows.Forms.Label
@@ -65,10 +65,10 @@ Partial Class frmEvents
         Me.grpActions = New System.Windows.Forms.GroupBox
         Me.lvActions = New System.Windows.Forms.ListView
         Me.colAction = New System.Windows.Forms.ColumnHeader
+        Me.cboActionFunction = New Feel.GroupedComboBox
         Me.grpInput = New Feel.CheckedGroupBox
-        Me.chkPaged = New System.Windows.Forms.CheckBox
-        Me.nudDevicePage = New System.Windows.Forms.NumericUpDown
-        Me.lblControlPage = New System.Windows.Forms.Label
+        Me.txtDefaultState = New System.Windows.Forms.TextBox
+        Me.lblDefaultState = New System.Windows.Forms.Label
         Me.grpInputValues = New System.Windows.Forms.GroupBox
         Me.lblVelocityValue = New System.Windows.Forms.Label
         Me.lblNoteControl = New System.Windows.Forms.Label
@@ -77,39 +77,54 @@ Partial Class frmEvents
         Me.lblNotCon = New System.Windows.Forms.Label
         Me.lblChan = New System.Windows.Forms.Label
         Me.lblDescription = New System.Windows.Forms.Label
+        Me.cmdEditDefaultState = New System.Windows.Forms.Button
         Me.lblDevice = New System.Windows.Forms.Label
         Me.lblControlDevice = New System.Windows.Forms.Label
+        Me.chkPaged = New System.Windows.Forms.CheckBox
         Me.lblControlType = New System.Windows.Forms.Label
+        Me.lblControlPage = New System.Windows.Forms.Label
+        Me.nudDevicePage = New System.Windows.Forms.NumericUpDown
         Me.grpConfiguration.SuspendLayout()
         Me.grpControlBehavior.SuspendLayout()
         CType(Me.nudControlGroup, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.grpAction.SuspendLayout()
         Me.grpActions.SuspendLayout()
         Me.grpInput.SuspendLayout()
-        CType(Me.nudDevicePage, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.grpInputValues.SuspendLayout()
+        CType(Me.nudDevicePage, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'grpConfiguration
         '
+        Me.grpConfiguration.Controls.Add(Me.cmdEditInitalState)
         Me.grpConfiguration.Controls.Add(Me.txtInitialState)
         Me.grpConfiguration.Controls.Add(Me.lblInitialState)
         Me.grpConfiguration.Controls.Add(Me.grpControlBehavior)
         Me.grpConfiguration.Controls.Add(Me.nudControlGroup)
         Me.grpConfiguration.Controls.Add(Me.lblControlGroup)
         Me.grpConfiguration.Enabled = False
-        Me.grpConfiguration.Location = New System.Drawing.Point(12, 253)
+        Me.grpConfiguration.Location = New System.Drawing.Point(13, 278)
         Me.grpConfiguration.Name = "grpConfiguration"
         Me.grpConfiguration.Size = New System.Drawing.Size(213, 168)
         Me.grpConfiguration.TabIndex = 3
         Me.grpConfiguration.TabStop = False
         Me.grpConfiguration.Text = "Configuration"
         '
+        'cmdEditInitalState
+        '
+        Me.cmdEditInitalState.Image = Global.Feel.My.Resources.Feel.EditInformation
+        Me.cmdEditInitalState.Location = New System.Drawing.Point(173, 22)
+        Me.cmdEditInitalState.Name = "cmdEditInitalState"
+        Me.cmdEditInitalState.Size = New System.Drawing.Size(22, 20)
+        Me.cmdEditInitalState.TabIndex = 16
+        Me.ttActions.SetToolTip(Me.cmdEditInitalState, "MIDI String Editor")
+        Me.cmdEditInitalState.UseVisualStyleBackColor = True
+        '
         'txtInitialState
         '
-        Me.txtInitialState.Location = New System.Drawing.Point(83, 22)
+        Me.txtInitialState.Location = New System.Drawing.Point(86, 22)
         Me.txtInitialState.Name = "txtInitialState"
-        Me.txtInitialState.Size = New System.Drawing.Size(112, 20)
+        Me.txtInitialState.Size = New System.Drawing.Size(87, 20)
         Me.txtInitialState.TabIndex = 2
         '
         'lblInitialState
@@ -156,10 +171,10 @@ Partial Class frmEvents
         '
         'nudControlGroup
         '
-        Me.nudControlGroup.Location = New System.Drawing.Point(123, 53)
+        Me.nudControlGroup.Location = New System.Drawing.Point(131, 53)
         Me.nudControlGroup.Maximum = New Decimal(New Integer() {255, 0, 0, 0})
         Me.nudControlGroup.Name = "nudControlGroup"
-        Me.nudControlGroup.Size = New System.Drawing.Size(72, 20)
+        Me.nudControlGroup.Size = New System.Drawing.Size(64, 20)
         Me.nudControlGroup.TabIndex = 3
         '
         'lblControlGroup
@@ -180,9 +195,9 @@ Partial Class frmEvents
         Me.grpAction.Controls.Add(Me.txtActionName)
         Me.grpAction.Controls.Add(Me.lblActionName)
         Me.grpAction.Enabled = False
-        Me.grpAction.Location = New System.Drawing.Point(467, 12)
+        Me.grpAction.Location = New System.Drawing.Point(468, 12)
         Me.grpAction.Name = "grpAction"
-        Me.grpAction.Size = New System.Drawing.Size(277, 409)
+        Me.grpAction.Size = New System.Drawing.Size(277, 434)
         Me.grpAction.TabIndex = 12
         Me.grpAction.TabStop = False
         Me.grpAction.Text = "Action"
@@ -195,31 +210,18 @@ Partial Class frmEvents
         Me.txtActionDescription.Name = "txtActionDescription"
         Me.txtActionDescription.ReadOnly = True
         Me.txtActionDescription.ScrollBars = System.Windows.Forms.ScrollBars.Both
-        Me.txtActionDescription.Size = New System.Drawing.Size(247, 89)
+        Me.txtActionDescription.Size = New System.Drawing.Size(247, 114)
         Me.txtActionDescription.TabIndex = 0
         Me.txtActionDescription.TabStop = False
         '
         'pgAction
         '
-        Me.pgAction.Location = New System.Drawing.Point(15, 166)
+        Me.pgAction.Location = New System.Drawing.Point(15, 191)
         Me.pgAction.Name = "pgAction"
         Me.pgAction.PropertySort = System.Windows.Forms.PropertySort.NoSort
         Me.pgAction.Size = New System.Drawing.Size(247, 228)
         Me.pgAction.TabIndex = 15
         Me.pgAction.ToolbarVisible = False
-        '
-        'cboActionFunction
-        '
-        Me.cboActionFunction.DropDownHeight = 212
-        Me.cboActionFunction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
-        Me.cboActionFunction.FormattingEnabled = True
-        Me.cboActionFunction.GroupMember = "Group"
-        Me.cboActionFunction.IntegralHeight = False
-        Me.cboActionFunction.Location = New System.Drawing.Point(69, 44)
-        Me.cboActionFunction.MaxDropDownItems = 20
-        Me.cboActionFunction.Name = "cboActionFunction"
-        Me.cboActionFunction.Size = New System.Drawing.Size(193, 21)
-        Me.cboActionFunction.TabIndex = 14
         '
         'lblActionFunction
         '
@@ -252,7 +254,7 @@ Partial Class frmEvents
         Me.cmdActionSwap.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
         Me.cmdActionSwap.Enabled = False
         Me.cmdActionSwap.Image = CType(resources.GetObject("cmdActionSwap.Image"), System.Drawing.Image)
-        Me.cmdActionSwap.Location = New System.Drawing.Point(131, 335)
+        Me.cmdActionSwap.Location = New System.Drawing.Point(131, 360)
         Me.cmdActionSwap.Name = "cmdActionSwap"
         Me.cmdActionSwap.Size = New System.Drawing.Size(26, 26)
         Me.cmdActionSwap.TabIndex = 11
@@ -264,7 +266,7 @@ Partial Class frmEvents
         Me.cmdActionRemove.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
         Me.cmdActionRemove.Enabled = False
         Me.cmdActionRemove.Image = CType(resources.GetObject("cmdActionRemove.Image"), System.Drawing.Image)
-        Me.cmdActionRemove.Location = New System.Drawing.Point(15, 368)
+        Me.cmdActionRemove.Location = New System.Drawing.Point(15, 393)
         Me.cmdActionRemove.Name = "cmdActionRemove"
         Me.cmdActionRemove.Size = New System.Drawing.Size(26, 26)
         Me.cmdActionRemove.TabIndex = 8
@@ -276,7 +278,7 @@ Partial Class frmEvents
         Me.cmdActionAdd.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
         Me.cmdActionAdd.Enabled = False
         Me.cmdActionAdd.Image = CType(resources.GetObject("cmdActionAdd.Image"), System.Drawing.Image)
-        Me.cmdActionAdd.Location = New System.Drawing.Point(15, 336)
+        Me.cmdActionAdd.Location = New System.Drawing.Point(15, 361)
         Me.cmdActionAdd.Name = "cmdActionAdd"
         Me.cmdActionAdd.Size = New System.Drawing.Size(26, 26)
         Me.cmdActionAdd.TabIndex = 7
@@ -288,7 +290,7 @@ Partial Class frmEvents
         Me.cmdActionDown.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
         Me.cmdActionDown.Enabled = False
         Me.cmdActionDown.Image = CType(resources.GetObject("cmdActionDown.Image"), System.Drawing.Image)
-        Me.cmdActionDown.Location = New System.Drawing.Point(73, 368)
+        Me.cmdActionDown.Location = New System.Drawing.Point(73, 393)
         Me.cmdActionDown.Name = "cmdActionDown"
         Me.cmdActionDown.Size = New System.Drawing.Size(26, 26)
         Me.cmdActionDown.TabIndex = 10
@@ -300,7 +302,7 @@ Partial Class frmEvents
         Me.cmdActionUp.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
         Me.cmdActionUp.Enabled = False
         Me.cmdActionUp.Image = CType(resources.GetObject("cmdActionUp.Image"), System.Drawing.Image)
-        Me.cmdActionUp.Location = New System.Drawing.Point(73, 336)
+        Me.cmdActionUp.Location = New System.Drawing.Point(73, 361)
         Me.cmdActionUp.Name = "cmdActionUp"
         Me.cmdActionUp.Size = New System.Drawing.Size(26, 26)
         Me.cmdActionUp.TabIndex = 9
@@ -312,7 +314,7 @@ Partial Class frmEvents
         Me.cmdActionClear.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center
         Me.cmdActionClear.Enabled = False
         Me.cmdActionClear.Image = CType(resources.GetObject("cmdActionClear.Image"), System.Drawing.Image)
-        Me.cmdActionClear.Location = New System.Drawing.Point(189, 335)
+        Me.cmdActionClear.Location = New System.Drawing.Point(189, 360)
         Me.cmdActionClear.Name = "cmdActionClear"
         Me.cmdActionClear.Size = New System.Drawing.Size(26, 26)
         Me.cmdActionClear.TabIndex = 12
@@ -329,9 +331,9 @@ Partial Class frmEvents
         Me.grpActions.Controls.Add(Me.cmdActionClear)
         Me.grpActions.Controls.Add(Me.lvActions)
         Me.grpActions.Enabled = False
-        Me.grpActions.Location = New System.Drawing.Point(231, 12)
+        Me.grpActions.Location = New System.Drawing.Point(232, 12)
         Me.grpActions.Name = "grpActions"
-        Me.grpActions.Size = New System.Drawing.Size(230, 409)
+        Me.grpActions.Size = New System.Drawing.Size(230, 434)
         Me.grpActions.TabIndex = 13
         Me.grpActions.TabStop = False
         Me.grpActions.Text = "Actions List"
@@ -378,7 +380,7 @@ Partial Class frmEvents
         Me.lvActions.MultiSelect = False
         Me.lvActions.Name = "lvActions"
         Me.lvActions.ShowItemToolTips = True
-        Me.lvActions.Size = New System.Drawing.Size(200, 307)
+        Me.lvActions.Size = New System.Drawing.Size(200, 332)
         Me.lvActions.TabIndex = 6
         Me.lvActions.UseCompatibleStateImageBehavior = False
         Me.lvActions.View = System.Windows.Forms.View.Details
@@ -388,54 +390,58 @@ Partial Class frmEvents
         Me.colAction.Text = "Action"
         Me.colAction.Width = 174
         '
+        'cboActionFunction
+        '
+        Me.cboActionFunction.DropDownHeight = 212
+        Me.cboActionFunction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cboActionFunction.FormattingEnabled = True
+        Me.cboActionFunction.GroupMember = "Group"
+        Me.cboActionFunction.IntegralHeight = False
+        Me.cboActionFunction.Location = New System.Drawing.Point(69, 44)
+        Me.cboActionFunction.MaxDropDownItems = 20
+        Me.cboActionFunction.Name = "cboActionFunction"
+        Me.cboActionFunction.Size = New System.Drawing.Size(193, 21)
+        Me.cboActionFunction.TabIndex = 14
+        '
         'grpInput
         '
         Me.grpInput.Checked = False
         Me.grpInput.CheckState = System.Windows.Forms.CheckState.Unchecked
-        Me.grpInput.Controls.Add(Me.chkPaged)
-        Me.grpInput.Controls.Add(Me.nudDevicePage)
-        Me.grpInput.Controls.Add(Me.lblControlPage)
+        Me.grpInput.Controls.Add(Me.txtDefaultState)
+        Me.grpInput.Controls.Add(Me.lblDefaultState)
         Me.grpInput.Controls.Add(Me.grpInputValues)
         Me.grpInput.Controls.Add(Me.lblDescription)
+        Me.grpInput.Controls.Add(Me.cmdEditDefaultState)
         Me.grpInput.Controls.Add(Me.lblDevice)
         Me.grpInput.Controls.Add(Me.lblControlDevice)
+        Me.grpInput.Controls.Add(Me.chkPaged)
         Me.grpInput.Controls.Add(Me.lblControlType)
+        Me.grpInput.Controls.Add(Me.lblControlPage)
+        Me.grpInput.Controls.Add(Me.nudDevicePage)
         Me.grpInput.DisableChildrenIfUnchecked = False
         Me.grpInput.Location = New System.Drawing.Point(12, 12)
         Me.grpInput.Name = "grpInput"
-        Me.grpInput.Size = New System.Drawing.Size(213, 235)
+        Me.grpInput.Size = New System.Drawing.Size(213, 260)
         Me.grpInput.TabIndex = 2
         Me.grpInput.TabStop = False
         Me.grpInput.Text = "Input"
         '
-        'chkPaged
+        'txtDefaultState
         '
-        Me.chkPaged.AutoSize = True
-        Me.chkPaged.Enabled = False
-        Me.chkPaged.Location = New System.Drawing.Point(18, 204)
-        Me.chkPaged.Name = "chkPaged"
-        Me.chkPaged.Size = New System.Drawing.Size(93, 17)
-        Me.chkPaged.TabIndex = 1
-        Me.chkPaged.Text = "Paged Control"
-        Me.chkPaged.UseVisualStyleBackColor = True
+        Me.txtDefaultState.Enabled = False
+        Me.txtDefaultState.Location = New System.Drawing.Point(87, 226)
+        Me.txtDefaultState.Name = "txtDefaultState"
+        Me.txtDefaultState.Size = New System.Drawing.Size(87, 20)
+        Me.txtDefaultState.TabIndex = 13
         '
-        'nudDevicePage
+        'lblDefaultState
         '
-        Me.nudDevicePage.Enabled = False
-        Me.nudDevicePage.Location = New System.Drawing.Point(123, 175)
-        Me.nudDevicePage.Maximum = New Decimal(New Integer() {255, 0, 0, 0})
-        Me.nudDevicePage.Name = "nudDevicePage"
-        Me.nudDevicePage.Size = New System.Drawing.Size(72, 20)
-        Me.nudDevicePage.TabIndex = 0
-        '
-        'lblControlPage
-        '
-        Me.lblControlPage.AutoSize = True
-        Me.lblControlPage.Location = New System.Drawing.Point(15, 177)
-        Me.lblControlPage.Name = "lblControlPage"
-        Me.lblControlPage.Size = New System.Drawing.Size(68, 13)
-        Me.lblControlPage.TabIndex = 12
-        Me.lblControlPage.Text = "Active Page:"
+        Me.lblDefaultState.AutoSize = True
+        Me.lblDefaultState.Location = New System.Drawing.Point(15, 229)
+        Me.lblDefaultState.Name = "lblDefaultState"
+        Me.lblDefaultState.Size = New System.Drawing.Size(72, 13)
+        Me.lblDefaultState.TabIndex = 14
+        Me.lblDefaultState.Text = "Default State:"
         '
         'grpInputValues
         '
@@ -447,7 +453,7 @@ Partial Class frmEvents
         Me.grpInputValues.Controls.Add(Me.lblChan)
         Me.grpInputValues.Location = New System.Drawing.Point(18, 72)
         Me.grpInputValues.Name = "grpInputValues"
-        Me.grpInputValues.Size = New System.Drawing.Size(177, 93)
+        Me.grpInputValues.Size = New System.Drawing.Size(178, 93)
         Me.grpInputValues.TabIndex = 11
         Me.grpInputValues.TabStop = False
         Me.grpInputValues.Text = "MIDI Values:"
@@ -455,7 +461,7 @@ Partial Class frmEvents
         'lblVelocityValue
         '
         Me.lblVelocityValue.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblVelocityValue.Location = New System.Drawing.Point(70, 66)
+        Me.lblVelocityValue.Location = New System.Drawing.Point(66, 66)
         Me.lblVelocityValue.Name = "lblVelocityValue"
         Me.lblVelocityValue.Size = New System.Drawing.Size(101, 13)
         Me.lblVelocityValue.TabIndex = 15
@@ -465,7 +471,7 @@ Partial Class frmEvents
         '
         Me.lblNoteControl.AutoEllipsis = True
         Me.lblNoteControl.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblNoteControl.Location = New System.Drawing.Point(69, 44)
+        Me.lblNoteControl.Location = New System.Drawing.Point(66, 44)
         Me.lblNoteControl.MaximumSize = New System.Drawing.Size(90, 13)
         Me.lblNoteControl.Name = "lblNoteControl"
         Me.lblNoteControl.Size = New System.Drawing.Size(90, 13)
@@ -475,7 +481,7 @@ Partial Class frmEvents
         'lblChannel
         '
         Me.lblChannel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblChannel.Location = New System.Drawing.Point(70, 22)
+        Me.lblChannel.Location = New System.Drawing.Point(66, 22)
         Me.lblChannel.Name = "lblChannel"
         Me.lblChannel.Size = New System.Drawing.Size(101, 13)
         Me.lblChannel.TabIndex = 13
@@ -517,6 +523,16 @@ Partial Class frmEvents
         Me.lblDescription.TabIndex = 10
         Me.lblDescription.Text = "N/A"
         '
+        'cmdEditDefaultState
+        '
+        Me.cmdEditDefaultState.Image = Global.Feel.My.Resources.Feel.EditInformation
+        Me.cmdEditDefaultState.Location = New System.Drawing.Point(174, 226)
+        Me.cmdEditDefaultState.Name = "cmdEditDefaultState"
+        Me.cmdEditDefaultState.Size = New System.Drawing.Size(22, 20)
+        Me.cmdEditDefaultState.TabIndex = 15
+        Me.ttActions.SetToolTip(Me.cmdEditDefaultState, "MIDI String Editor")
+        Me.cmdEditDefaultState.UseVisualStyleBackColor = True
+        '
         'lblDevice
         '
         Me.lblDevice.AutoSize = True
@@ -535,6 +551,17 @@ Partial Class frmEvents
         Me.lblControlDevice.TabIndex = 2
         Me.lblControlDevice.Text = "Device::"
         '
+        'chkPaged
+        '
+        Me.chkPaged.AutoSize = True
+        Me.chkPaged.Enabled = False
+        Me.chkPaged.Location = New System.Drawing.Point(18, 173)
+        Me.chkPaged.Name = "chkPaged"
+        Me.chkPaged.Size = New System.Drawing.Size(93, 17)
+        Me.chkPaged.TabIndex = 1
+        Me.chkPaged.Text = "Paged Control"
+        Me.chkPaged.UseVisualStyleBackColor = True
+        '
         'lblControlType
         '
         Me.lblControlType.AutoSize = True
@@ -544,12 +571,30 @@ Partial Class frmEvents
         Me.lblControlType.TabIndex = 1
         Me.lblControlType.Text = "Type:"
         '
+        'lblControlPage
+        '
+        Me.lblControlPage.AutoSize = True
+        Me.lblControlPage.Location = New System.Drawing.Point(15, 199)
+        Me.lblControlPage.Name = "lblControlPage"
+        Me.lblControlPage.Size = New System.Drawing.Size(111, 13)
+        Me.lblControlPage.TabIndex = 12
+        Me.lblControlPage.Text = "Active (Current) Page:"
+        '
+        'nudDevicePage
+        '
+        Me.nudDevicePage.Enabled = False
+        Me.nudDevicePage.Location = New System.Drawing.Point(133, 197)
+        Me.nudDevicePage.Maximum = New Decimal(New Integer() {255, 0, 0, 0})
+        Me.nudDevicePage.Name = "nudDevicePage"
+        Me.nudDevicePage.Size = New System.Drawing.Size(63, 20)
+        Me.nudDevicePage.TabIndex = 0
+        '
         'frmEvents
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
-        Me.ClientSize = New System.Drawing.Size(757, 433)
+        Me.ClientSize = New System.Drawing.Size(757, 459)
         Me.Controls.Add(Me.grpActions)
         Me.Controls.Add(Me.grpAction)
         Me.Controls.Add(Me.grpConfiguration)
@@ -558,7 +603,7 @@ Partial Class frmEvents
         Me.KeyPreview = True
         Me.MaximizeBox = False
         Me.Name = "frmEvents"
-        Me.Text = "Feel: Events"
+        Me.Text = "Feel: Edit Events"
         Me.TransparencyKey = System.Drawing.Color.Fuchsia
         Me.grpConfiguration.ResumeLayout(False)
         Me.grpConfiguration.PerformLayout()
@@ -570,9 +615,9 @@ Partial Class frmEvents
         Me.grpActions.ResumeLayout(False)
         Me.grpInput.ResumeLayout(False)
         Me.grpInput.PerformLayout()
-        CType(Me.nudDevicePage, System.ComponentModel.ISupportInitialize).EndInit()
         Me.grpInputValues.ResumeLayout(False)
         Me.grpInputValues.PerformLayout()
+        CType(Me.nudDevicePage, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -616,4 +661,8 @@ Partial Class frmEvents
     Friend WithEvents lvActions As System.Windows.Forms.ListView
     Friend WithEvents colAction As System.Windows.Forms.ColumnHeader
     Friend WithEvents grpInput As Feel.CheckedGroupBox
+    Friend WithEvents txtDefaultState As System.Windows.Forms.TextBox
+    Friend WithEvents lblDefaultState As System.Windows.Forms.Label
+    Friend WithEvents cmdEditDefaultState As System.Windows.Forms.Button
+    Friend WithEvents cmdEditInitalState As System.Windows.Forms.Button
 End Class

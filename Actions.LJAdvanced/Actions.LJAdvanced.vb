@@ -72,8 +72,7 @@ Public Class IntensityGroupValueAbs
     End Property
 
     Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
-        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
-
+        If Not (Host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
         _myData = New ActionData
         _host = Host
         Return True
@@ -203,7 +202,7 @@ Public Class IntensityGroupValueRel
     End Property
 
     Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
-        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+        If Not (Host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
 
         _myData = New ActionData
         _host = Host
@@ -324,7 +323,7 @@ Public Class CueMacroAmplitudeAbs
     End Property
 
     Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
-        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+        If Not (Host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
 
         _myData = New ActionData
         _host = Host
@@ -432,7 +431,7 @@ Public Class CueMacroAmplitudeRel
     End Property
 
     Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
-        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+        If Not (Host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
 
         _myData = New ActionData
         _host = Host
@@ -539,7 +538,7 @@ Public Class CueMacroSpeedAbs
     End Property
 
     Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
-        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+        If Not (Host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
 
         _myData = New ActionData
         _host = Host
@@ -647,7 +646,7 @@ Public Class CueMacroSpeedRel
     End Property
 
     Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
-        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+        If Not (Host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
 
         _myData = New ActionData
         _host = Host
@@ -744,7 +743,7 @@ Public Class LoadCue
     End Property
 
     Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
-        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+        If Not (Host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
 
         _myData = New ActionData
         _host = Host
@@ -841,7 +840,7 @@ Public Class LoadCuelist
     End Property
 
     Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
-        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+        If Not (Host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
 
         _myData = New ActionData
         _host = Host
@@ -903,7 +902,7 @@ Public Class LoadCuelist
         End Property
 
         Public Sub New()
-            _cuelist = 100
+            _cuelist = 0
             _forceCueListRestart = False
         End Sub
     End Class
@@ -948,7 +947,7 @@ Public Class LoadBackgroundCue
     End Property
 
     Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
-        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+        If Not (Host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
 
         _myData = New ActionData
         _host = Host
@@ -1056,7 +1055,7 @@ Public Class FlashSequence
     End Property
 
     Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
-        If Not (_host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
+        If Not (Host.Licensing_CodeMeter_Validate(10, 201000, 1)) Then Return False
 
         _myData = New ActionData
         _host = Host

@@ -113,6 +113,13 @@ Namespace My.Resources
             End Get
         End Property
         
+        Friend Shared ReadOnly Property EditInformation() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("EditInformation", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
         Friend Shared ReadOnly Property feel() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("feel", resourceCulture)

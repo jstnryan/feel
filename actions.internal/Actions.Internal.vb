@@ -2,6 +2,133 @@
 Imports System.ComponentModel
 Imports Feel.ActionInterface
 
+<Guid("15ABCE5A-D91E-4d65-946A-58394B9FE470")> _
+Public Class ExitProgram
+    Implements IAction
+
+    Private _host As IServices
+    Private _actionData As ExitProgram.ActionData
+
+    ''' <summary>
+    ''' ExitProgram.ActionData
+    ''' </summary>
+    ''' <remarks>Stores the properties for this action.</remarks>
+    <Serializable()> _
+    Public Class ActionData
+        Friend _restart As Boolean
+
+        <DisplayName("Restart"), _
+            Description("Restart program after exiting.'"), _
+            DefaultValue(False)> _
+        Public Property Group() As Boolean
+            Get
+                Return _restart
+            End Get
+            Set(ByVal value As Boolean)
+                _restart = value
+            End Set
+        End Property
+
+        Public Sub New()
+            _restart = False
+        End Sub
+    End Class
+
+    Public Property Data() As Object Implements IAction.Data
+        Get
+            Return _actionData
+        End Get
+        Set(ByVal value As Object)
+            _actionData = CType(value, ExitProgram.ActionData)
+        End Set
+    End Property
+
+    Public ReadOnly Property Description() As String Implements IAction.Description
+        Get
+            Return "Exits Feel, and optionally restarts."
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements IAction.Execute
+        _host.ExitProgram(_actionData._restart)
+        Return True
+    End Function
+
+    Public ReadOnly Property Group() As String Implements IAction.Group
+        Get
+            Return "Internal Functions"
+        End Get
+    End Property
+
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
+        _host = Host
+        _actionData = New ExitProgram.ActionData
+        Return True
+    End Function
+
+    Public ReadOnly Property Name() As String Implements IAction.Name
+        Get
+            Return "Exit Program"
+        End Get
+    End Property
+
+    Public ReadOnly Property UniqueID() As Guid Implements IAction.UniqueID
+        Get
+            Return New Guid("15ABCE5A-D91E-4d65-946A-58394B9FE470")
+        End Get
+    End Property
+End Class
+
+<Guid("15ABCE5A-D91E-4d65-946A-58394B9FE471")> _
+Public Class SaveConfiguration
+    Implements IAction
+
+    Private _host As IServices
+
+    Public Property Data() As Object Implements IAction.Data
+        Get
+            Return False
+        End Get
+        Set(ByVal value As Object)
+            ''Nothing to do
+        End Set
+    End Property
+
+    Public ReadOnly Property Description() As String Implements IAction.Description
+        Get
+            Return "Saves the current Feel configuration to file, overwriting the currently used filename."
+        End Get
+    End Property
+
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements IAction.Execute
+        _host.SaveConfiguration()
+        Return True
+    End Function
+
+    Public ReadOnly Property Group() As String Implements IAction.Group
+        Get
+            Return "Internal Functions"
+        End Get
+    End Property
+
+    Public Function Initialize(ByRef Host As IServices) As Boolean Implements IAction.Initialize
+        _host = Host
+        Return True
+    End Function
+
+    Public ReadOnly Property Name() As String Implements IAction.Name
+        Get
+            Return "Save Configuration"
+        End Get
+    End Property
+
+    Public ReadOnly Property UniqueID() As Guid Implements IAction.UniqueID
+        Get
+            Return New Guid("15ABCE5A-D91E-4d65-946A-58394B9FE471")
+        End Get
+    End Property
+End Class
+
 <Guid("15ABCE5A-D91E-4d65-946A-58394B9FE478")> _
 Public Class ConfigureProgram
     Implements IAction
@@ -280,81 +407,83 @@ Public Class ChangePage
     End Class
 End Class
 
-'<Guid("15ABCE5A-D91E-4d65-946A-58394B9FE475")> _
-'Public Class ShowMessageBox
-'    Implements ActionInterface.IAction
+<Guid("15ABCE5A-D91E-4d65-946A-58394B9FE475")> _
+Public Class ShowMessageBox
+    Implements IAction
 
-'    Private _actionData As ActionData
-'    Private _host As ActionInterface.IServices
+    Private _actionData As ActionData
+    Private _host As ActionInterface.IServices
 
-'    ''' <summary>
-'    ''' ShowMessageBox.ActionData
-'    ''' </summary>
-'    ''' <remarks>Stores the custom message to display in the messagebox.</remarks>
-'    <Serializable()> _
-'    Public Class ActionData
-'        Private _message As String
+    ''' <summary>
+    ''' ShowMessageBox.ActionData
+    ''' </summary>
+    ''' <remarks>Stores the custom message to display in the messagebox.</remarks>
+    <Serializable()> _
+    Public Class ActionData
+        Private _message As String
 
-'        <DisplayName("Message"), _
-'            Description("The message to display in the message dialog box."), _
-'            DefaultValue("My message!")> _
-'        Public Property Message() As String
-'            Get
-'                Return _message
-'            End Get
-'            Set(ByVal value As String)
-'                _message = value
-'            End Set
-'        End Property
+        <DisplayName("Message"), _
+            Description("The message to display in the message dialog box."), _
+            DefaultValue("My message!")> _
+        Public Property Message() As String
+            Get
+                Return _message
+            End Get
+            Set(ByVal value As String)
+                _message = value
+            End Set
+        End Property
 
-'        Public Sub New()
-'            _message = "My message!"
-'        End Sub
-'    End Class
+        Public Sub New()
+            _message = "My message!"
+        End Sub
+    End Class
 
-'    Public Property Data() As Object Implements ActionInterface.IAction.Data
-'        Get
-'            Return _actionData
-'        End Get
-'        Set(ByVal value As Object)
-'            _actionData = DirectCast(value, ActionData)
-'        End Set
-'    End Property
+    Public Property Data() As Object Implements ActionInterface.IAction.Data
+        Get
+            Return _actionData
+        End Get
+        Set(ByVal value As Object)
+            _actionData = DirectCast(value, ActionData)
+        End Set
+    End Property
 
-'    Public ReadOnly Property Description() As String Implements ActionInterface.IAction.Description
-'        Get
-'            Return "Displays a message box with a custom message."
-'        End Get
-'    End Property
+    Public ReadOnly Property Description() As String Implements ActionInterface.IAction.Description
+        Get
+            Return "Displays a message box with a custom message."
+        End Get
+    End Property
 
-'    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements ActionInterface.IAction.Execute
-'        MsgBox(_actionData.Message)
-'        Return True
-'    End Function
+    Public Function Execute(ByVal Device As String, ByVal Type As Byte, ByVal Channel As Byte, ByVal NoteCon As Byte, ByVal VelVal As Byte) As Boolean Implements ActionInterface.IAction.Execute
+        MsgBox(_actionData.Message)
+        Return True
+    End Function
 
-'    Public ReadOnly Property Group() As String Implements ActionInterface.IAction.Group
-'        Get
-'            Return "Other"
-'        End Get
-'    End Property
+    Public ReadOnly Property Group() As String Implements ActionInterface.IAction.Group
+        Get
+            Return "Other"
+        End Get
+    End Property
 
-'    Public Sub Initialize(ByRef Host As ActionInterface.IServices) Implements ActionInterface.IAction.Initialize
-'        _host = Host
-'        _actionData = New ActionData
-'    End Sub
+    Public Function Initialize(ByRef Host As ActionInterface.IServices) As Boolean Implements ActionInterface.IAction.Initialize
+        Return False ''Switch to enable
 
-'    Public ReadOnly Property Name() As String Implements ActionInterface.IAction.Name
-'        Get
-'            Return "Display Message Box"
-'        End Get
-'    End Property
+        _host = Host
+        _actionData = New ActionData
+    End Function
 
-'    Public ReadOnly Property UniqueID() As System.Guid Implements ActionInterface.IAction.UniqueID
-'        Get
-'            Return New Guid("15ABCE5A-D91E-4d65-946A-58394B9FE475")
-'        End Get
-'    End Property
-'End Class
+    Public ReadOnly Property Name() As String Implements ActionInterface.IAction.Name
+        Get
+            Return "Display Message Box"
+        End Get
+    End Property
+
+    Public ReadOnly Property UniqueID() As System.Guid Implements ActionInterface.IAction.UniqueID
+        Get
+            Return New Guid("15ABCE5A-D91E-4d65-946A-58394B9FE475")
+        End Get
+    End Property
+End Class
 
 <Guid("15ABCE5A-D91E-4d65-946A-58394B9FE476")> _
 Public Class ChangeControlState

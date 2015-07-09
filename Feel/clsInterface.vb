@@ -6,7 +6,7 @@
         Public Overrides Sub OpenWindowActions()
             'Source: http://www.codeproject.com/Articles/31971/Understanding-SynchronizationContext-Part-I
             'main._threadcontext.Post(AddressOf main.OpenActionWindow_Ext, main._threadcontext)
-            main._threadcontext.Post(AddressOf main.OpenEventWindow_Ext, Nothing)
+            If (_threadcontext IsNot Nothing) Then main._threadcontext.Post(AddressOf main.OpenEventWindow_Ext, Nothing)
         End Sub
 
         Public Overrides Sub OpenWindowConnections()
@@ -17,8 +17,16 @@
             If (_threadcontext IsNot Nothing) Then main._threadcontext.Post(AddressOf main.OpenConfigWindow_Ext, _threadcontext)
         End Sub
 
+        Public Overrides Sub SaveConfiguration()
+            ''There is the possiblility that a MessageBox will appear upon error. Need to send this to UI thread?
+            main.SaveConfiguration()
+        End Sub
+
+        Public Overrides Sub ExitProgram(Optional ByVal Restart As Boolean = False)
+            If (_threadcontext IsNot Nothing) Then main._threadcontext.Post(AddressOf main.ExitProgram, Restart)
+        End Sub
+
         Public Overrides Sub SetPage(ByVal Device As String, ByVal Page As Byte)
-            'main.SetPage(Device, Page)
             If (Device = "ALL DEVICES") Then
                 For Each dev As clsConnection In FeelConfig.Connections.Values
                     If (dev.Enabled = True) Then
@@ -34,13 +42,9 @@
             RedrawControls(Device)
         End Sub
         Public Overrides Sub SetPage(ByVal Device As Integer, ByVal Page As Byte)
-            'main.SetPage(Device, Page)
-            If (Device = -1) Or (Not FeelConfig.Connections.ContainsKey(Device)) Then
-                Exit Sub
-            Else
-                FeelConfig.Connections(Device).PageCurrent = Page
-                RedrawControls(Device)
-            End If
+            If (Device = -1) Or (Not FeelConfig.Connections.ContainsKey(Device)) Then Exit Sub
+            FeelConfig.Connections(Device).PageCurrent = Page
+            RedrawControls(Device)
         End Sub
 
         Public Overrides Sub RedrawControls(ByVal Device As Integer)
@@ -50,14 +54,33 @@
                 With FeelConfig.Connections(Device)
                     If (.Enabled And .OutputEnable) Then
                         For Each cont As clsControl In .Control.Values
-                            If (cont.Page.ContainsKey(.PageCurrent)) Then
-                                ''If this is the first time setting state, also set current state
-                                '' otherwise use only CurrentState
-                                If (cont.Page(.PageCurrent).CurrentState = "") Then
-                                    SendMIDI(Device, cont.Page(.PageCurrent).InitialState)
-                                    cont.Page(.PageCurrent).CurrentState = cont.Page(.PageCurrent).InitialState
+                            If (cont.Paged) Then
+                                If (cont.Page.ContainsKey(.PageCurrent)) Then
+                                    ''If this is the first time setting state, also set current state
+                                    '' otherwise use only CurrentState
+                                    If (cont.Page(.PageCurrent).CurrentState.IsNullOrEmpty) Then
+                                        SendMIDI(Device, cont.Page(.PageCurrent).InitialState)
+                                        cont.Page(.PageCurrent).CurrentState = cont.Page(.PageCurrent).InitialState
+                                    Else
+                                        SendMIDI(Device, cont.Page(.PageCurrent).CurrentState)
+                                    End If
                                 Else
-                                    SendMIDI(Device, cont.Page(.PageCurrent).CurrentState)
+                                    ''Turn button/feedback off
+                                    If (cont.Paged) Then
+                                        If Not (cont.DefaultState.IsNullOrEmpty) Then SendMIDI(Device, cont.DefaultState)
+                                    End If
+                                End If
+                            Else
+                                If (cont.Page.ContainsKey(0)) Then
+                                    If (cont.Page(0).CurrentState.IsNullOrEmpty) Then
+                                        SendMIDI(Device, cont.Page(0).InitialState)
+                                        cont.Page(0).CurrentState = cont.Page(0).InitialState
+                                    Else
+                                        SendMIDI(Device, cont.Page(0).CurrentState)
+                                    End If
+                                Else
+                                    ''Turn off
+                                    If Not (cont.DefaultState.IsNullOrEmpty) Then SendMIDI(Device, cont.DefaultState)
                                 End If
                             End If
                         Next
@@ -345,7 +368,7 @@
 
 #Region "Licensing"
         Overrides Function Licensing_CodeMeter_Validate(ByVal firmCode As UInteger, Optional ByVal productCode As UInteger = Nothing, Optional ByVal featureCode As UInteger = Nothing) As Boolean
-            Return False
+            Return True
         End Function
 #End Region
 

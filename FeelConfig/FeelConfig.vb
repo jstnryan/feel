@@ -102,10 +102,12 @@ Public Class clsControl
     Public Paged As Boolean
     'String is format "WW"
     Public Page As Collections.Generic.Dictionary(Of Byte, clsControlPage)
+    Public DefaultState As String
 
     Public Sub New()
         Paged = False
         Page = New Collections.Generic.Dictionary(Of Byte, clsControlPage)
+        DefaultState = ""
     End Sub
 End Class
 

@@ -3,10 +3,12 @@ SendMidiString                15ABCE5A-D91E-4d65-946B-58394B9FE400
 SendMidiComponents            15ABCE5A-D91E-4d65-946B-58394B9FE401
 
 ##INTERNAL ("Internal Functions")
+ExitProgram                   15ABCE5A-D91E-4d65-946A-58394B9FE470  ##internal only?
+SaveConfiguration             15ABCE5A-D91E-4d65-946A-58394B9FE471  ##internal only?
 ConfigureConnections          15ABCE5A-D91E-4d65-946A-58394B9FE472
 ConfigureActions              15ABCE5A-D91E-4d65-946A-58394B9FE473
 ChangePage                    15ABCE5A-D91E-4d65-946A-58394B9FE474
-ShowMessageBox                15ABCE5A-D91E-4d65-946A-58394B9FE475  ##Depreciated
+ShowMessageBox                15ABCE5A-D91E-4d65-946A-58394B9FE475  ##internal only?
 ChangeControlState            15ABCE5A-D91E-4d65-946A-58394B9FE476
 ResetControlGroup             15ABCE5A-D91E-4d65-946A-58394B9FE477
 ConfigureProgram              15ABCE5A-D91E-4d65-946A-58394B9FE478
@@ -43,3 +45,13 @@ Load Cue                      88F81E46-596B-4aa3-A5C4-8FB475DA21A6
 Load CueList                  88F81E46-596B-4aa3-A5C4-8FB475DA21A7
 Load Background Cue           88F81E46-596B-4aa3-A5C4-8FB475DA21A8
 Flash Sequence                88F81E46-596B-4aa3-A5C4-8FB475DA21A9
+
+#LJ Fixture Controls ("LJ Fixture Controls")
+Fixture Control Show/Hide     287BC6EB-94D9-481f-891C-11D63FEC4200
+Fixture Control Toggle        287BC6EB-94D9-481f-891C-11D63FEC4201
+Deselect All Fixtures         287BC6EB-94D9-481f-891C-11D63FEC4202
+Select All Fixtures           287BC6EB-94D9-481f-891C-11D63FEC4203
+Select All Fixtures Of Type   287BC6EB-94D9-481f-891C-11D63FEC4204
+Deselect All Fixtures Of Type 287BC6EB-94D9-481f-891C-11D63FEC4205
+Deselect All Fixtures Except  287BC6EB-94D9-481f-891C-11D63FEC4206
+Change Fixture Attribute State287BC6EB-94D9-481f-891C-11D63FEC4207

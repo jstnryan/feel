@@ -4,7 +4,7 @@ Imports System.Runtime.InteropServices
 
 Module main
     ''Stores a 'reference' to the UI thread for opening forms from an event
-    Friend _threadcontext As New System.Threading.SynchronizationContext
+    Friend _threadcontext As System.Threading.SynchronizationContext
 
     ''Components for System Tray icon
     Dim WithEvents trayIcon As New NotifyIcon
@@ -35,7 +35,7 @@ Module main
     Friend connectForm As frmConnections
     Friend eventForm As frmEvents
     Friend aboutForm As frmAbout '= New frmAbout ''Have to do this in order to get a valid SynchronizationContext
-    Dim _dummyControl As System.Windows.Forms.Control = New Windows.Forms.Control
+    Dim _dummyControl As New System.Windows.Forms.Control
 
     Private _configMode As Boolean = False    ''when configuring actions, override output to LJ
     Public Property configMode(Optional ByVal reConnect As Boolean = False) As Boolean
@@ -137,7 +137,7 @@ Module main
     End Sub
 
 #Region "Windows & Menus"
-    Private Sub menuExit_Click(ByVal sender As Object, ByVal e As EventArgs) Handles menuExit.Click
+    Private Sub menuExit_Click() Handles menuExit.Click
         If _configMode Then
             Dim quitNoSave As System.Windows.Forms.DialogResult = MessageBox.Show("One or more configuration windows are open; any changes made have not been saved. Do you want to exit without saving?", "Feel: Configuration Not Saved", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2)
             If (quitNoSave = DialogResult.No) Then Exit Sub
@@ -148,8 +148,16 @@ Module main
         trayIcon.Visible = False
         Application.Exit()
     End Sub
+    Friend Sub ExitProgram(ByVal state As Object)
+        'TODO: handle Restart = True
+        If Not CType(state, Boolean) Then
+            menuExit_Click()
+        Else
+            MessageBox.Show("Restarting not yet implemented!")
+        End If
+    End Sub
 
-    Friend Sub OpenProgramWindow() Handles menuConfigProgram.Click
+    Private Sub OpenProgramWindow() Handles menuConfigProgram.Click
         ''Singleton: See designer code.
         '' http://www.codeproject.com/Articles/5000/Simple-Singleton-Forms
         '' (dated link) http://www.codeproject.com/KB/vb/Simple_Singleton_Forms.aspx
@@ -163,7 +171,7 @@ Module main
         OpenProgramWindow()
     End Sub
 
-    Friend Sub OpenConnectWindow() Handles menuConfigConnections.Click
+    Private Sub OpenConnectWindow() Handles menuConfigConnections.Click
         ''The Connections Configuration form makes its own connections to
         '' test devices, so we must disconnect existing connections first.
         DisconnectDevices()
@@ -178,8 +186,7 @@ Module main
         OpenConnectWindow()
     End Sub
 
-    'Delegate Sub dlgOpenEventWindow()
-    Friend Sub OpenEventWindow() Handles menuConfigEvents.Click
+    Private Sub OpenEventWindow() Handles menuConfigEvents.Click
         'If actionForm Is Nothing Then
         '    actionForm = New frmActions
         '    actionForm.Show()
@@ -524,7 +531,7 @@ LoadConfig:
     End Sub
 #End Region
 
-#Region "Event Handlers"
+#Region "MIDI Event Handlers"
     Private Sub NoteOn(ByVal msg As NoteOnMessage)
         If configMode And Not (eventForm Is Nothing) Then
             ''override programmed action, redirect action to Configure Actions window
@@ -840,21 +847,6 @@ LoadConfig:
     Private Sub ReloadModules() Handles menuUpdateAvailablePlugins.Click
         actionModules.Clear()
         LoadModules()
-    End Sub
-#End Region
-
-#Region "Random Code Helpers"
-    ''' <summary>
-    ''' Add an item (T) to end of array (of T).
-    ''' </summary>
-    ''' <typeparam name="T"></typeparam>
-    ''' <param name="arr"></param>
-    ''' <param name="item"></param>
-    ''' <remarks></remarks>
-    <System.Runtime.CompilerServices.Extension()> _
-    Public Sub Add(Of T)(ByRef arr As T(), ByVal item As T)
-        Array.Resize(arr, arr.Length + 1)
-        arr(arr.Length - 1) = item
     End Sub
 #End Region
 End Module

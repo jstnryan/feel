@@ -23,9 +23,14 @@
         main.SaveConfiguration()
     End Sub
 
-    Private Sub frmConfiguration_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
         main.configMode = True
         SetControls()
+
+        MyBase.OnLoad(e)
+    End Sub
+
+    Private Sub frmConfiguration_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
     End Sub
 
     Private Sub SetControls()

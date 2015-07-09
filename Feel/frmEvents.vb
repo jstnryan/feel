@@ -1,6 +1,5 @@
 ﻿Imports System.ComponentModel
 
-'Imports Feel.My.Resources
 Public Class frmEvents
     Dim DeviceList As Collections.Generic.Dictionary(Of String, Integer)
 
@@ -67,6 +66,11 @@ Public Class frmEvents
                                 'ElseIf Not (.InitialState = "") Then
                                 '    main.SendMidi(_device, .InitialState)
                             End If
+                        Else
+                            'TODO: not sure if I really need this...
+                            If Not (.Control(_curCont.ContStr).DefaultState.IsNullOrEmpty) Then
+                                serviceHost.SendMIDI(_device, .Control(_curCont.ContStr).DefaultState)
+                            End If
                         End If
                     End If
                 End With
@@ -89,6 +93,7 @@ Public Class frmEvents
             If (chkPaged.Enabled = False) Then
                 chkPaged.Enabled = True
                 nudDevicePage.Enabled = True
+                txtDefaultState.Enabled = True
                 grpConfiguration.Enabled = True
                 grpActions.Enabled = True
                 'TODO: Previous makes the following unneccessary?
@@ -105,19 +110,20 @@ Public Class frmEvents
             lvActions.Items.Clear()
             AddHandler lvActions.ItemSelectionChanged, AddressOf lvActions_ItemSelectionChanged
 
-            DeselectActionPane()
+            SetControlStates()
 
             'TODO: Check to see if active control contains a page change action, if so, update page
-            If False Then
-                'change page
-            Else
-                nudDevicePage.Value = _curCont.ContPage
-            End If
+            'If False Then
+            '    'change page
+            'Else
+            nudDevicePage.Value = _curCont.ContPage
+            'End If
 
             ''Check to see if this control has been programmed, update UI with configuration data
             If SetControl(False) Then
                 With FeelConfig.Connections(_device).Control(_curCont.ContStr)
                     chkPaged.Checked = .Paged
+                    txtDefaultState.Text = .DefaultState
                     If SetPage(False) Then
                         With .Page(_curCont.ContPage)
                             txtInitialState.Text = .InitialState
@@ -139,6 +145,7 @@ Public Class frmEvents
             Else
                 ''No Control is configured, so give things default values
                 chkPaged.Checked = False
+                txtDefaultState.Text = ""
                 txtInitialState.Text = ""
                 nudControlGroup.Value = 0
                 rdoMomentaryAbsolute.Checked = True
@@ -146,17 +153,33 @@ Public Class frmEvents
         End If
     End Sub
 
-    Public Sub DeselectActionPane()
-        txtActionName.Text = ""
-        cboActionFunction.SelectedIndex = -1
-        pgAction.SelectedObject = Nothing
-
-        cmdActionRemove.Enabled = False
-        cmdActionUp.Enabled = False
-        cmdActionDown.Enabled = False
-        cmdActionSwap.Enabled = False
-        'cmdActionClear.Enabled = False
-        grpAction.Enabled = False
+    ''' <summary>
+    ''' Sets control properties according to <see cref="lvActions">lvActions</see> SelectedItems.
+    ''' </summary>
+    Private Sub SetControlStates()
+        If (lvActions.SelectedItems.Count = 1) Then
+            cmdActionAdd.Enabled = True
+            cmdActionRemove.Enabled = True
+            cmdActionUp.Enabled = True
+            cmdActionDown.Enabled = True
+            If (_curCont.Type = "Note") Then cmdActionSwap.Enabled = True
+            cmdActionClear.Enabled = True
+            grpAction.Enabled = True
+        Else
+            'TODO: support moving/removing multiple actions at the same time
+            'cmdActionAdd.Enabled = True
+            cmdActionRemove.Enabled = False
+            cmdActionUp.Enabled = False
+            cmdActionDown.Enabled = False
+            cmdActionSwap.Enabled = False
+            'cmdActionClear.Enabled = True
+            txtActionName.Text = ""
+            cboActionFunction.SelectedIndex = -1
+            pgAction.SelectedObject = Nothing
+            grpAction.Enabled = False
+            'If (lvActions.SelectedItems.Count = 0) Then
+            'End If
+        End If
     End Sub
 
     Delegate Sub SetLblCallback(ByVal Device As String, ByVal Description As String, ByVal Channel As String, ByVal NoteControl As String, ByVal VelocityValue As String)
@@ -248,6 +271,9 @@ Public Class frmEvents
         lvActions.Select()
     End Sub
 
+    ''' <summary>
+    ''' Populates <see cref="cboActionFunction">cboActionFunction</see> with the currently available Action plugins.
+    ''' </summary>
     Private Sub PopulateActionFunctions()
         cboActionFunction.ValueMember = "Value"
         cboActionFunction.DisplayMember = "Display"
@@ -279,6 +305,7 @@ Public Class frmEvents
         ''If the X, C, V keys are pressed (along with Control), handle Cut, Copy, Paste operations
         If (e.Control) Then
             If (e.KeyCode = Windows.Forms.Keys.X) Then ''Cut
+                'TODO: Cut
             ElseIf (e.KeyCode = Windows.Forms.Keys.C) Then ''Copy
                 With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                     CopyData = New clsCopiedActions
@@ -328,19 +355,23 @@ Public Class frmEvents
         End If
     End Sub
 
-    Private Sub frmActions_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        main.configMode = True
-        'Form size: 765, 460
-
-        'TODO: clear the actions list of design-time items
+    Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
+        'TODO: clear the actions list of design-time items in the editor
         lvActions.Items.Clear()
 
         PopulateActionFunctions()
-
         ChangeDescriptionHeight(pgAction, 128)
+        main.configMode = True
+
+        MyBase.OnLoad(e)
     End Sub
 
-    ''Allows modification of the "Description" window height in a PropertyGrid control
+    Private Sub frmActions_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        'Form size: 765, 460
+        ' New size: 765, 486
+    End Sub
+
+    '''<summary>Changes the height of the Description pane in a PropertyGrid</summary>
     Private Shared Sub ChangeDescriptionHeight(ByVal grid As Windows.Forms.PropertyGrid, ByVal height As Integer)
         If grid Is Nothing Then
             Throw New ArgumentNullException("grid")
@@ -364,7 +395,7 @@ Public Class frmEvents
                 With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                     Dim whichGroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
                     Dim curIndex As Integer = lvActions.Groups(whichGroup).Items.IndexOf(lvActions.SelectedItems(0))
-                    ''If this is a new action, assign .Data
+                    ''If this is a new action, assign new .Data
                     If (cboActionFunctionQualify(whichGroup, curIndex)) Then
                         If (whichGroup = 1) Then
                             .ActionsOff(curIndex).Type = targetGuid
@@ -374,6 +405,21 @@ Public Class frmEvents
                             .Actions(curIndex).Type = targetGuid
                             .Actions(curIndex).Data = ObjectCopier.Clone(main.actionModules.Item(.Actions(curIndex).Type).Data)
                             .Actions(curIndex)._available = True
+                        End If
+                    Else
+                        ''An action has already been assigned, test to see if targetGuid is different, and reassign
+                        If (whichGroup = 1) Then
+                            If Not (.ActionsOff(curIndex).Type = targetGuid) Then
+                                .ActionsOff(curIndex).Type = targetGuid
+                                .ActionsOff(curIndex).Data = ObjectCopier.Clone(main.actionModules.Item(.ActionsOff(curIndex).Type).Data)
+                                .ActionsOff(curIndex)._available = True
+                            End If
+                        Else
+                            If Not (.Actions(curIndex).Type = targetGuid) Then
+                                .Actions(curIndex).Type = targetGuid
+                                .Actions(curIndex).Data = ObjectCopier.Clone(main.actionModules.Item(.Actions(curIndex).Type).Data)
+                                .Actions(curIndex)._available = True
+                            End If
                         End If
                     End If
                     pgAction.SelectedObject = If(whichGroup = 1, .ActionsOff(curIndex).Data, .Actions(curIndex).Data)
@@ -385,12 +431,11 @@ Public Class frmEvents
         End If
     End Sub
     ''' <summary>
-    ''' This tests to see if an Action needs to be assigned to a clsAction
+    ''' Tests to see if an Action needs to be assigned to a clsAction
     ''' </summary>
     ''' <param name="whichGroup">The index of the group the selected Action belongs to in Actions ListView control.</param>
     ''' <param name="curIndex">The selected Action's current index in the group.</param>
     ''' <returns>True if .Data Is Nothing, otherwise False.</returns>
-    ''' <remarks></remarks>
     Private Function cboActionFunctionQualify(ByVal whichGroup As Integer, ByVal curIndex As Integer) As Boolean
         With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
             If (whichGroup = 1) Then
@@ -413,15 +458,6 @@ Public Class frmEvents
     ''The SelectedIndexChanged event occurs in single selection ListView controls, whenever there is a change to the index position of the selected item. In a multiple selection ListView control, this event occurs whenever an item is removed or added to the list of selected items.
     Private Sub lvActions_ItemSelectionChanged(ByVal sender As Object, ByVal e As System.Windows.Forms.ListViewItemSelectionChangedEventArgs) Handles lvActions.ItemSelectionChanged
         If (lvActions.SelectedItems.Count = 1) Then
-            ''actions list pane:
-            cmdActionRemove.Enabled = True
-            cmdActionUp.Enabled = True
-            cmdActionDown.Enabled = True
-            If (_curCont.Type = "note") Then cmdActionSwap.Enabled = True
-            cmdActionClear.Enabled = True
-            grpAction.Enabled = True
-
-            ''action pane:
             Dim whichgroup As Integer = lvActions.Groups.IndexOf(lvActions.SelectedItems(0).Group)
             'TODO: This is a fix for some nasty bug that is seemingly impossible to track
             'If (whichgroup < 0) Then Exit Sub
@@ -432,23 +468,23 @@ Public Class frmEvents
                     Try
                         cboActionFunction.SelectedValue = .ActionsOff(curindex).Type
                     Catch ex As Exception
-                        Windows.MessageBox.Show("this action module is not currently loaded.")
+                        Windows.MessageBox.Show("This action module is not currently loaded.")
                     End Try
-                    'pgaction.selectedobject = .actionsoff(curindex).data
+                    'pgaction.selectedobject = .actionsoff(curindex).data ''Happens automatically in cboActionFunction_SelectedIndexChanged()
                 Else
                     txtActionName.Text = .Actions(curindex).Name
                     Try
                         cboActionFunction.SelectedValue = .Actions(curindex).Type
                     Catch ex As Exception
-                        Windows.MessageBox.Show("this action module is not currently loaded.")
+                        Windows.MessageBox.Show("This action module is not currently loaded.")
                     End Try
-                    'pgaction.selectedobject = .actions(curindex).data
+                    'pgaction.selectedobject = .actions(curindex).data ''Happens automatically in cboActionFunction_SelectedIndexChanged()
                 End If
             End With
-        Else
+            'Else
             ''copy/paste mode or nothing selected
-            DeselectActionPane()
         End If
+        SetControlStates()
     End Sub
     'Private Sub lvActions_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lvActions.SelectedIndexChanged
     'End Sub
@@ -468,10 +504,8 @@ Public Class frmEvents
             With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                 If (whichGroup = 1) Then
                     .ActionsOff(curIndex).Enabled = e.Item.Checked
-                    'Diagnostics.Debug.WriteLine(.ActionsOff(curIndex).Name & ": " & .ActionsOff(curIndex).Enabled.ToString)
                 Else
                     .Actions(curIndex).Enabled = e.Item.Checked
-                    'Diagnostics.Debug.WriteLine(.Actions(curIndex).Name & ": " & .Actions(curIndex).Enabled.ToString)
                 End If
             End With
         End If
@@ -480,10 +514,7 @@ Public Class frmEvents
     Private Sub cmdActionClear_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdActionClear.Click
         If Windows.Forms.MessageBox.Show("Are you sure you want to clear all actions associated with this control?", "Feel: Confirm Clear Actions", Windows.Forms.MessageBoxButtons.YesNo, Windows.Forms.MessageBoxIcon.Exclamation, Windows.Forms.MessageBoxDefaultButton.Button2) = Windows.Forms.DialogResult.Yes Then
             lvActions.Items.Clear()
-            'grpAction.Enabled = False
-            'TODO: this should happen automatically
-            'lvActions_ItemSelectionChanged()
-            If SetPage(True) Then
+            If SetPage(False) Then
                 'TODO: (not sure if this is the best way to do this)
                 With FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage)
                     .Actions = New Collections.Generic.List(Of clsAction)
@@ -621,15 +652,25 @@ Public Class frmEvents
         End If
     End Sub
 
+    Private Sub txtDefaultState_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtDefaultState.TextChanged
+        If SetControl(True) Then
+            'TODO: Sanitize this input
+            FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).DefaultState = txtDefaultState.Text
+        Else
+            ''Should never hit this block
+            Windows.Forms.MessageBox.Show("unable to set this value")
+        End If
+    End Sub
+
     Private Sub txtInitialState_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtInitialState.TextChanged
         If SetPage(True) Then
+            'TODO: Sanitize this input
             FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control(_curCont.ContStr).Page(_curCont.ContPage).InitialState = txtInitialState.Text
         Else
             'TODO: need this?
             ''error that should never happen
             Windows.Forms.MessageBox.Show("unable to set this value")
         End If
-        'Diagnostics.Debug.WriteLine("Did it take? " & Configuration.Connections(curCont.Device).Control(curCont.ContStr).Page(curCont.ContPage).InitialState)
     End Sub
 
     Private Sub nudControlGroup_ValueChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles nudControlGroup.ValueChanged
@@ -647,7 +688,7 @@ Public Class frmEvents
             End If
         End If
     End Sub
-    '''Shouldn't need this, because rdoMomentaryAbsolute should take care of it
+    ''Shouldn't need this, because rdoMomentaryAbsolute should take care of it
     'Private Sub rdoLatchRelative_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles rdoLatchRelative.CheckedChanged
     '    If SetPage(True) Then
     '        If rdoLatchRelative.Checked Then
@@ -686,8 +727,12 @@ Public Class frmEvents
         holdControl = grpInput.Checked
     End Sub
 
-    ''Generates a new Control in the Device Configuration, if not exist
-    Private Function SetControl(ByVal createControl As Boolean) As Boolean
+    '''<summary>
+    '''Checks whether a Control exists on the currently active Page and Device, optionally creates it if not.
+    '''</summary>
+    '''<param name="createControl">Create the Control if it doesn't exist (default: False).</param>
+    '''<returns>True if the Control exists, or was created, otherwise False.</returns>
+    Private Function SetControl(Optional ByVal createControl As Boolean = False) As Boolean
         If Not _curCont Is Nothing Then
             If Not (FeelConfig.Connections(serviceHost.FindDeviceIndexByInput(_curCont.Device)).Control.ContainsKey(_curCont.ContStr)) Then
                 If createControl Then
@@ -704,7 +749,11 @@ Public Class frmEvents
         End If
     End Function
 
-    ''Generates a new Page in the Control, if not exist
+    '''<summary>
+    '''Checks whether a Page exists on the currently active Device, optionally creates it if not.
+    '''</summary>
+    '''<param name="createPage">Create the Pontrol if it doesn't exist (default: False).</param>
+    '''<returns>True if the Pontrol exists, or was created, otherwise False.</returns>
     Private Function SetPage(ByVal createPage As Boolean) As Boolean
         If Not _curCont Is Nothing Then
             If SetControl(createPage) Then
@@ -726,12 +775,38 @@ Public Class frmEvents
         End If
     End Function
 
+    Private Sub cmdEditDefaultState_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdEditDefaultState.Click
+        Using newEditor As frmMidiEditor = New frmMidiEditor(txtDefaultState.Text)
+            If (newEditor.ShowDialog(Me) = Windows.Forms.DialogResult.OK) Then
+                txtDefaultState.Text = newEditor.midiData.StringFormat
+            End If
+        End Using
+    End Sub
+
+    Private Sub cmdEditInitalState_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdEditInitalState.Click
+        Using newEditor As frmMidiEditor = New frmMidiEditor(txtInitialState.Text)
+            If (newEditor.ShowDialog(Me) = Windows.Forms.DialogResult.OK) Then
+                txtInitialState.Text = newEditor.midiData.StringFormat
+            End If
+        End Using
+    End Sub
+
 #Region "Display Preference Conversions"
-    Private Function DisplayChannel(ByVal channel As Byte) As String
+    ''' <summary>
+    ''' Formats a MIDI Channel string, according to user preferences.
+    ''' </summary>
+    ''' <param name="channel">The MIDI Channel number to format.</param>
+    ''' <returns>Formatted Channel string.</returns>
+    Friend Function DisplayChannel(ByVal channel As Byte) As String
         Return If(FeelConfig.MidiNumbering = 0, channel.ToString, (channel + 1).ToString)
     End Function
 
-    Private Function DisplayNote(ByVal note As Byte) As String
+    ''' <summary>
+    ''' Formats a MIDI Note string according to user preferences.
+    ''' </summary>
+    ''' <param name="note">The MIDI Note to format.</param>
+    ''' <returns>Formatted Note string.</returns>
+    Friend Function DisplayNote(ByVal note As Byte) As String
         Select Case FeelConfig.MidiNotation
             Case 1, 2 ''Dec
                 Return note.ToString & If(FeelConfig.MidiNotation = 2, "d", "")
@@ -742,7 +817,12 @@ Public Class frmEvents
         End Select
     End Function
 
-    Private Function DisplayNoteAsString(ByVal note As Byte) As String
+    ''' <summary>
+    ''' Converts a numeric MIDI Note into a friendly word string.
+    ''' </summary>
+    ''' <param name="note">The MIDI Note to format.</param>
+    ''' <returns>Formatted Note string.</returns>
+    Friend Function DisplayNoteAsString(ByVal note As Byte) As String
         If (FeelConfig.MidiTranspose = 1) Then
             Return [Enum].GetName(GetType(Midi.Pitch), note).Replace("Sharp", "#")
         Else
@@ -761,7 +841,12 @@ Public Class frmEvents
         End If
     End Function
 
-    Private Function DisplayVelVal(ByVal velval As Byte) As String
+    ''' <summary>
+    ''' Formats a MIDI Velocity or MIDI Value according to user preferences.
+    ''' </summary>
+    ''' <param name="velval">The MIDI Velocity or Value to format.</param>
+    ''' <returns>Formatted Velocity or Value string.</returns>
+    Friend Function DisplayVelVal(ByVal velval As Byte) As String
         If (FeelConfig.MidiNotation = 3 Or FeelConfig.MidiNotation = 4) Then
             ''Hex
             Return velval.ToString("X2")
@@ -773,7 +858,7 @@ Public Class frmEvents
 #End Region
 End Class
 
-'''Keeping this solely because I found a little way to make shit transparent
+''Keeping this solely because I found a little way to make shit transparent
 'Private Sub UpdateButtonImages()
 '    For Each button As Windows.Forms.Control In Me.Controls
 '        If TypeOf button Is Windows.Forms.Button Then
