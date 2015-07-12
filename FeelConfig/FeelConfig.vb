@@ -74,7 +74,7 @@ Public Class clsConnection
     Public Control As Collections.Generic.Dictionary(Of String, clsControl)
 
     Public Sub New()
-        Enabled = False
+        Enabled = True 'TODO: Normally False; put good thought into whether this will have unintended consequences.
         Name = "New Connection"
         Input = -1
         InputName = ""
