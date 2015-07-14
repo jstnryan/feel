@@ -66,6 +66,7 @@ Module main
                     ConnectDevices()
                 End If
             End If
+            MenuConfigModeSwitch()
         End Set
     End Property
 
@@ -169,69 +170,57 @@ Module main
         End If
     End Sub
 
-    <Diagnostics.DebuggerStepThrough()> _
+    <Diagnostics.DebuggerStepThrough()>
     Private Sub OpenProgramWindow() Handles menuConfigProgram.Click
-        ''Singleton: See designer code.
-        '' http://www.codeproject.com/Articles/5000/Simple-Singleton-Forms
-        '' (dated link) http://www.codeproject.com/KB/vb/Simple_Singleton_Forms.aspx
-        If configForm Is Nothing Then
-            configForm = New frmConfiguration
+        If Not _configMode Then
+            ''Singleton: See designer code.
+            '' http://www.codeproject.com/Articles/5000/Simple-Singleton-Forms
+            '' (dated link) http://www.codeproject.com/KB/vb/Simple_Singleton_Forms.aspx
+            If configForm Is Nothing Then
+                configForm = New frmConfiguration
+            End If
+            configForm.Show()
+            'configForm.Focus()
+        Else
+            HighlightActiveConfig()
         End If
-        configForm.Show()
-        'configForm.Focus()
     End Sub
     Friend Sub OpenConfigWindow_Ext(ByVal state As Object)
         OpenProgramWindow()
     End Sub
 
-    <Diagnostics.DebuggerStepThrough()> _
+    <Diagnostics.DebuggerStepThrough()>
     Private Sub OpenConnectWindow() Handles menuConfigConnections.Click
-        ''The Connections Configuration form makes its own connections to
-        '' test devices, so we must disconnect existing connections first.
-        DisconnectDevices()
+        If Not _configMode Then
+            ''The Connections Configuration form makes its own connections to
+            '' test devices, so we must disconnect existing connections first.
+            DisconnectDevices()
 
-        If connectForm Is Nothing Then
-            connectForm = New frmConnections
+            If connectForm Is Nothing Then
+                connectForm = New frmConnections
+            End If
+            connectForm.Show()
+        Else
+            HighlightActiveConfig()
         End If
-        connectForm.Show()
-        'configForm.Focus()
     End Sub
     <Diagnostics.DebuggerStepThrough()> _
     Friend Sub OpenConnectWindow_Ext(ByVal state As Object)
         OpenConnectWindow()
     End Sub
 
-    <Diagnostics.DebuggerStepThrough()> _
+    <Diagnostics.DebuggerStepThrough()>
     Private Sub OpenEventWindow() Handles menuConfigEvents.Click, trayIcon.DoubleClick
-        'If actionForm Is Nothing Then
-        '    actionForm = New frmActions
-        '    actionForm.Show()
-        'Else
-        '    If actionForm.InvokeRequired Then
-        '        actionForm.Invoke(New dlgOpenActionWindow(AddressOf OpenActionWindow))
-        '    Else
-        '        actionForm.Show()
-        '    End If
-        'End If
-        If eventForm Is Nothing Then
-            eventForm = New frmEvents
+        If Not _configMode Then
+            If eventForm Is Nothing Then
+                eventForm = New frmEvents
+            End If
+            eventForm.Show()
+        Else
+            HighlightActiveConfig()
         End If
-        eventForm.Show()
     End Sub
-    ''Delegate Sub dlgDisposeActionWindow()
-    'Friend Sub DisposeActionWindow()
-    '    'If actionForm.InvokeRequired Then
-    '    '    actionForm.Invoke(New dlgDisposeActionWindow(AddressOf DisposeActionWindow))
-    '    'Else
-    '    '    actionForm = Nothing
-    '    'End If
-    '    actionForm = Nothing
-    'End Sub
-    ''The following two Subs for opening Action window on UI thread
-    'Friend Sub OpenActionWindow_Ext()
-    '    _threadcontext.Post(AddressOf OpenActionWindow_Del, _threadcontext)
-    'End Sub
-    <Diagnostics.DebuggerStepThrough()> _
+    <Diagnostics.DebuggerStepThrough()>
     Friend Sub OpenEventWindow_Ext(ByVal state As Object)
         OpenEventWindow()
     End Sub
@@ -255,11 +244,32 @@ Module main
     ''See: #Region "File I/O", SaveConfiguration()
     'Private Sub SaveConfiguration() Handles menuSaveConfiguration.Click
 
-    <Diagnostics.DebuggerStepThrough()> _
+    <Diagnostics.DebuggerStepThrough()>
     Friend Sub UpdateAvailableDevices() Handles menuUpdateAvailableDevices.Click
         Midi.InputDevice.UpdateInstalledDevices()
         Midi.OutputDevice.UpdateInstalledDevices()
         'TODO: update lists in Connection Config, if in ConfigMode
+    End Sub
+
+    ''' <summary>Enables/Disables menu items based on <see cref="configMode(Boolean)">configMode(Boolean)</see>.</summary>
+    Private Sub MenuConfigModeSwitch()
+        menuConfigConnections.Enabled = Not _configMode
+        menuConfigEvents.Enabled = Not _configMode
+        menuConfigProgram.Enabled = Not _configMode
+    End Sub
+
+    ''' <summary>Brings open config window into Focus if there is an attempt to open another config window.</summary>
+    Private Sub HighlightActiveConfig()
+        If (_configMode) Then
+            Select Case True
+                Case eventForm IsNot Nothing
+                    eventForm.Focus()
+                Case connectForm IsNot Nothing
+                    connectForm.Focus()
+                Case configForm IsNot Nothing
+                    configForm.Focus()
+            End Select
+        End If
     End Sub
 #End Region
 
