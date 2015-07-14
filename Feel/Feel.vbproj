@@ -128,6 +128,10 @@
     <Compile Include="validation.vb" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Midi, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Midi.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -187,10 +191,6 @@
       <Project>{B4A03EF1-9D1C-4388-B9FE-2B46E4C23E88}</Project>
       <Name>FeelConfig</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MIDI\MIDI.csproj">
-      <Project>{F60D8B7B-2D2E-4B94-A736-3783FFE1A25C}</Project>
-      <Name>MIDI</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AddToPage.png" />
@@ -215,6 +215,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="feel.ico" />
+    <Content Include="Midi.dll" />
     <None Include="Resources\bmp\EditInformation.bmp" />
     <None Include="Resources\EditInformation.png" />
     <None Include="app.config" />
