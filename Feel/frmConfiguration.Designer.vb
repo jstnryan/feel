@@ -26,34 +26,34 @@ Partial Class frmConfiguration
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmConfiguration))
-        Me.grpMidiDisplay = New System.Windows.Forms.GroupBox
-        Me.grpTranspose = New System.Windows.Forms.GroupBox
-        Me.rdoTransposeC3 = New System.Windows.Forms.RadioButton
-        Me.rdoTransposeC4 = New System.Windows.Forms.RadioButton
-        Me.rdoTransposeC5 = New System.Windows.Forms.RadioButton
-        Me.grpNumbering = New System.Windows.Forms.GroupBox
-        Me.rdoNumbering1 = New System.Windows.Forms.RadioButton
-        Me.rdoNumbering0 = New System.Windows.Forms.RadioButton
-        Me.grpNotation = New System.Windows.Forms.GroupBox
-        Me.rdoNotationDecS = New System.Windows.Forms.RadioButton
-        Me.rdoNotationHexS = New System.Windows.Forms.RadioButton
-        Me.rdoNotationDec = New System.Windows.Forms.RadioButton
-        Me.rdoNotationHexP = New System.Windows.Forms.RadioButton
-        Me.rdoNotationNot = New System.Windows.Forms.RadioButton
-        Me.grpLJConfig = New System.Windows.Forms.GroupBox
-        Me.chkDmxover = New System.Windows.Forms.CheckBox
-        Me.chkDmxin = New System.Windows.Forms.CheckBox
-        Me.chkWindowsMessages = New System.Windows.Forms.CheckBox
-        Me.grpConnection = New System.Windows.Forms.GroupBox
-        Me.chkReconnectDevices = New System.Windows.Forms.CheckBox
-        Me.chkIgnoreWhileConnecting = New System.Windows.Forms.CheckBox
-        Me.grpConfigFile = New System.Windows.Forms.GroupBox
-        Me.cmdFileSaveAs = New System.Windows.Forms.Button
-        Me.cmdFileNew = New System.Windows.Forms.Button
-        Me.cmdFileOpen = New System.Windows.Forms.Button
-        Me.txtConfigFile = New System.Windows.Forms.TextBox
-        Me.grpLicense = New System.Windows.Forms.GroupBox
-        Me.txtLicense = New System.Windows.Forms.TextBox
+        Me.grpMidiDisplay = New System.Windows.Forms.GroupBox()
+        Me.grpTranspose = New System.Windows.Forms.GroupBox()
+        Me.rdoTransposeC3 = New System.Windows.Forms.RadioButton()
+        Me.rdoTransposeC4 = New System.Windows.Forms.RadioButton()
+        Me.rdoTransposeC5 = New System.Windows.Forms.RadioButton()
+        Me.grpNumbering = New System.Windows.Forms.GroupBox()
+        Me.rdoNumbering1 = New System.Windows.Forms.RadioButton()
+        Me.rdoNumbering0 = New System.Windows.Forms.RadioButton()
+        Me.grpNotation = New System.Windows.Forms.GroupBox()
+        Me.rdoNotationDecS = New System.Windows.Forms.RadioButton()
+        Me.rdoNotationHexS = New System.Windows.Forms.RadioButton()
+        Me.rdoNotationDec = New System.Windows.Forms.RadioButton()
+        Me.rdoNotationHexP = New System.Windows.Forms.RadioButton()
+        Me.rdoNotationNot = New System.Windows.Forms.RadioButton()
+        Me.grpLJConfig = New System.Windows.Forms.GroupBox()
+        Me.chkDmxover = New System.Windows.Forms.CheckBox()
+        Me.chkDmxin = New System.Windows.Forms.CheckBox()
+        Me.chkWindowsMessages = New System.Windows.Forms.CheckBox()
+        Me.grpConnection = New System.Windows.Forms.GroupBox()
+        Me.chkReconnectDevices = New System.Windows.Forms.CheckBox()
+        Me.chkIgnoreWhileConnecting = New System.Windows.Forms.CheckBox()
+        Me.grpConfigFile = New System.Windows.Forms.GroupBox()
+        Me.cmdFileSaveAs = New System.Windows.Forms.Button()
+        Me.cmdFileNew = New System.Windows.Forms.Button()
+        Me.cmdFileOpen = New System.Windows.Forms.Button()
+        Me.txtConfigFile = New System.Windows.Forms.TextBox()
+        Me.grpLicense = New System.Windows.Forms.GroupBox()
+        Me.txtLicense = New System.Windows.Forms.TextBox()
         Me.grpMidiDisplay.SuspendLayout()
         Me.grpTranspose.SuspendLayout()
         Me.grpNumbering.SuspendLayout()
@@ -366,8 +366,8 @@ Partial Class frmConfiguration
         Me.txtLicense.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.txtLicense.Size = New System.Drawing.Size(237, 58)
         Me.txtLicense.TabIndex = 19
-        Me.txtLicense.Text = "Protection device found" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Feel single license found" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Plug-in licenses:" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Advanced L" & _
-            "J Functions license" & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "OSC license."
+        Me.txtLicense.Text = "Unlicensed (no licensing mechanism)." & Global.Microsoft.VisualBasic.ChrW(13) & Global.Microsoft.VisualBasic.ChrW(10) & "Product demonstration only - not for sale o" &
+    "r distribution."
         '
         'frmConfiguration
         '
