@@ -102,9 +102,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ActionInterface\Action.Interface.vbproj">
+    <ProjectReference Include="..\ActionInterface\Feel.Interface.vbproj">
       <Project>{C242BFED-C9F6-493A-8DC4-FB9571E3A8E0}</Project>
-      <Name>Action.Interface</Name>
+      <Name>Feel.Interface</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

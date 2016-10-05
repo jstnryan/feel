@@ -88,3 +88,6 @@ Edit Playback (Reverse)         20E33D32-7502-4e6c-B2BC-C6F7CF482D70
 Edit Playback (Stop)            20E33D32-7502-4e6c-B2BC-C6F7CF482D71
 Delete Scene(s) Window          20E33D32-7502-4e6c-B2BC-C6F7CF482D72
 Delete Scene(s)                 20E33D32-7502-4e6c-B2BC-C6F7CF482D73
+
+#GrandMA2 Show Control
+Fader Control					41D5F122-CFF8-44BC-AE2F-B085E4B5C9CC

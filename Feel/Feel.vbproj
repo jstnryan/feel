@@ -11,7 +11,7 @@
     <AssemblyName>Feel</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>WindowsFormsWithCustomSubMain</MyType>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <OptionExplicit>On</OptionExplicit>
     <OptionCompare>Binary</OptionCompare>
@@ -40,6 +40,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,6 +50,8 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>Feel.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,42353,42354,42355</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>None</DebugType>
@@ -58,6 +61,8 @@
     <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>Feel.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,42353,42354,42355</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -180,14 +185,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ActionInterface\Action.Interface.vbproj">
+    <ProjectReference Include="..\ActionInterface\Feel.Interface.vbproj">
       <Project>{C242BFED-C9F6-493A-8DC4-FB9571E3A8E0}</Project>
-      <Name>Action.Interface</Name>
+      <Name>Feel.Interface</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\FeelConfig\FeelConfig.vbproj">
+    <ProjectReference Include="..\FeelConfig\Feel.Config.vbproj">
       <Project>{B4A03EF1-9D1C-4388-B9FE-2B46E4C23E88}</Project>
-      <Name>FeelConfig</Name>
+      <Name>Feel.Config</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

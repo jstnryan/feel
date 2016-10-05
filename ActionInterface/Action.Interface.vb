@@ -132,6 +132,7 @@ Public Class ActionInterface
         MustOverride Function PostWMessage(ByVal Handle As Integer, ByVal uMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
         MustOverride Function SendLJCopyData(ByVal lParam As ActionInterface.CopyData) As Integer
 
+        'TODO: NEEDS TO BE REMOVED FROM ALL INTERFACES
         ''Software protection functions (licensing)
         Overridable Function Licensing_CodeMeter_Validate(ByVal firmCode As UInteger, Optional ByVal productCode As UInteger = Nothing, Optional ByVal featureCode As UInteger = Nothing) As Boolean
             Return False

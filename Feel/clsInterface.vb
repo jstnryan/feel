@@ -283,28 +283,37 @@ Public Class Interfaces
                     ''Get the device's MIDI output name
                     Dim _device As String = FeelConfig.Connections(Device).OutputName
 
-                    ''Take appropriate action
-                    Select Case cmdType
+                    Try
+                        ''Take appropriate action
+                        Select Case cmdType
                         ''Unsupported:
                         'Case "A" 'Polyphonic Aftertouch
                         'Case "D" 'Channel Pressure (Aftertouch)
-
-                        Case "8" 'MIDI Note Off
-                            'midiOut.Item(device.OutputName).SendNoteOff(CType(cmd.Substring(1, 1), Midi.Channel), CType(Convert.ToInt16(cmd.Substring(2, 2)), Midi.Pitch), Convert.ToInt16(cmd.Substring(4, 2)))
-                            midiOut.Item(_device).SendNoteOff(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Pitch), cmdArr(2))
-                        Case "9" 'MIDI Note On
-                            midiOut.Item(_device).SendNoteOn(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Pitch), cmdArr(2))
-                        Case "B" 'Control Change
-                            midiOut.Item(_device).SendControlChange(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Control), cmdArr(2))
-                        Case "C" 'Program Change
-                            midiOut.Item(_device).SendProgramChange(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Instrument))
-                        Case "E" 'Pitch Wheel Change (Pitch Bend)
-                            midiOut.Item(_device).SendPitchBend(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), cmdArr(1))
-                        Case "F" 'MIDI System-Common Message
-                            If (Message.Substring(1, 1) = "0") Then 'MIDI Sysex Message
-                                midiOut.Item(_device).SendSysEx(cmdArr)
-                            End If
-                    End Select
+                            Case "8" 'MIDI Note Off
+                                'midiOut.Item(device.OutputName).SendNoteOff(CType(cmd.Substring(1, 1), Midi.Channel), CType(Convert.ToInt16(cmd.Substring(2, 2)), Midi.Pitch), Convert.ToInt16(cmd.Substring(4, 2)))
+                                midiOut.Item(_device).SendNoteOff(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Pitch), cmdArr(2))
+                            Case "9" 'MIDI Note On
+                                midiOut.Item(_device).SendNoteOn(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Pitch), cmdArr(2))
+                            Case "B" 'Control Change
+                                midiOut.Item(_device).SendControlChange(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Control), cmdArr(2))
+                            Case "C" 'Program Change
+                                midiOut.Item(_device).SendProgramChange(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), CType(cmdArr(1), Midi.Instrument))
+                            Case "E" 'Pitch Wheel Change (Pitch Bend)
+                                midiOut.Item(_device).SendPitchBend(CType(Convert.ToByte(Message.Substring(1, 1), 16), Midi.Channel), cmdArr(1))
+                            Case "F" 'MIDI System-Common Message
+                                If (Message.Substring(1, 1) = "0") Then 'MIDI Sysex Message
+                                    midiOut.Item(_device).SendSysEx(cmdArr)
+                                End If
+                        End Select
+                    Catch ex As Midi.DeviceException
+                        ''Connection probably disappeared (disconnected) after opening
+                        main.MidiConnectionErrror(_device)
+                        'Catch ex As System.InvalidOperationException
+                        '    ''Connection was never opened, or closed prematurely - should never arrive here
+                        '    'Diagnostics.Debug.WriteLine("(Feel) System.InvalidOperationException: " & ex.Message)
+                        'Catch ex As Exception
+                        '    'Diagnostics.Debug.WriteLine("(Feel) Unknown Exception" & ex.Message)
+                    End Try
                 End If
             End If
         End Sub

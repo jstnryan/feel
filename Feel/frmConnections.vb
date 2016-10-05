@@ -18,8 +18,8 @@
     End Sub
 
     Private Sub frmConfig_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
-        'Save the new configuration
-        main.SaveConfiguration()
+        ''Save the new configuration
+        'main.SaveConfiguration()
     End Sub
 
     Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)

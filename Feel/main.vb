@@ -192,6 +192,7 @@ Module main
     <Diagnostics.DebuggerStepThrough()>
     Private Sub OpenConnectWindow() Handles menuConfigConnections.Click
         If Not _configMode Then
+            'TODO: This is no longer true, possibly not necessary to disconnect
             ''The Connections Configuration form makes its own connections to
             '' test devices, so we must disconnect existing connections first.
             DisconnectDevices()
@@ -827,7 +828,7 @@ LoadConfig:
 #Region "Action Plugins"
     ''' <summary>Populates list of currently available action plug-ins.</summary>
     ''' <remarks>Attempts to load each instance of ActionInterface.IAction; upon success stores refernces by GUID in <see cref="actionModules">actionModules</see>.</remarks>
-    <Diagnostics.DebuggerStepThrough()> _
+    <Diagnostics.DebuggerStepThrough()>
     Friend Sub LoadModules()
         Dim addonsRootDirectory As String = My.Application.Info.DirectoryPath & "\actions\"
         Dim addonsLoaded As New Collections.Generic.List(Of System.Type)
@@ -860,15 +861,15 @@ LoadConfig:
     ''' <param name="dllFilePath">Fully qualified path to DLL to search</param>
     ''' <returns>List of all IAction classes in DLL</returns>
     ''' <remarks>For use only within <see cref="LoadModules">LoadModules</see>.</remarks>
-    <Diagnostics.DebuggerStepThrough()> _
+    <Diagnostics.DebuggerStepThrough()>
     Private Function TryLoadAssemblyReference(ByVal dllFilePath As String) As Collections.Generic.List(Of System.Type)
         Dim loadedAssembly As Reflection.Assembly = Nothing
         Dim listOfModules As New Collections.Generic.List(Of System.Type)
-        Try
-            loadedAssembly = Reflection.Assembly.LoadFile(dllFilePath)
-        Catch ex As Exception
-            Diagnostics.Debug.WriteLine("Reflection.Assembly exception")
-        End Try
+        'Try
+        loadedAssembly = Reflection.Assembly.LoadFile(dllFilePath)
+        'Catch ex As Exception
+        'Diagnostics.Debug.WriteLine("Reflection.Assembly exception")
+        'End Try
         If loadedAssembly IsNot Nothing Then
             For Each assemblyModule As System.Reflection.Module In loadedAssembly.GetModules
                 For Each moduleType As System.Type In assemblyModule.GetTypes()
@@ -887,10 +888,43 @@ LoadConfig:
     End Function
 
     ''' <summary>Updates the list of available plugins.</summary>
-    <Diagnostics.DebuggerStepThrough()> _
+    <Diagnostics.DebuggerStepThrough()>
     Private Sub ReloadModules() Handles menuUpdateAvailablePlugins.Click
         actionModules.Clear()
         LoadModules()
+    End Sub
+#End Region
+
+#Region "Error Handling"
+    ''' <summary>Safely removes a MIDI device connection that has caused an error.</summary>
+    ''' <param name="_device">Name of the errant device</param>
+    Public Sub MidiConnectionErrror(ByVal _device As String)
+        ''TODO: Would like to set Connecting on a per-device basis here..
+        ''Close device (may throw exception)
+        Try
+            midiIn.Item(_device).Close()
+            midiOut.Item(_device).Close()
+        Catch ex As Exception
+            Diagnostics.Debug.WriteLine("(Feel) MidiConnectionError: Exception thrown on device Close")
+        End Try
+        Dim devIndexInput As Integer = serviceHost.FindDeviceIndexByInput(_device)
+        Dim devIndexOutput As Integer = serviceHost.FindDeviceIndexByOutput(_device)
+        ''Disable in/output
+        'Dim wasEnabledInput As Boolean = FeelConfig.Connections(devIndexInput).InputEnable
+        'Dim wasEnabledOutput As Boolean = FeelConfig.Connections(devIndexOutput).OutputEnable
+        FeelConfig.Connections(devIndexInput).InputEnable = False
+        FeelConfig.Connections(devIndexOutput).OutputEnable = False
+        ''Disable device
+        FeelConfig.Connections(serviceHost.FindDeviceIndex(_device)).Enabled = False
+        ''Reset connection flags in configuration
+        Try
+            midiIn.Item(_device).RemoveAllEventHandlers()
+            midiIn.Remove(_device)
+            midiOut.Remove(_device)
+        Catch ex As Exception
+            Diagnostics.Debug.WriteLine("(Feel) MidiConnectionError: Exception thrown on device Remove")
+        End Try
+        trayIcon.ShowBalloonTip(10000, "Device Disconnected", "The connection named '" & _device & "' is no longer accessible.", ToolTipIcon.Warning)
     End Sub
 #End Region
 End Module
