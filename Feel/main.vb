@@ -536,14 +536,19 @@ LoadConfig:
             Case 1 ''Close incoming
                 If (midiIn.Count > 0) Then
                     For Each inDev As InputDevice In midiIn.Values
-                        If inDev.IsReceiving Then inDev.StopReceiving()
-                        If inDev.IsOpen Then
-                            inDev.Close()
-                            RemoveHandler inDev.NoteOn, AddressOf NoteOn
-                            RemoveHandler inDev.NoteOff, AddressOf NoteOff
-                            RemoveHandler inDev.ControlChange, AddressOf ControlChange
-                            inDev.RemoveAllEventHandlers()
-                        End If
+                        Try
+                            If inDev.IsReceiving Then inDev.StopReceiving()
+                            If inDev.IsOpen Then
+                                inDev.Close()
+                                RemoveHandler inDev.NoteOn, AddressOf NoteOn
+                                RemoveHandler inDev.NoteOff, AddressOf NoteOff
+                                RemoveHandler inDev.ControlChange, AddressOf ControlChange
+                                inDev.RemoveAllEventHandlers()
+                            End If
+                        Catch ex As Exception
+                            'Diagnostics.Debug.WriteLine("(Feel) DisconnectDevices: Exception thrown on input device StopReceiving")
+                            MidiDisconnectError(inDev.Name)
+                        End Try
                     Next
                     midiIn.Clear()
                 End If
@@ -551,7 +556,12 @@ LoadConfig:
             Case 2 ''Close outgoing
                 If (midiOut.Count > 0) Then
                     For Each outDev As OutputDevice In midiOut.Values
-                        If outDev.IsOpen Then outDev.Close()
+                        Try
+                            If outDev.IsOpen Then outDev.Close()
+                        Catch ex As Exception
+                            'Diagnostics.Debug.WriteLine("(Feel) DisconnectDevices: Exception thrown on output device Close")
+                            MidiDisconnectError(outDev.Name)
+                        End Try
                     Next
                     midiOut.Clear()
                 End If
@@ -924,6 +934,23 @@ LoadConfig:
         Catch ex As Exception
             Diagnostics.Debug.WriteLine("(Feel) MidiConnectionError: Exception thrown on device Remove")
         End Try
+        trayIcon.ShowBalloonTip(10000, "Device Disconnected", "The connection named '" & _device & "' is no longer accessible.", ToolTipIcon.Warning)
+    End Sub
+
+    ''' <summary>Safely disables a MIDI devices connection that caused an error while disconnecting.</summary>
+    ''' <remarks>Unlike <see cref="MidiConnectionErrror(String)">MidiConnectionError</see>, does not modify the device collection.</remarks>
+    ''' <param name="_device">Name of errant device</param>
+    Public Sub MidiDisconnectError(ByVal _device As String)
+        Dim devIndexInput As Integer = serviceHost.FindDeviceIndexByInput(_device)
+        Dim devIndexOutput As Integer = serviceHost.FindDeviceIndexByOutput(_device)
+        ''Disable in/output
+        'Dim wasEnabledInput As Boolean = FeelConfig.Connections(devIndexInput).InputEnable
+        'Dim wasEnabledOutput As Boolean = FeelConfig.Connections(devIndexOutput).OutputEnable
+        FeelConfig.Connections(devIndexInput).InputEnable = False
+        FeelConfig.Connections(devIndexOutput).OutputEnable = False
+        ''Disable device
+        FeelConfig.Connections(serviceHost.FindDeviceIndex(_device)).Enabled = False
+        midiIn.Item(_device).RemoveAllEventHandlers()
         trayIcon.ShowBalloonTip(10000, "Device Disconnected", "The connection named '" & _device & "' is no longer accessible.", ToolTipIcon.Warning)
     End Sub
 #End Region
